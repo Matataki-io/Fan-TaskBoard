@@ -2,7 +2,7 @@ import axios from "axios";
 import { getCookie } from "../utils/cookie";
 
 const client = axios.create({
-  baseURL: process.env.REACT_APP_BACKEND_API,
+  baseURL: process.env.REACT_APP_MATATAKI_API,
   timeout: 1000 * 30,
   headers: {},
 });

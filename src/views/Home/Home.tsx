@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useMount } from 'ahooks'
 import styled from 'styled-components'
 import chef from '../../assets/img/chef.png'
 // import Button from '../../components/Button'
@@ -8,7 +9,9 @@ import PageHeader from '../../components/PageHeader'
 import Spacer from '../../components/Spacer'
 import Balances from './components/Balances'
 
-import { Button, Input, Select, Form } from 'antd';
+import { getAllQuests, createQuest, questInterface } from '../../api/api'
+
+import { Button, Input, Select, Form, message } from 'antd';
 
 import logo from '../../assets/img/logo.png'
 const { Search } = Input;
@@ -20,10 +23,64 @@ const Home: React.FC = () => {
   const handleChange = (value: any) => console.log(`selected ${value}`);
 
   const [form] = Form.useForm();
+  const [questsReload, setQuestsReload] = useState<number>(0)
+  const [quests, setQuests] = useState<any[]>([])
+  const [questsCount, setQuestsCount] = useState<number>(0)
+
+  useMount(() => {
+
+  })
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const result: any = await getAllQuests()
+        if (result.code === 0) {
+          setQuests(result.data.list)
+          setQuestsCount(result.data.count)
+        }
+      } catch (error) {
+        console.log('error', error)
+      }
+    }
+    getData()
+
+  }, [questsReload])
+
+
 
   const onFinish = (value: any) => {
     console.log(value);
+
+    const createQuestFn = async (data: questInterface) => {
+      const result: any = await createQuest(data)
+      if (result.code === 0) {
+        message.info('创建成功')
+        setQuestsReload(Date.now()) // 刷新列表
+        form.resetFields()
+      } else {
+        message.error('创建失败')
+        console.log(result)
+      }
+    }
+    let data = {
+      type: 0,
+      twitter_id: value.account,
+      token_id: 21,
+      reward_people: value.rewardPeople,
+      reward_price: value.rewardPrice
+    }
+    createQuestFn(data)
   };
+  // 处理twitter图片
+  const processTwitterImage = (url: string) => {
+    try {
+      return url.replace('_normal', '_400x400')
+    } catch (error) {
+      console.log('processTwitterImage error', error)
+      return url
+    }
+  }
 
   return (
     <Page>
@@ -33,16 +90,10 @@ const Home: React.FC = () => {
           <ul>
             <li><h3>任务分类</h3></li>
             <li>
-              <a href="">所有任务（132）</a>
+              <a href="">所有任务（{ questsCount }）</a>
             </li>
             <li>
-              <a href="">推特关注（11）</a>
-            </li>
-            <li>
-              <a href="">其他10）</a>
-            </li>
-            <li>
-              <a href="">系统（2）</a>
+              <a href="">Twitter关注（{questsCount}）</a>
             </li>
           </ul>
         </StyledMenu>
@@ -87,20 +138,21 @@ const Home: React.FC = () => {
               form={form}
               onFinish={onFinish}
             >
-              <Form.Item label="关注账户" name="account">
+              <Form.Item label="关注账户" name="account" rules={[{ required: true,
+                 message: '请输入关注账户!' }]}>
                 <Input placeholder="关注账户" />
               </Form.Item>
-              <Form.Item label="奖励Fan票类型" name="token">
+              <Form.Item label="奖励Fan票类型" name="token" rules={[{ required: true, message: '请选择奖励Fan票类型!' }]}>
                 <Select onChange={handleChange} placeholder="选择奖励Fan票类型">
                   <Option value="dao">DAO</Option>
                   <Option value="meta">META</Option>
                 </Select>
               </Form.Item>
               <Form.Item label="奖励设置">
-                <Form.Item style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} name="rewardPeople">
+                <Form.Item style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} name="rewardPeople" rules={[{ required: true, message: '请输入奖励人数!' }]}>
                   <Input placeholder="奖励人数" />
                 </Form.Item>
-                <Form.Item style={{ display: 'inline-block', width: 'calc(50% - 8px)', margin: '0 8px' }} name="rewardPrice">
+                <Form.Item style={{ display: 'inline-block', width: 'calc(50% - 8px)', margin: '0 8px' }} name="rewardPrice" rules={[{ required: true, message: '请输入奖励总金额!' }]}>
                   <Input placeholder="奖励总金额" />
                 </Form.Item>
               </Form.Item>
@@ -128,28 +180,28 @@ const Home: React.FC = () => {
 
         <StyledList>
           {
-            [1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => (
+            quests.map(i => (
               <StyledListItem>
                 <StyledListItemInfo>
-                  <span className="tips">去关注</span>
+                  <span className="tips">Twitter关注</span>
                   <StyledListItemUser>
                     <div className="user">
-                      <img src={logo} alt="avatar" />
+                      <img src={processTwitterImage(i.profile_image_url_https)} alt="avatar" />
                     </div>
-                    <span className="user-name">LLLLLL</span>
+                    <span className="user-name">{i.twitter_id}</span>
                   </StyledListItemUser>
-                  <p className="user-by"><span>by</span>xxxxxxxxxxxxxx</p>
+                  <p className="user-by"><span>by</span>{i.username}</p>
                 </StyledListItemInfo>
 
                 <StyledListItemBox>
                   <StyledListItemBoxReward>
                     <div className="box-reward">
-                      <p className="box-reward-token">2<sub>DPC</sub></p>
+                      <p className="box-reward-token">{i.reward_price}<sub>{i.symbol}</sub></p>
                       <p className="box-reward-title">你可得</p>
                     </div>
                     <div className="box-reward">
-                      <p className="box-reward-token">2<sub>DPC</sub></p>
-                      <p className="box-reward-title">你可得</p>
+                      <p className="box-reward-token">{i.reward_people}<sub>/{i.reward_people}</sub></p>
+                      <p className="box-reward-title">总奖励</p>
                     </div>
                   </StyledListItemBoxReward>
                   <StyledButton>领取奖励</StyledButton>
