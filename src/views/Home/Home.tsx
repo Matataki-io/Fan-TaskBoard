@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useMount } from 'ahooks'
 import styled from 'styled-components'
+import BigNumber from 'bignumber.js'
+
 import chef from '../../assets/img/chef.png'
 // import Button from '../../components/Button'
 import Container from '../../components/Container'
@@ -83,6 +85,22 @@ const Home: React.FC = () => {
     }
   }
 
+  // 计算获取奖励
+  const processReward = (price: string, people: string) => {
+    // console.log('1111', price, people)
+    let BN = BigNumber.clone()
+    BN.config({ DECIMAL_PLACES: 3 })
+    let single = new BN(new BN(Number(price))).dividedBy(Number(people))
+    return single.toString()
+  }
+  // 计算奖励领取份额
+  const processRewardShare = (people: string, received: string) => {
+    let BN = BigNumber.clone()
+    BN.config({ DECIMAL_PLACES: 3 })
+    let single = new BN(new BN(Number(people))).minus(Number(received))
+    return single.toString()
+  }
+
   // 领取奖励
   const receiveFn = async (qid: number): Promise<void> => {
 
@@ -108,10 +126,12 @@ const Home: React.FC = () => {
   }
 
   const rewardButton = (i: any) => {
-    console.log('i', i)
+    // console.log('i', i)
 
     if (String(i.uid) === String(user.id)) {
       return (<StyledButton disabled={true}>自己发布</StyledButton>)
+    } else if (i.receive) {
+      return (<StyledButton disabled={true}>已经领取</StyledButton>)
     } else if (i.following) {
       return (<StyledButton onClick={() => receiveFn(i.id)}>领取奖励</StyledButton>)
     } else if (!i.following) {
@@ -235,11 +255,11 @@ const Home: React.FC = () => {
                 <StyledListItemBox>
                   <StyledListItemBoxReward>
                     <div className="box-reward">
-                      <p className="box-reward-token">{i.reward_price}<sub>{i.symbol}</sub></p>
+                      <p className="box-reward-token">{ processReward(i.reward_price, i.reward_people) }<sub>{i.symbol}</sub></p>
                       <p className="box-reward-title">你可得</p>
                     </div>
                     <div className="box-reward">
-                      <p className="box-reward-token">{i.reward_people}<sub>/{i.reward_people}</sub></p>
+                      <p className="box-reward-token">{ processRewardShare(i.reward_people, i.received) }<sub>/{i.reward_people}</sub></p>
                       <p className="box-reward-title">总奖励</p>
                     </div>
                   </StyledListItemBoxReward>
