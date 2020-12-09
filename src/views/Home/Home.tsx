@@ -7,6 +7,7 @@ import { getAllQuests, createQuest, questInterface } from '../../api/api'
 import { Button, Input, Select, Form, message, Spin } from 'antd'
 
 import TwitterUserSearch from './components/TwitterUserSearch'
+import TokenSearch from './components/TokenSearch'
 
 import logo from '../../assets/img/logo.png'
 const { Search } = Input;
@@ -127,19 +128,18 @@ const Home: React.FC = () => {
               form={form}
               onFinish={onFinish}
             >
-              {/* <Form.Item label="关注账户" name="account" rules={[{ required: true,
-                 message: '请输入关注账户!' }]}>
-                <Input placeholder="关注账户" />
-              </Form.Item> */}
               <Form.Item label="关注账户" name="account" rules={[{ required: true,
                  message: '请输入关注账户!' }]}>
                 <TwitterUserSearch />
               </Form.Item>
-              <Form.Item label="奖励Fan票类型" name="token" rules={[{ required: true, message: '请选择奖励Fan票类型!' }]}>
+              {/* <Form.Item label="奖励Fan票类型" name="token" rules={[{ required: true, message: '请选择奖励Fan票类型!' }]}>
                 <Select onChange={handleChange} placeholder="选择奖励Fan票类型">
                   <Option value="dao">DAO</Option>
                   <Option value="meta">META</Option>
                 </Select>
+              </Form.Item> */}
+              <Form.Item label="奖励Fan票类型" name="token" rules={[{ required: true, message: '请选择奖励Fan票类型!' }]}>
+                <TokenSearch />
               </Form.Item>
               <Form.Item label="奖励设置">
                 <Form.Item style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} name="rewardPeople" rules={[{ required: true, message: '请输入奖励人数!' }]}>

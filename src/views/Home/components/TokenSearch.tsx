@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 
-import { twitterUsersSearch } from '../../../api/api'
+import { getTokenList } from '../../../api/api'
 
 import { Select, Spin, Avatar } from 'antd';
 
@@ -12,13 +12,13 @@ const { Option } = Select;
 
 const Home: React.FC = ({ value = {}, onChange }: any) => {
 
-  // 推特用户搜索框相关变量
+  // Fan票搜索框相关变量
   const [searchData, setSearchData] = useState<any[]>([])
   const [searchFetching, setSearchFetching] = useState<boolean>(false)
   const [searchValue, setSearchValue] = useState<any>(undefined)
   let userSearchStr = ''
 
-  /** 搜索推特用户 */
+  /** 搜索Fan票 */
   const fetchUser = (localValue: any) => {
     setSearchData([])
     setSearchFetching(true)
@@ -26,12 +26,12 @@ const Home: React.FC = ({ value = {}, onChange }: any) => {
     const thisUserSearchStr = userSearchStr
 
     ;(async function () {
-      const res: any = await twitterUsersSearch(localValue, 10)
+      const res: any = await getTokenList(1, 20, localValue)
       if (thisUserSearchStr !== userSearchStr) return
       if (res && !res.code) {
-        const resDara = res.data.map((user: any) => ({
-          value: user.screen_name,
-          user
+        const resDara = res.data.list.map((token: any) => ({
+          value: token.symbol,
+          token
         }))
         setSearchData(resDara)
         setSearchFetching(false)
@@ -46,7 +46,7 @@ const Home: React.FC = ({ value = {}, onChange }: any) => {
   /** 防抖的 */
   const debounceFetchUser = debounce(fetchUser, 800)
 
-  /** 推特用户选择事件 */
+  /** Fan票选择事件 */
   const handleUserSearchChange = (localValue: any) => {
     setSearchValue(localValue)
     setSearchData([])
@@ -55,20 +55,20 @@ const Home: React.FC = ({ value = {}, onChange }: any) => {
     onChange(localValue)
   }
 
-  /** 推特用户搜索框用到的展示卡片 */
+  /** Fan票搜索框用到的展示卡片 */
   function TwitterUserCard (props: any) {
     const { card } = props
     return (
       <StyledTwitterUserCard>
-        <div className="twitter-avatar">
-          <Avatar size={36} src={card.profile_image_url_https} />
+        <div className="token-logo">
+          <Avatar size={36} src={process.env.REACT_APP_MTTK_IMG_CDN + card.logo} />
         </div>
-        <div className="twitter-main">
+        <div className="token-main">
           <h4>
             { card.name }
           </h4>
           <p>
-            @{ card.screen_name }
+            { card.symbol }
           </p>
         </div>
       </StyledTwitterUserCard>
@@ -90,7 +90,7 @@ const Home: React.FC = ({ value = {}, onChange }: any) => {
     >
       {searchData.map(d => (
         <Option key={d.value} value={undefined}>
-          <TwitterUserCard card={d.user} />
+          <TwitterUserCard card={d.token} />
         </Option>
       ))}
     </Select>
@@ -102,14 +102,14 @@ const StyledTwitterUserCard = styled.div`
   height: 38px;
 
 
-  .twitter-avatar {
+  .token-logo {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-right: 5px;
   }
 
-  .twitter-main {
+  .token-main {
     max-width: calc(100% - 36px);
     h4 {
       font-size: 14px;
