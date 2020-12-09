@@ -5,7 +5,7 @@ export interface questInterface {
   id?: number,
   uid?: number,
   type: number,
-  twitter_id: number,
+  twitter_id: string,
   token_id: number,
   reward_people: string,
   reward_price: string,
@@ -27,4 +27,8 @@ export function getAllQuests() {
 // 创建任务
 export function createQuest(data: questInterface) {
   return client.post(`/quest`, data);
+}
+
+export function twitterUsersSearch(q: string, count: number = 5) {
+  return client.get(`/users/search/twitter`, { params: { q, count } })
 }

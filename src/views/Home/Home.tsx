@@ -9,9 +9,11 @@ import PageHeader from '../../components/PageHeader'
 import Spacer from '../../components/Spacer'
 import Balances from './components/Balances'
 
-import { getAllQuests, createQuest, questInterface } from '../../api/api'
+import { getAllQuests, createQuest, questInterface, twitterUsersSearch } from '../../api/api'
 
-import { Button, Input, Select, Form, message } from 'antd';
+import { Button, Input, Select, Form, message, Spin, Avatar } from 'antd';
+
+import debounce from 'lodash/debounce'
 
 import logo from '../../assets/img/logo.png'
 const { Search } = Input;
@@ -27,9 +29,46 @@ const Home: React.FC = () => {
   const [quests, setQuests] = useState<any[]>([])
   const [questsCount, setQuestsCount] = useState<number>(0)
 
-  useMount(() => {
+  // 推特用户搜索框相关变量
+  const [searchData, setSearchData] = useState<any[]>([])
+  const [searchFetching, setSearchFetching] = useState<boolean>(false)
+  const [searchValue, setSearchValue] = useState<any>(undefined)
+  let userSearchStr = ''
 
-  })
+  /** 搜索推特用户 */
+  const fetchUser = (value: any) => {
+    setSearchData([])
+    setSearchFetching(true)
+    userSearchStr = value
+    const thisUserSearchStr = userSearchStr
+
+    ;(async function () {
+      const res: any = await twitterUsersSearch(value)
+      if (thisUserSearchStr !== userSearchStr) return
+      if (res && !res.code) {
+        const resDara = res.data.map((user: any) => ({
+          value: user.screen_name,
+          user
+        }))
+        setSearchData(resDara)
+        setSearchFetching(false)
+      } else {
+        console.warn('[搜索失败]:', res.message)
+        setSearchFetching(false)
+        setSearchData([])
+      }
+    }())
+  }
+
+  /** 防抖的 */
+  const debounceFetchUser = debounce(fetchUser, 800)
+
+  /** 推特用户选择事件 */
+  const handleUserSearchChange = (value: any) => {
+    setSearchValue(value)
+    setSearchData([])
+    setSearchFetching(false)
+  }
 
   useEffect(() => {
     const getData = async () => {
@@ -47,8 +86,6 @@ const Home: React.FC = () => {
 
   }, [questsReload])
 
-
-
   const onFinish = (value: any) => {
     console.log(value);
 
@@ -65,7 +102,7 @@ const Home: React.FC = () => {
     }
     let data = {
       type: 0,
-      twitter_id: value.account,
+      twitter_id: value.account ? value.account.value : '',
       token_id: 21,
       reward_people: value.rewardPeople,
       reward_price: value.rewardPrice
@@ -77,9 +114,29 @@ const Home: React.FC = () => {
     try {
       return url.replace('_normal', '_400x400')
     } catch (error) {
-      console.log('processTwitterImage error', error)
+      // console.log('processTwitterImage error', error)
       return url
     }
+  }
+
+  /** 推特用户搜索框用到的展示卡片 */
+  function TwitterUserCard (props: any) {
+    const { card } = props
+    return (
+      <StyledTwitterUserCard>
+        <div className="twitter-avatar">
+          <Avatar size={36} src={card.profile_image_url_https} />
+        </div>
+        <div className="twitter-main">
+          <h4>
+            { card.name }
+          </h4>
+          <p>
+            @{ card.screen_name }
+          </p>
+        </div>
+      </StyledTwitterUserCard>
+    )
   }
 
   return (
@@ -138,9 +195,30 @@ const Home: React.FC = () => {
               form={form}
               onFinish={onFinish}
             >
-              <Form.Item label="关注账户" name="account" rules={[{ required: true,
+              {/* <Form.Item label="关注账户" name="account" rules={[{ required: true,
                  message: '请输入关注账户!' }]}>
                 <Input placeholder="关注账户" />
+              </Form.Item> */}
+              <Form.Item label="关注账户" name="account" rules={[{ required: true,
+                 message: '请输入关注账户!' }]}>
+                <Select
+                  size="large"
+                  labelInValue
+                  showSearch
+                  value={searchValue}
+                  placeholder="关注账户"
+                  notFoundContent={searchFetching ? <Spin size="small" /> : '没有此关键词的结果'}
+                  filterOption={false}
+                  onSearch={debounceFetchUser}
+                  onChange={handleUserSearchChange}
+                  style={{ width: '100%' }}
+                >
+                  {searchData.map(d => (
+                    <Option key={d.value} value={undefined}>
+                      <TwitterUserCard card={d.user} />
+                    </Option>
+                  ))}
+                </Select>
               </Form.Item>
               <Form.Item label="奖励Fan票类型" name="token" rules={[{ required: true, message: '请选择奖励Fan票类型!' }]}>
                 <Select onChange={handleChange} placeholder="选择奖励Fan票类型">
@@ -468,5 +546,44 @@ const StyledHallCreate = styled.div`
     }
   }
 `
+
+const StyledTwitterUserCard = styled.div`
+  display: flex;
+  height: 38px;
+
+
+  .twitter-avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 5px;
+  }
+
+  .twitter-main {
+    max-width: calc(100% - 36px);
+    h4 {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 16px;
+      color: black;
+      margin:  1px 0 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    p {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 16px;
+      color: #b2b2b2;
+      margin: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+`
+
 
 export default Home
