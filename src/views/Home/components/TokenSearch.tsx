@@ -30,7 +30,7 @@ const Home: React.FC = ({ value = {}, onChange }: any) => {
       if (thisUserSearchStr !== userSearchStr) return
       if (res && !res.code) {
         const resDara = res.data.list.map((token: any) => ({
-          value: token.symbol,
+          value: token.id,
           token
         }))
         setSearchData(resDara)

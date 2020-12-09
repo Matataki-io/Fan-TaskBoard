@@ -56,7 +56,7 @@ const Home: React.FC = () => {
     let data = {
       type: 0,
       twitter_id: value.account ? value.account.value : '',
-      token_id: 21,
+      token_id: value.token.value,
       reward_people: value.rewardPeople,
       reward_price: value.rewardPrice
     }
