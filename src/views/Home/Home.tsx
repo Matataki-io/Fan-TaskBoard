@@ -1,19 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { useMount } from 'ahooks'
 import styled from 'styled-components'
-import chef from '../../assets/img/chef.png'
-// import Button from '../../components/Button'
-import Container from '../../components/Container'
 import Page from '../../components/Page'
-import PageHeader from '../../components/PageHeader'
-import Spacer from '../../components/Spacer'
-import Balances from './components/Balances'
 
-import { getAllQuests, createQuest, questInterface, twitterUsersSearch } from '../../api/api'
+import { getAllQuests, createQuest, questInterface } from '../../api/api'
 
-import { Button, Input, Select, Form, message, Spin, Avatar } from 'antd';
+import { Button, Input, Select, Form, message, Spin } from 'antd'
 
-import debounce from 'lodash/debounce'
+import TwitterUserSearch from './components/TwitterUserSearch'
 
 import logo from '../../assets/img/logo.png'
 const { Search } = Input;
@@ -28,47 +21,6 @@ const Home: React.FC = () => {
   const [questsReload, setQuestsReload] = useState<number>(0)
   const [quests, setQuests] = useState<any[]>([])
   const [questsCount, setQuestsCount] = useState<number>(0)
-
-  // 推特用户搜索框相关变量
-  const [searchData, setSearchData] = useState<any[]>([])
-  const [searchFetching, setSearchFetching] = useState<boolean>(false)
-  const [searchValue, setSearchValue] = useState<any>(undefined)
-  let userSearchStr = ''
-
-  /** 搜索推特用户 */
-  const fetchUser = (value: any) => {
-    setSearchData([])
-    setSearchFetching(true)
-    userSearchStr = value
-    const thisUserSearchStr = userSearchStr
-
-    ;(async function () {
-      const res: any = await twitterUsersSearch(value)
-      if (thisUserSearchStr !== userSearchStr) return
-      if (res && !res.code) {
-        const resDara = res.data.map((user: any) => ({
-          value: user.screen_name,
-          user
-        }))
-        setSearchData(resDara)
-        setSearchFetching(false)
-      } else {
-        console.warn('[搜索失败]:', res.message)
-        setSearchFetching(false)
-        setSearchData([])
-      }
-    }())
-  }
-
-  /** 防抖的 */
-  const debounceFetchUser = debounce(fetchUser, 800)
-
-  /** 推特用户选择事件 */
-  const handleUserSearchChange = (value: any) => {
-    setSearchValue(value)
-    setSearchData([])
-    setSearchFetching(false)
-  }
 
   useEffect(() => {
     const getData = async () => {
@@ -117,26 +69,6 @@ const Home: React.FC = () => {
       // console.log('processTwitterImage error', error)
       return url
     }
-  }
-
-  /** 推特用户搜索框用到的展示卡片 */
-  function TwitterUserCard (props: any) {
-    const { card } = props
-    return (
-      <StyledTwitterUserCard>
-        <div className="twitter-avatar">
-          <Avatar size={36} src={card.profile_image_url_https} />
-        </div>
-        <div className="twitter-main">
-          <h4>
-            { card.name }
-          </h4>
-          <p>
-            @{ card.screen_name }
-          </p>
-        </div>
-      </StyledTwitterUserCard>
-    )
   }
 
   return (
@@ -201,24 +133,7 @@ const Home: React.FC = () => {
               </Form.Item> */}
               <Form.Item label="关注账户" name="account" rules={[{ required: true,
                  message: '请输入关注账户!' }]}>
-                <Select
-                  size="large"
-                  labelInValue
-                  showSearch
-                  value={searchValue}
-                  placeholder="关注账户"
-                  notFoundContent={searchFetching ? <Spin size="small" /> : '没有此关键词的结果'}
-                  filterOption={false}
-                  onSearch={debounceFetchUser}
-                  onChange={handleUserSearchChange}
-                  style={{ width: '100%' }}
-                >
-                  {searchData.map(d => (
-                    <Option key={d.value} value={undefined}>
-                      <TwitterUserCard card={d.user} />
-                    </Option>
-                  ))}
-                </Select>
+                <TwitterUserSearch />
               </Form.Item>
               <Form.Item label="奖励Fan票类型" name="token" rules={[{ required: true, message: '请选择奖励Fan票类型!' }]}>
                 <Select onChange={handleChange} placeholder="选择奖励Fan票类型">
