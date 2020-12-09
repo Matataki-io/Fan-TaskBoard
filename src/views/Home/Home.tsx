@@ -132,12 +132,6 @@ const Home: React.FC = () => {
                  message: '请输入关注账户!' }]}>
                 <TwitterUserSearch />
               </Form.Item>
-              {/* <Form.Item label="奖励Fan票类型" name="token" rules={[{ required: true, message: '请选择奖励Fan票类型!' }]}>
-                <Select onChange={handleChange} placeholder="选择奖励Fan票类型">
-                  <Option value="dao">DAO</Option>
-                  <Option value="meta">META</Option>
-                </Select>
-              </Form.Item> */}
               <Form.Item label="奖励Fan票类型" name="token" rules={[{ required: true, message: '请选择奖励Fan票类型!' }]}>
                 <TokenSearch />
               </Form.Item>

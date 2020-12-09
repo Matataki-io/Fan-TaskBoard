@@ -81,7 +81,7 @@ const Home: React.FC = ({ value = {}, onChange }: any) => {
       labelInValue
       showSearch
       value={searchValue}
-      placeholder="关注账户"
+      placeholder="选择奖励Fan票类型"
       notFoundContent={searchFetching ? <Spin size="small" /> : '没有此关键词的结果'}
       filterOption={false}
       onSearch={debounceFetchUser}
