@@ -9,9 +9,10 @@ import PageHeader from '../../components/PageHeader'
 import Spacer from '../../components/Spacer'
 import Balances from './components/Balances'
 
-import { getAllQuests, createQuest, questInterface } from '../../api/api'
-
-import { Button, Input, Select, Form, message } from 'antd';
+import { useSelector, useDispatch } from "react-redux";
+import { getAllQuests, createQuest, questInterface, receiveProps, receive } from '../../api/api'
+import { Button, Input, Select, Form, message } from 'antd'
+import { selectUser } from '../../store/userSlice';
 
 import logo from '../../assets/img/logo.png'
 const { Search } = Input;
@@ -26,6 +27,7 @@ const Home: React.FC = () => {
   const [questsReload, setQuestsReload] = useState<number>(0)
   const [quests, setQuests] = useState<any[]>([])
   const [questsCount, setQuestsCount] = useState<number>(0)
+  const user: any = useSelector(selectUser)
 
   useMount(() => {
 
@@ -47,8 +49,7 @@ const Home: React.FC = () => {
 
   }, [questsReload])
 
-
-
+  // 完成表单
   const onFinish = (value: any) => {
     console.log(value);
 
@@ -79,6 +80,44 @@ const Home: React.FC = () => {
     } catch (error) {
       console.log('processTwitterImage error', error)
       return url
+    }
+  }
+
+  // 领取奖励
+  const receiveFn = async (qid: number): Promise<void> => {
+
+    if (!user.id) {
+      message.error('请先登陆')
+      return
+    }
+
+    try {
+      const data: receiveProps = {
+        qid: qid
+      }
+      const result: any = await receive(data)
+      console.log('result', result)
+      if (result.code === 0) {
+        message.success('领取成功')
+      } else {
+        message.error(result.message)
+      }
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
+
+  const rewardButton = (i: any) => {
+    console.log('i', i)
+
+    if (String(i.uid) === String(user.id)) {
+      return (<StyledButton disabled={true}>自己发布</StyledButton>)
+    } else if (i.following) {
+      return (<StyledButton onClick={() => receiveFn(i.id)}>领取奖励</StyledButton>)
+    } else if (!i.following) {
+      return (<StyledButton onClick={ () => window.open(`https://twitter.com/${i.screen_name || i.twitter_id}`) }>去做任务</StyledButton>)
+    } else {
+      return (<StyledButton>其他</StyledButton>)
     }
   }
 
@@ -204,7 +243,14 @@ const Home: React.FC = () => {
                       <p className="box-reward-title">总奖励</p>
                     </div>
                   </StyledListItemBoxReward>
-                  <StyledButton>领取奖励</StyledButton>
+                  {
+                    rewardButton(i)
+                  }
+                  {/* <StyledButton>去关注</StyledButton> */}
+                  {/* <StyledButton>领取奖励</StyledButton> */}
+                  {/* <StyledButton>已经领取</StyledButton> */}
+                  {/* <StyledButton>取消任务</StyledButton> */}
+                  {/* <StyledButton>自己发布</StyledButton> */}
                 </StyledListItemBox>
               </StyledListItem>
             ))
@@ -215,7 +261,7 @@ const Home: React.FC = () => {
   )
 }
 
-const StyledButton = styled.button`
+const StyledButton = styled(Button)`
   background: #6236FF;
   border-radius: 4px;
   width: 100%;
@@ -224,7 +270,7 @@ const StyledButton = styled.button`
   font-size: 14px;
   font-weight: 500;
   color: #FFFFFF;
-  line-height: 20px;
+  height: 40px;
   padding: 10px 0;
   margin: 34px 0 0 0;
   cursor: pointer;

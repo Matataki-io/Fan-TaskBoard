@@ -13,6 +13,10 @@ export interface questInterface {
   update_time?: string,
 }
 
+export interface receiveProps {
+  qid: number
+}
+
 // =========== MTK ===========
 // 获取用户信息
 export function getUserProfile() {
@@ -27,4 +31,9 @@ export function getAllQuests() {
 // 创建任务
 export function createQuest(data: questInterface) {
   return client.post(`/quest`, data);
+}
+
+// 创建任务
+export function receive(data: receiveProps) {
+  return client.post(`/receive`, data);
 }
