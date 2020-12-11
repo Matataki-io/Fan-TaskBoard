@@ -21,7 +21,7 @@ const Oauth = () => {
     console.log("useLocation()", query.get('x-access-token'));
     if (!accessToken) return;
     setCookie("x-access-token", accessToken);
-    router.replace(toPath);
+    router.push(toPath);
   });
   if (!accessToken) {
     return (

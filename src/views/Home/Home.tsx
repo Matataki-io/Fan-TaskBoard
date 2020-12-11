@@ -1,18 +1,25 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
+import BigNumber from 'bignumber.js'
+import { useSelector, useDispatch } from "react-redux";
+import { Button, Input, Select, Form, message, Spin, Pagination } from 'antd'
+import { getCookie } from '../../utils/cookie'
+
+import logo from '../../assets/img/logo.png'
+// import chef from '../../assets/img/chef.png'
+// import Button from '../../components/Button'
+// import Container from '../../components/Container'
 import Page from '../../components/Page'
-
-import { getAllQuests, createQuest, questInterface } from '../../api/api'
-
-import { Button, Input, Select, Form, message, Spin } from 'antd'
-
+import {
+  questInterface, getAllQuestsProps, receiveProps,
+  getAllQuests, createQuest, receive, getAccountList
+} from '../../api/api'
+import { selectUser } from '../../store/userSlice';
 import TwitterUserSearch from './components/TwitterUserSearch'
 import TokenSearch from './components/TokenSearch'
 
-import logo from '../../assets/img/logo.png'
 const { Search } = Input;
 const { Option } = Select;
-
 
 const Home: React.FC = () => {
   const onSearch = (value: any) => console.log(value);
@@ -21,12 +28,24 @@ const Home: React.FC = () => {
   const [form] = Form.useForm();
   const [questsReload, setQuestsReload] = useState<number>(0)
   const [quests, setQuests] = useState<any[]>([])
-  const [questsCount, setQuestsCount] = useState<number>(0)
+  const [questsCount, setQuestsCount] = useState<number>(0) // 任务 总数量
+  const [questsCurrent, setQuestsCurrent] = useState<number>(1) // 任务 当前页
+  const [questCreateLoading, setQuestCreateLoading] = useState<boolean>(false)
+  const [questGetLoading, setQuestGetLoading] = useState<boolean>(false)
+  const [bindTwitter, setBindTwitter] = useState<boolean>(false)
+  const user: any = useSelector(selectUser)
 
   useEffect(() => {
+    // 获取任务列表
     const getData = async () => {
       try {
-        const result: any = await getAllQuests()
+        let params: getAllQuestsProps = {
+          page: questsCurrent,
+          size: 9
+        }
+        setQuestGetLoading(true)
+        const result: any = await getAllQuests(params)
+        setQuestGetLoading(false)
         if (result.code === 0) {
           setQuests(result.data.list)
           setQuestsCount(result.data.count)
@@ -35,15 +54,43 @@ const Home: React.FC = () => {
         console.log('error', error)
       }
     }
+
     getData()
 
-  }, [questsReload])
+    // 获取用户的绑定信息
+    const getAccountBind = async () => {
+    if (!getCookie("x-access-token")) return
 
+      try {
+        const result: any = await getAccountList()
+        if (result.code === 0) {
+          console.log('res', result)
+          if (result.data.find((i: any) => i.platform === "twitter")) {
+            setBindTwitter(true)
+          }
+        }
+      } catch (error) {
+        console.log('error', error)
+      }
+    }
+    getAccountBind()
+
+  }, [questsReload, questsCurrent])
+
+  // 完成表单
   const onFinish = (value: any) => {
     console.log(value);
 
+    if (!user.id) {
+      message.info('请登陆')
+      return
+    }
+
     const createQuestFn = async (data: questInterface) => {
+      setQuestCreateLoading(true)
+      message.info('正在支付并且创建任务，请耐心等待...')
       const result: any = await createQuest(data)
+      setQuestCreateLoading(false)
       if (result.code === 0) {
         message.info('创建成功')
         setQuestsReload(Date.now()) // 刷新列表
@@ -53,13 +100,38 @@ const Home: React.FC = () => {
         console.log(result)
       }
     }
-    let data = {
+
+    let data: any = {
       type: 0,
       twitter_id: value.account ? value.account.value : '',
       token_id: value.token.value,
       reward_people: value.rewardPeople,
       reward_price: value.rewardPrice
     }
+
+    let typeList = [0]
+    if (!typeList.includes(data.type)) {
+      message.info(`请选择任务类型`)
+      return
+    }
+
+    for (const key in data) {
+      // 忽略type
+      if (key !== 'type' && !data[key]) {
+        message.info(`${key} 不能为空`)
+        return
+      }
+    }
+
+    if (!(Number.isInteger(Number(data.reward_people)) && Number(data.reward_people) > 0)) {
+      message.info(`奖励人数必须为整数并大于0`)
+      return
+    }
+    if (!(Number(data.reward_price) > 0)) {
+      message.info(`奖励金额必须大于0`)
+      return
+    }
+
     createQuestFn(data)
   };
   // 处理twitter图片
@@ -69,6 +141,67 @@ const Home: React.FC = () => {
     } catch (error) {
       // console.log('processTwitterImage error', error)
       return url
+    }
+  }
+
+  // 计算获取奖励
+  const processReward = (price: string, people: string) => {
+    // console.log('1111', price, people)
+    let BN = BigNumber.clone()
+    BN.config({ DECIMAL_PLACES: 3 })
+    let single = new BN(new BN(Number(price))).dividedBy(Number(people))
+    return single.toString()
+  }
+  // 计算奖励领取份额
+  const processRewardShare = (people: string, received: string) => {
+    let BN = BigNumber.clone()
+    BN.config({ DECIMAL_PLACES: 3 })
+    let single = new BN(new BN(Number(people))).minus(Number(received))
+    return single.toString()
+  }
+
+  // 领取奖励
+  const receiveFn = async (qid: number): Promise<void> => {
+
+    if (!user.id) {
+      message.error('请先登陆')
+      return
+    }
+
+    try {
+      const data: receiveProps = {
+        qid: qid
+      }
+      const result: any = await receive(data)
+      console.log('result', result)
+      if (result.code === 0) {
+        message.success('领取成功')
+      } else {
+        message.error(result.message)
+      }
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
+
+  const handlePaginationChange = (page: any, pagesize: any) => {
+    console.log(11, page, pagesize)
+    setQuestsCurrent(page)
+  }
+
+  const rewardButton = (i: any) => {
+    // console.log('i', i)
+
+    if (String(i.uid) === String(user.id)) {
+      return (<StyledButton disabled={true}>自己发布</StyledButton>)
+    } else if (i.receive) {
+      return (<StyledButton disabled={true}>已经领取</StyledButton>)
+    } else if (i.following) {
+      return (<StyledButton onClick={() => receiveFn(i.id)}>领取奖励</StyledButton>)
+    } else if (!i.following) {
+      return (<StyledButton onClick={ () => window.open(`https://twitter.com/${i.screen_name || i.twitter_id}`) }>去做任务</StyledButton>)
+    } else {
+      return (<StyledButton>其他</StyledButton>)
     }
   }
 
@@ -97,12 +230,14 @@ const Home: React.FC = () => {
               </div>
               <p className="hall-description">完成下方任务即可开始获取奖励</p>
               <ul className="item">
-                <li>1.前往 <a>这里</a> 完成Twitter账户绑定</li>
-                <li>2.前往 <a>这里</a> 授权获取Twitter消息</li>
+                <li>1. <a href={`${process.env.REACT_APP_MATATAKI}/setting/account`} target="_blank" rel="noopener noreferrer">完成Twitter账户绑定</a>
+                  <span>{ bindTwitter ? '✅' : '❌' } </span>
+                </li>
+                {/* <li>2.前往 <a>这里</a> 授权获取Twitter消息</li> */}
               </ul>
             </StyledListItemInfo>
 
-            <StyledListItemBox>
+            {/* <StyledListItemBox>
               <StyledListItemBoxReward>
                 <div className="box-reward">
                   <p className="box-reward-token">2<sub>DPC</sub></p>
@@ -114,7 +249,7 @@ const Home: React.FC = () => {
                 </div>
               </StyledListItemBoxReward>
               <StyledButton>领取奖励</StyledButton>
-            </StyledListItemBox>
+            </StyledListItemBox> */}
 
           </StyledHallSystem>
           <StyledHallCreate>
@@ -128,8 +263,7 @@ const Home: React.FC = () => {
               form={form}
               onFinish={onFinish}
             >
-              <Form.Item label="关注账户" name="account" rules={[{ required: true,
-                 message: '请输入关注账户!' }]}>
+              <Form.Item label="关注账户" name="account" rules={[{ required: true, message: '请输入关注账户!' }]}>
                 <TwitterUserSearch />
               </Form.Item>
               <Form.Item label="奖励Fan票类型" name="token" rules={[{ required: true, message: '请选择奖励Fan票类型!' }]}>
@@ -144,7 +278,7 @@ const Home: React.FC = () => {
                 </Form.Item>
               </Form.Item>
               <Form.Item style={{ margin: "-24px 0 0 0" }}>
-                <StyledButtonAntd type="primary" htmlType="submit">支付并创建</StyledButtonAntd>
+                <StyledButtonAntd loading={questCreateLoading} type="primary" htmlType="submit">支付并创建</StyledButtonAntd>
               </Form.Item>
             </Form>
           </StyledHallCreate>
@@ -161,48 +295,59 @@ const Home: React.FC = () => {
           <div>
             <Select defaultValue="new" style={{ width: 120 }} onChange={handleChange}>
               <Option value="new">最新创建</Option>
+              <Option value="most">最多奖励</Option>
             </Select>
           </div>
         </StyledContentHead>
 
-        <StyledList>
-          {
-            quests.map(i => (
-              <StyledListItem>
-                <StyledListItemInfo>
-                  <span className="tips">Twitter关注</span>
-                  <StyledListItemUser>
-                    <div className="user">
-                      <img src={processTwitterImage(i.profile_image_url_https)} alt="avatar" />
-                    </div>
-                    <span className="user-name">{i.twitter_id}</span>
-                  </StyledListItemUser>
-                  <p className="user-by"><span>by</span>{i.username}</p>
-                </StyledListItemInfo>
+        <Spin spinning={questGetLoading}>
+          <StyledList>
+            {
+              quests.map(i => (
+                <StyledListItem key={i.id}>
+                  <StyledListItemInfo>
+                    <span className="tips">Twitter关注</span>
+                    <StyledListItemUser>
+                      <div className="user">
+                        <img src={processTwitterImage(i.profile_image_url_https)} alt="avatar" />
+                      </div>
+                      <span className="user-name">{i.twitter_id}</span>
+                    </StyledListItemUser>
+                    <p className="user-by"><span>by</span>{i.username}</p>
+                  </StyledListItemInfo>
 
-                <StyledListItemBox>
-                  <StyledListItemBoxReward>
-                    <div className="box-reward">
-                      <p className="box-reward-token">{i.reward_price}<sub>{i.symbol}</sub></p>
-                      <p className="box-reward-title">你可得</p>
-                    </div>
-                    <div className="box-reward">
-                      <p className="box-reward-token">{i.reward_people}<sub>/{i.reward_people}</sub></p>
-                      <p className="box-reward-title">总奖励</p>
-                    </div>
-                  </StyledListItemBoxReward>
-                  <StyledButton>领取奖励</StyledButton>
-                </StyledListItemBox>
-              </StyledListItem>
-            ))
-          }
-        </StyledList>
+                  <StyledListItemBox>
+                    <StyledListItemBoxReward>
+                      <div className="box-reward">
+                        <p className="box-reward-token">{ processReward(i.reward_price, i.reward_people) }<sub>{i.symbol}</sub></p>
+                        <p className="box-reward-title">你可得</p>
+                      </div>
+                      <div className="box-reward">
+                        <p className="box-reward-token">{ processRewardShare(i.reward_people, i.received) }<sub>/{i.reward_people}</sub></p>
+                        <p className="box-reward-title">总奖励</p>
+                      </div>
+                    </StyledListItemBoxReward>
+                    {
+                      rewardButton(i)
+                    }
+                    {/* <StyledButton>去关注</StyledButton> */}
+                    {/* <StyledButton>领取奖励</StyledButton> */}
+                    {/* <StyledButton>已经领取</StyledButton> */}
+                    {/* <StyledButton>取消任务</StyledButton> */}
+                    {/* <StyledButton>自己发布</StyledButton> */}
+                  </StyledListItemBox>
+                </StyledListItem>
+              ))
+            }
+          </StyledList>
+        </Spin>
+        <Pagination style={{ textAlign: 'center', marginTop: 20 }} hideOnSinglePage={true} current={questsCurrent} total={questsCount} onChange={handlePaginationChange}></Pagination>
       </StyledContent>
     </Page>
   )
 }
 
-const StyledButton = styled.button`
+const StyledButton = styled(Button)`
   background: #6236FF;
   border-radius: 4px;
   width: 100%;
@@ -211,7 +356,7 @@ const StyledButton = styled.button`
   font-size: 14px;
   font-weight: 500;
   color: #FFFFFF;
-  line-height: 20px;
+  height: 40px;
   padding: 10px 0;
   margin: 34px 0 0 0;
   cursor: pointer;
@@ -265,6 +410,7 @@ const StyledContentHead = styled.div`
   }
 `
 const StyledList = styled.div`
+  min-height: 300px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-row-gap: 24px;
@@ -436,7 +582,11 @@ const StyledHallSystem = styled.div`
       line-height: 20px;
       margin: 16px 0 0;
       a {
-        color: #6236FF;
+        color: #fff;
+        text-decoration: underline;
+      }
+      span {
+        margin: 0 0 0 6px;
       }
     }
   }
@@ -494,5 +644,11 @@ const StyledTwitterUserCard = styled.div`
   }
 `
 
+const StyledSpinContent = styled.div`
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
 
 export default Home

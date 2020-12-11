@@ -13,22 +13,39 @@ export interface questInterface {
   update_time?: string,
 }
 
+export interface receiveProps {
+  qid: number
+}
+
+export interface getAllQuestsProps {
+  page: number,
+  size: number
+}
+
 // =========== MTK ===========
 // 获取用户信息
 export function getUserProfile() {
   return clientMtkApi.get(`/user/stats`);
 }
+// 用户绑定信息
+export function getAccountList() {
+  return clientMtkApi.get(`/account/list`);
+}
 
 // =========== BE ===========
 // 获取所有任务列表
-export function getAllQuests() {
-  return client.get(`/quest`);
+export function getAllQuests(params: getAllQuestsProps) {
+  return client.get(`/quest`, { params });
 }
 // 创建任务
 export function createQuest(data: questInterface) {
   return client.post(`/quest`, data);
 }
 
+// 创建任务
+export function receive(data: receiveProps) {
+  return client.post(`/receive`, data);
+}
 export function twitterUsersSearch(q: string, count: number = 5) {
   return client.get(`/users/search/twitter`, { params: { q, count } })
 }
