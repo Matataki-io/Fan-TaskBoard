@@ -1,10 +1,6 @@
-import React, { useContext } from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
-import { useWallet } from 'use-wallet'
-import { useMount } from "ahooks";
-import { useSelector, useDispatch } from "react-redux";
-import { initUser } from '../../store/userSlice'
 
 import logo from "../../assets/img/logo.png";
 import logoText from "../../assets/img/logo-text.png";
@@ -12,12 +8,6 @@ import AccountButton from './components/AccountButton'
 
 const Header: React.FC = () => {
   // const { account }: { account: string } = useWallet()
-
-  const dispatch = useDispatch()
-
-  useMount(() => {
-    dispatch(initUser())
-  })
 
   return (
     <StyledHeader>

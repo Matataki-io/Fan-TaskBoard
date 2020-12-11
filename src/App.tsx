@@ -17,9 +17,13 @@ import Oauth from './views/Oauth'
 import Login from './views/Login'
 import Stake from './views/Stake'
 import Header from './components/Header/index'
+import { initUser } from './store/userSlice';
+import { useMount } from "ahooks";
+import { useSelector, useDispatch } from "react-redux";
 
 const App: React.FC = () => {
   const [mobileMenu, setMobileMenu] = useState(false)
+  const dispatch = useDispatch()
 
   const handleDismissMobileMenu = useCallback(() => {
     setMobileMenu(false)
@@ -28,6 +32,10 @@ const App: React.FC = () => {
   const handlePresentMobileMenu = useCallback(() => {
     setMobileMenu(true)
   }, [setMobileMenu])
+
+  useMount(() => {
+    dispatch(initUser())
+  })
 
   return (
     <Providers>
