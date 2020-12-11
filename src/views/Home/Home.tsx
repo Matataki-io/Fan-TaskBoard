@@ -295,6 +295,7 @@ const Home: React.FC = () => {
           <div>
             <Select defaultValue="new" style={{ width: 120 }} onChange={handleChange}>
               <Option value="new">最新创建</Option>
+              <Option value="most">最多奖励</Option>
             </Select>
           </div>
         </StyledContentHead>
