@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from 'react'
-import { useMount } from 'ahooks'
 import styled from 'styled-components'
 import BigNumber from 'bignumber.js'
+import { useSelector, useDispatch } from "react-redux";
+import { Button, Input, Select, Form, message, Spin } from 'antd'
 
 import chef from '../../assets/img/chef.png'
 // import Button from '../../components/Button'
 import Container from '../../components/Container'
 import Page from '../../components/Page'
-import PageHeader from '../../components/PageHeader'
-import Spacer from '../../components/Spacer'
-import Balances from './components/Balances'
-
-import { useSelector, useDispatch } from "react-redux";
 import { getAllQuests, createQuest, questInterface, receiveProps, receive } from '../../api/api'
-import { Button, Input, Select, Form, message } from 'antd'
 import { selectUser } from '../../store/userSlice';
+import TwitterUserSearch from './components/TwitterUserSearch'
+import TokenSearch from './components/TokenSearch'
 
 import logo from '../../assets/img/logo.png'
 const { Search } = Input;
@@ -30,10 +27,6 @@ const Home: React.FC = () => {
   const [quests, setQuests] = useState<any[]>([])
   const [questsCount, setQuestsCount] = useState<number>(0)
   const user: any = useSelector(selectUser)
-
-  useMount(() => {
-
-  })
 
   useEffect(() => {
     const getData = async () => {
@@ -68,8 +61,8 @@ const Home: React.FC = () => {
     }
     let data = {
       type: 0,
-      twitter_id: value.account,
-      token_id: 21,
+      twitter_id: value.account ? value.account.value : '',
+      token_id: value.token.value,
       reward_people: value.rewardPeople,
       reward_price: value.rewardPrice
     }
@@ -80,7 +73,7 @@ const Home: React.FC = () => {
     try {
       return url.replace('_normal', '_400x400')
     } catch (error) {
-      console.log('processTwitterImage error', error)
+      // console.log('processTwitterImage error', error)
       return url
     }
   }
@@ -197,15 +190,11 @@ const Home: React.FC = () => {
               form={form}
               onFinish={onFinish}
             >
-              <Form.Item label="关注账户" name="account" rules={[{ required: true,
-                 message: '请输入关注账户!' }]}>
-                <Input placeholder="关注账户" />
+              <Form.Item label="关注账户" name="account" rules={[{ required: true, message: '请输入关注账户!' }]}>
+                <TwitterUserSearch />
               </Form.Item>
               <Form.Item label="奖励Fan票类型" name="token" rules={[{ required: true, message: '请选择奖励Fan票类型!' }]}>
-                <Select onChange={handleChange} placeholder="选择奖励Fan票类型">
-                  <Option value="dao">DAO</Option>
-                  <Option value="meta">META</Option>
-                </Select>
+                <TokenSearch />
               </Form.Item>
               <Form.Item label="奖励设置">
                 <Form.Item style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} name="rewardPeople" rules={[{ required: true, message: '请输入奖励人数!' }]}>
@@ -534,5 +523,44 @@ const StyledHallCreate = styled.div`
     }
   }
 `
+
+const StyledTwitterUserCard = styled.div`
+  display: flex;
+  height: 38px;
+
+
+  .twitter-avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 5px;
+  }
+
+  .twitter-main {
+    max-width: calc(100% - 36px);
+    h4 {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 16px;
+      color: black;
+      margin:  1px 0 2px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    p {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 16px;
+      color: #b2b2b2;
+      margin: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+`
+
 
 export default Home
