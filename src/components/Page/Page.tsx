@@ -16,6 +16,7 @@ const StyledMain = styled.div`
   display: flex;
   flex-direction: column;
   min-height: calc(100vh - ${(props) => props.theme.topBarSize * 2}px);
+  /* min-height: calc(100vh - 230px); */
 `
 
 export default Page
