@@ -25,7 +25,8 @@ const SearchToken: React.FC<SearchTokenProps> = ({ setSearchTokenFn }) => {
 
     // 获取token列表
     const getData = async () => {
-      const res: any = await getTokenList(1, 5, query)
+      let queryStr = (query.toLocaleLowerCase()).trim()
+      const res: any = await getTokenList(1, 5, queryStr)
       if (res.code === 0) {
         return res.data.list
       }
