@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { Input, AutoComplete, Avatar } from 'antd'
 import { SelectProps } from 'antd/es/select';
-import { isEmpty } from 'lodash';
+import { isEmpty, debounce } from 'lodash';
 
 import { getTokenList } from '../../../api/api';
 
@@ -14,8 +14,8 @@ const SearchToken: React.FC<SearchTokenProps> = ({ setSearchTokenFn }) => {
   const [tokenList, setTokenList] = useState<any[]>([])
   const [options, setOptions] = useState<SelectProps<object>['options']>([]);
 
+  // 搜索token
   const searchTokenResult = async (query: string) => {
-
     // 没有 query 或者清除
     if (!query) {
       setOptions([])
@@ -58,11 +58,6 @@ const SearchToken: React.FC<SearchTokenProps> = ({ setSearchTokenFn }) => {
       setOptions(listOptions)
   };
 
-  // 搜索token
-  const handleSearchToken = (value: string) => {
-    searchTokenResult(value)
-  };
-
   // 搜索token后选择结果
   const handleSearchTokenSelect = (value: string) => {
     const selectToken = tokenList.find((i: any) => i.symbol === value)
@@ -72,13 +67,15 @@ const SearchToken: React.FC<SearchTokenProps> = ({ setSearchTokenFn }) => {
     }
   };
 
+  const debounceSearch = debounce(searchTokenResult, 300)
+
   return (
     <AutoComplete
     dropdownMatchSelectWidth={200}
     style={{ width: 200 }}
     options={options}
     onSelect={handleSearchTokenSelect}
-    onSearch={handleSearchToken}
+    onSearch={debounceSearch}
   >
     <Input.Search placeholder="搜索特定Fan票奖励下的任务" enterButton allowClear />
   </AutoComplete>
