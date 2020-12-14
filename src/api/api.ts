@@ -19,17 +19,19 @@ export interface receiveProps {
 
 export interface getAllQuestsProps {
   page: number,
-  size: number
+  size: number,
+  sort: string,
+  token: string|number
 }
 
 // =========== MTK ===========
 // 获取用户信息
 export function getUserProfile() {
-  return clientMtkApi.get(`/user/stats`);
+  return client.get(`/user/stats`);
 }
 // 用户绑定信息
 export function getAccountList() {
-  return clientMtkApi.get(`/account/list`);
+  return client.get(`/account/list`);
 }
 
 // =========== BE ===========
