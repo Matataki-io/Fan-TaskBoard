@@ -312,6 +312,9 @@ const Home: React.FC = () => {
         </StyledContentHead>
 
         <Spin spinning={questGetLoading}>
+          {
+            !quests.length ? <p style={{ color: '#fff', textAlign: 'center', fontSize: 16, margin: '100px 0 0 0' }}>暂无任务！</p> : ''
+          }
           <StyledList>
             {
               quests.map(i => (

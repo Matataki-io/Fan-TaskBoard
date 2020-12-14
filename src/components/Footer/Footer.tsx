@@ -23,10 +23,7 @@ const Footer: React.FC = () => (
       <StyledFooterUlContent>
         <StyledFooterUl>
           <li>
-            <a href="https://github.com/Matataki-io/Matataki-NFT" rel="noopener noreferrer" target="_blank">Github</a>
-          </li>
-          <li>
-            <a href="https://rinkeby.etherscan.io/address/0x97e895Faa51feaE17BBbBAb7eBA4248ACbf6F0Ae" rel="noopener noreferrer" target="_blank">Contract</a>
+            <a href="https://github.com/Matataki-io/Fan-TaskBoard" rel="noopener noreferrer" target="_blank">Github</a>
           </li>
         </StyledFooterUl>
       </StyledFooterUlContent>
