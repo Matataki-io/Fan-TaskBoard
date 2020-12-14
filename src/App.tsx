@@ -20,6 +20,7 @@ import Header from './components/Header/index'
 import { initUser } from './store/userSlice';
 import { useMount } from "ahooks";
 import { useSelector, useDispatch } from "react-redux";
+import { Alert } from 'antd'
 
 const App: React.FC = () => {
   const [mobileMenu, setMobileMenu] = useState(false)
@@ -42,6 +43,11 @@ const App: React.FC = () => {
       <Router>
         <Header></Header>
         <div style={{ height: 60 }}></div>
+        <Alert
+          message="可能因为调用Twitter API 次数过多无法查询关注状态！可以稍后再来重试！"
+          banner
+          closable
+        />
         {/* <TopBar onPresentMobileMenu={handlePresentMobileMenu} /> */}
         {/* <MobileMenu onDismiss={handleDismissMobileMenu} visible={mobileMenu} /> */}
         <Switch>

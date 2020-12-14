@@ -17,14 +17,12 @@ import {
 import { selectUser } from '../../store/userSlice';
 import TwitterUserSearch from './components/TwitterUserSearch'
 import TokenSearch from './components/TokenSearch'
+import SearchToken from './components/SearchToken'
 
-const { Search } = Input;
+
 const { Option } = Select;
 
 const Home: React.FC = () => {
-  const onSearch = (value: any) => console.log(value);
-  const handleChange = (value: any) => console.log(`selected ${value}`);
-
   const [form] = Form.useForm();
   const [questsReload, setQuestsReload] = useState<number>(0)
   const [quests, setQuests] = useState<any[]>([])
@@ -33,7 +31,14 @@ const Home: React.FC = () => {
   const [questCreateLoading, setQuestCreateLoading] = useState<boolean>(false)
   const [questGetLoading, setQuestGetLoading] = useState<boolean>(false)
   const [bindTwitter, setBindTwitter] = useState<boolean>(false)
+  const [questSort, setQuestSort] = useState<string>('new') // 排序
+  const [questSearchToken, setQuestSearchToken] = useState<string|number>('') // 根据token搜索
   const user: any = useSelector(selectUser)
+
+  // 任务排序处理
+  const handleChange = (value: string) => {
+    setQuestSort(value)
+  };
 
   useEffect(() => {
     // 获取任务列表
@@ -41,7 +46,9 @@ const Home: React.FC = () => {
       try {
         let params: getAllQuestsProps = {
           page: questsCurrent,
-          size: 9
+          size: 6,
+          sort: questSort,
+          token: questSearchToken
         }
         setQuestGetLoading(true)
         const result: any = await getAllQuests(params)
@@ -56,7 +63,9 @@ const Home: React.FC = () => {
     }
 
     getData()
+  }, [questsReload, questsCurrent, questSort, questSearchToken])
 
+  useEffect(() => {
     // 获取用户的绑定信息
     const getAccountBind = async () => {
     if (!getCookie("x-access-token")) return
@@ -75,7 +84,7 @@ const Home: React.FC = () => {
     }
     getAccountBind()
 
-  }, [questsReload, questsCurrent])
+  }, [])
 
   // 完成表单
   const onFinish = (value: any) => {
@@ -185,7 +194,7 @@ const Home: React.FC = () => {
   }
 
   const handlePaginationChange = (page: any, pagesize: any) => {
-    console.log(11, page, pagesize)
+    // console.log(11, page, pagesize)
     setQuestsCurrent(page)
   }
 
@@ -205,11 +214,13 @@ const Home: React.FC = () => {
     }
   }
 
+  const setSearchTokenFn = (tokenId: string | number): void => setQuestSearchToken(tokenId)
+
   return (
     <Page>
       <StyledContent>
         <StyledMenu>
-          <Search placeholder="搜索特定Fan票奖励下的任务" onSearch={onSearch} style={{ width: 200 }} />
+          <SearchToken setSearchTokenFn={ setSearchTokenFn }></SearchToken>
           <ul>
             <li><h3>任务分类</h3></li>
             <li>
@@ -293,7 +304,7 @@ const Home: React.FC = () => {
             <p className="head-description">关注下方的账号即可领取Fan票奖励</p>
           </div>
           <div>
-            <Select defaultValue="new" style={{ width: 120 }} onChange={handleChange}>
+            <Select defaultValue={questSort} style={{ width: 120 }} onChange={handleChange}>
               <Option value="new">最新创建</Option>
               <Option value="most">最多奖励</Option>
             </Select>

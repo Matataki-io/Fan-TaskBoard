@@ -19,7 +19,9 @@ export interface receiveProps {
 
 export interface getAllQuestsProps {
   page: number,
-  size: number
+  size: number,
+  sort: string,
+  token: string|number
 }
 
 // =========== MTK ===========
