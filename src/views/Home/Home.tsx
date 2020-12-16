@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js'
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Input, Select, Form, message, Spin, Pagination } from 'antd'
 import { getCookie } from '../../utils/cookie'
+import { useHistory } from 'react-router-dom'
 
 import logo from '../../assets/img/logo.png'
 // import chef from '../../assets/img/chef.png'
@@ -36,6 +37,7 @@ const Home: React.FC = () => {
   const [questSort, setQuestSort] = useState<string>('new') // 排序
   const [questSearchToken, setQuestSearchToken] = useState<string|number>('') // 根据token搜索
   const user: any = useSelector(selectUser)
+  const history = useHistory();
 
   // 任务排序处理
   const handleChange = (value: string) => {
@@ -232,6 +234,25 @@ const Home: React.FC = () => {
               <a href="">Twitter关注（{questsCount}）</a>
             </li>
           </ul>
+
+          {/* <ul>
+            <li><h3>筛选</h3></li>
+            <li>
+              <a href="" className="action">全部（{ questsCount }）</a>
+            </li>
+            <li>
+              <a href="">待完成（{questsCount}）</a>
+            </li>
+            <li>
+              <a href="">已完成（{questsCount}）</a>
+            </li>
+            <li>
+              <a href="">领取完毕（{questsCount}）</a>
+            </li>
+            <li>
+              <a href="">我创建的（{questsCount}）</a>
+            </li>
+          </ul> */}
         </StyledMenu>
 
         <StyledHall>
@@ -270,7 +291,7 @@ const Home: React.FC = () => {
               <CreateIcon className="head-icon"></CreateIcon>
               <span className="head-title">创建任务</span>
             </div>
-            <Form
+            {/* <Form
               className="hall-create"
               layout="vertical"
               form={form}
@@ -293,7 +314,8 @@ const Home: React.FC = () => {
               <Form.Item style={{ margin: "-24px 0 0 0" }}>
                 <StyledButtonAntd loading={questCreateLoading} type="primary" htmlType="submit">支付并创建</StyledButtonAntd>
               </Form.Item>
-            </Form>
+            </Form> */}
+            <StyledButton onClick={ () => history.push('/publish') }>创建任务</StyledButton>
           </StyledHallCreate>
         </StyledHall>
 
@@ -552,6 +574,9 @@ const StyledMenu = styled.div`
         color: #FFFFFF;
         line-height: 20px;
         text-decoration: none;
+        &.action {
+          color: #6236FF;
+        }
       }
     }
   }

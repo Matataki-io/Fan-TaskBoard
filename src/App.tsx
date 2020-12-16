@@ -16,6 +16,8 @@ import Home from './views/Home'
 import Oauth from './views/Oauth'
 import Login from './views/Login'
 import Stake from './views/Stake'
+import Publish from './views/Publish'
+import PublishType from './views/PublishType'
 import Header from './components/Header/index'
 import { initUser } from './store/userSlice';
 import { useMount } from "ahooks";
@@ -43,15 +45,15 @@ const App: React.FC = () => {
       <Router>
         <Header></Header>
         <div style={{ height: 60 }}></div>
-        <Alert
-          message="可能因为调用Twitter API 次数过多无法查询关注状态！可以稍后再来重试！"
-          banner
-          closable
-        />
         {/* <TopBar onPresentMobileMenu={handlePresentMobileMenu} /> */}
         {/* <MobileMenu onDismiss={handleDismissMobileMenu} visible={mobileMenu} /> */}
         <Switch>
           <Route path="/" exact>
+            <Alert
+              message="可能因为调用Twitter API 次数过多无法查询关注状态！可以稍后再来重试！"
+              banner
+              closable
+            />
             <Home />
           </Route>
           <Route path="/oauth" exact>
@@ -59,6 +61,12 @@ const App: React.FC = () => {
           </Route>
           <Route path="/login" exact>
             <Login />
+          </Route>
+          <Route path="/publish" exact>
+            <Publish />
+          </Route>
+          <Route path="/publish/:type" exact>
+            <PublishType />
           </Route>
           <Route path="/farms">
             <Farms />
