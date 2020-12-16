@@ -21,6 +21,7 @@ const Home: React.FC = ({ value = {}, onChange }: any) => {
   /** 搜索Fan票 */
   const fetchUser = (localValue: any) => {
     setSearchData([])
+    if (!localValue) return
     setSearchFetching(true)
     userSearchStr = localValue
     const thisUserSearchStr = userSearchStr
@@ -81,7 +82,7 @@ const Home: React.FC = ({ value = {}, onChange }: any) => {
       labelInValue
       showSearch
       value={searchValue}
-      placeholder="选择奖励Fan票类型"
+      placeholder="输入关键词搜索"
       notFoundContent={searchFetching ? <Spin size="small" /> : '没有此关键词的结果'}
       filterOption={false}
       onSearch={debounceFetchUser}
