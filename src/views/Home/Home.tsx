@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js'
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Input, Select, Form, message, Spin, Pagination } from 'antd'
 import { getCookie } from '../../utils/cookie'
+import { useHistory } from 'react-router-dom'
 
 import logo from '../../assets/img/logo.png'
 // import chef from '../../assets/img/chef.png'
@@ -18,6 +19,8 @@ import { selectUser } from '../../store/userSlice';
 import TwitterUserSearch from './components/TwitterUserSearch'
 import TokenSearch from './components/TokenSearch'
 import SearchToken from './components/SearchToken'
+
+import { SystemIcon, CreateIcon } from '../../components/IconAnt'
 
 
 const { Option } = Select;
@@ -34,6 +37,7 @@ const Home: React.FC = () => {
   const [questSort, setQuestSort] = useState<string>('new') // 排序
   const [questSearchToken, setQuestSearchToken] = useState<string|number>('') // 根据token搜索
   const user: any = useSelector(selectUser)
+  const history = useHistory();
 
   // 任务排序处理
   const handleChange = (value: string) => {
@@ -202,15 +206,15 @@ const Home: React.FC = () => {
     // console.log('i', i)
 
     if (String(i.uid) === String(user.id)) {
-      return (<StyledButton disabled={true}>自己发布</StyledButton>)
+      return (<StyledButton type="primary" disabled={true}>自己发布</StyledButton>)
     } else if (i.receive) {
-      return (<StyledButton disabled={true}>已经领取</StyledButton>)
+      return (<StyledButton type="primary" disabled={true}>已经领取</StyledButton>)
     } else if (i.following) {
-      return (<StyledButton onClick={() => receiveFn(i.id)}>领取奖励</StyledButton>)
+      return (<StyledButton type="primary" onClick={() => receiveFn(i.id)}>领取奖励</StyledButton>)
     } else if (!i.following) {
-      return (<StyledButton onClick={ () => window.open(`https://twitter.com/${i.screen_name || i.twitter_id}`) }>去做任务</StyledButton>)
+      return (<StyledButton type="primary" onClick={ () => window.open(`https://twitter.com/${i.screen_name || i.twitter_id}`) }>去做任务</StyledButton>)
     } else {
-      return (<StyledButton>其他</StyledButton>)
+      return (<StyledButton type="primary">其他</StyledButton>)
     }
   }
 
@@ -230,13 +234,32 @@ const Home: React.FC = () => {
               <a href="">Twitter关注（{questsCount}）</a>
             </li>
           </ul>
+
+          {/* <ul>
+            <li><h3>筛选</h3></li>
+            <li>
+              <a href="" className="action">全部（{ questsCount }）</a>
+            </li>
+            <li>
+              <a href="">待完成（{questsCount}）</a>
+            </li>
+            <li>
+              <a href="">已完成（{questsCount}）</a>
+            </li>
+            <li>
+              <a href="">领取完毕（{questsCount}）</a>
+            </li>
+            <li>
+              <a href="">我创建的（{questsCount}）</a>
+            </li>
+          </ul> */}
         </StyledMenu>
 
         <StyledHall>
           <StyledHallSystem>
             <StyledListItemInfo>
               <div className="head">
-                <span className="head-icon">icon</span>
+                <SystemIcon className="head-icon"></SystemIcon>
                 <span className="head-title">系统任务</span>
               </div>
               <p className="hall-description">完成下方任务即可开始获取奖励</p>
@@ -265,10 +288,10 @@ const Home: React.FC = () => {
           </StyledHallSystem>
           <StyledHallCreate>
             <div className="head">
-              <span className="head-icon">icon</span>
+              <CreateIcon className="head-icon"></CreateIcon>
               <span className="head-title">创建任务</span>
             </div>
-            <Form
+            {/* <Form
               className="hall-create"
               layout="vertical"
               form={form}
@@ -291,7 +314,8 @@ const Home: React.FC = () => {
               <Form.Item style={{ margin: "-24px 0 0 0" }}>
                 <StyledButtonAntd loading={questCreateLoading} type="primary" htmlType="submit">支付并创建</StyledButtonAntd>
               </Form.Item>
-            </Form>
+            </Form> */}
+            <StyledButton onClick={ () => history.push('/publish') }>创建任务</StyledButton>
           </StyledHallCreate>
         </StyledHall>
 
@@ -327,7 +351,7 @@ const Home: React.FC = () => {
                       </div>
                       <span className="user-name">{i.twitter_id}</span>
                     </StyledListItemUser>
-                    <p className="user-by"><span>by</span>{i.username}</p>
+                    <a href={ `${process.env.REACT_APP_MATATAKI}/user/${i.uid}` } target="_blank" rel="noopener noreferrer" className="user-by"><span>by</span>{i.username}</a>
                   </StyledListItemInfo>
 
                   <StyledListItemBox>
@@ -446,6 +470,7 @@ const StyledListItem = styled.div`
     color: #FFFFFF;
     line-height: 17px;
     margin: 0;
+    display: block;
     span {
       font-size: 12px;
       font-weight: 400;
@@ -549,6 +574,9 @@ const StyledMenu = styled.div`
         color: #FFFFFF;
         line-height: 20px;
         text-decoration: none;
+        &.action {
+          color: #6236FF;
+        }
       }
     }
   }
