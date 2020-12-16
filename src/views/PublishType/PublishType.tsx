@@ -60,7 +60,7 @@ const PublishType: React.FC = () => {
     let data: any = {
       type: 0,
       twitter_id: value.account ? value.account.value : '',
-      token_id: value.token.value,
+      token_id: value.token,
       reward_people: value.rewardPeople,
       reward_price: value.rewardPrice
     }

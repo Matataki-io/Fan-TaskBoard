@@ -24,6 +24,11 @@ export interface getAllQuestsProps {
   token: string|number
 }
 
+export interface tokenListProps {
+  pagesize: number
+  order: number
+}
+
 // =========== MTK ===========
 // 获取用户信息
 export function getUserProfile() {
@@ -32,6 +37,10 @@ export function getUserProfile() {
 // 用户绑定信息
 export function getAccountList() {
   return client.get(`/account/list`);
+}
+// 用户token余额
+export function tokenTokenList(params: tokenListProps) {
+  return client.get(`/token/tokenlist`, { params });
 }
 
 // =========== BE ===========
