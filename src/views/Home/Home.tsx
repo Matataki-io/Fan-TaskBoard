@@ -345,7 +345,7 @@ const Home: React.FC = () => {
                 <StyledListItem key={i.id}>
                   <StyledListItemInfo>
                     <span className="tips">Twitter关注</span>
-                    <StyledListItemUser>
+                    <StyledListItemUser href={ `https://twitter.com/${i.twitter_id}`} target="_blank" rel="noopener noreferrer">
                       <div className="user">
                         <img src={processTwitterImage(i.profile_image_url_https)} alt="avatar" />
                       </div>
@@ -379,7 +379,7 @@ const Home: React.FC = () => {
             }
           </StyledList>
         </Spin>
-        <Pagination style={{ textAlign: 'center', marginTop: 20 }} hideOnSinglePage={true} current={questsCurrent} total={questsCount} onChange={handlePaginationChange}></Pagination>
+        <Pagination style={{ textAlign: 'center', marginTop: 20 }} hideOnSinglePage={true} defaultPageSize={6} current={questsCurrent} total={questsCount} onChange={handlePaginationChange}></Pagination>
       </StyledContent>
     </Page>
   )
@@ -485,7 +485,7 @@ const StyledListItemInfo = styled.div`
   padding: 24px;
 `
 
-const StyledListItemUser = styled.div`
+const StyledListItemUser = styled.a`
   display: flex;
   align-items: center;
   margin: 16px 0;
