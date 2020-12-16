@@ -19,6 +19,8 @@ import TwitterUserSearch from './components/TwitterUserSearch'
 import TokenSearch from './components/TokenSearch'
 import SearchToken from './components/SearchToken'
 
+import { SystemIcon, CreateIcon } from '../../components/IconAnt'
+
 
 const { Option } = Select;
 
@@ -202,15 +204,15 @@ const Home: React.FC = () => {
     // console.log('i', i)
 
     if (String(i.uid) === String(user.id)) {
-      return (<StyledButton disabled={true}>自己发布</StyledButton>)
+      return (<StyledButton type="primary" disabled={true}>自己发布</StyledButton>)
     } else if (i.receive) {
-      return (<StyledButton disabled={true}>已经领取</StyledButton>)
+      return (<StyledButton type="primary" disabled={true}>已经领取</StyledButton>)
     } else if (i.following) {
-      return (<StyledButton onClick={() => receiveFn(i.id)}>领取奖励</StyledButton>)
+      return (<StyledButton type="primary" onClick={() => receiveFn(i.id)}>领取奖励</StyledButton>)
     } else if (!i.following) {
-      return (<StyledButton onClick={ () => window.open(`https://twitter.com/${i.screen_name || i.twitter_id}`) }>去做任务</StyledButton>)
+      return (<StyledButton type="primary" onClick={ () => window.open(`https://twitter.com/${i.screen_name || i.twitter_id}`) }>去做任务</StyledButton>)
     } else {
-      return (<StyledButton>其他</StyledButton>)
+      return (<StyledButton type="primary">其他</StyledButton>)
     }
   }
 
@@ -236,7 +238,7 @@ const Home: React.FC = () => {
           <StyledHallSystem>
             <StyledListItemInfo>
               <div className="head">
-                <span className="head-icon">icon</span>
+                <SystemIcon className="head-icon"></SystemIcon>
                 <span className="head-title">系统任务</span>
               </div>
               <p className="hall-description">完成下方任务即可开始获取奖励</p>
@@ -265,7 +267,7 @@ const Home: React.FC = () => {
           </StyledHallSystem>
           <StyledHallCreate>
             <div className="head">
-              <span className="head-icon">icon</span>
+              <CreateIcon className="head-icon"></CreateIcon>
               <span className="head-title">创建任务</span>
             </div>
             <Form
@@ -327,7 +329,7 @@ const Home: React.FC = () => {
                       </div>
                       <span className="user-name">{i.twitter_id}</span>
                     </StyledListItemUser>
-                    <p className="user-by"><span>by</span>{i.username}</p>
+                    <a href={ `${process.env.REACT_APP_MATATAKI}/user/${i.uid}` } target="_blank" rel="noopener noreferrer" className="user-by"><span>by</span>{i.username}</a>
                   </StyledListItemInfo>
 
                   <StyledListItemBox>
@@ -446,6 +448,7 @@ const StyledListItem = styled.div`
     color: #FFFFFF;
     line-height: 17px;
     margin: 0;
+    display: block;
     span {
       font-size: 12px;
       font-weight: 400;
