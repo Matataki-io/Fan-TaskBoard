@@ -19,6 +19,7 @@ import Stake from './views/Stake'
 import Publish from './views/Publish'
 import PublishType from './views/PublishType'
 import PublishDone from './views/PublishDone'
+import Detail from './views/Detail'
 import Header from './components/Header/index'
 import { initUser } from './store/userSlice';
 import { useMount } from "ahooks";
@@ -66,17 +67,14 @@ const App: React.FC = () => {
           <Route path="/publish" exact>
             <Publish />
           </Route>
+          <Route path="/:id" exact>
+            <Detail />
+          </Route>
           <Route path="/publish/done" exact>
             <PublishDone />
           </Route>
           <Route path="/publish/:type" exact>
             <PublishType />
-          </Route>
-          <Route path="/farms">
-            <Farms />
-          </Route>
-          <Route path="/staking">
-            <Stake />
           </Route>
         </Switch>
       </Router>
