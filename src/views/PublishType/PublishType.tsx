@@ -12,6 +12,7 @@ import {
 import Page from '../../components/Page'
 import TwitterUserSearch from './components/TwitterUserSearch'
 import TokenSearch from './components/TokenSearch'
+import publish1 from '../../assets/img/publish-1.png'
 
 const PublishType: React.FC = () => {
   const { type }: { type: string } = useParams();
@@ -95,7 +96,10 @@ const PublishType: React.FC = () => {
     <Page>
       <StyledContent>
         <StyledBackPage to="/publish"> { '<' } 返回选择创建任务类型</StyledBackPage>
+        <StyledCover src={ publish1 } alt="logo"/>
+
         <p className="title">创建Twitter关注任务</p>
+        <p className="description">只要1分钟即可发布属于你的有奖任务</p>
 
         <Form
           className="hall-create"
@@ -137,14 +141,14 @@ const StyledButtonAntd = styled(Button)`
   cursor: pointer;
   height: 40px;
   width: 100%;
-  margin: 0;
+  margin: 20px 0 0 0;
   box-sizing: border-box;
 `
 
 const StyledContent = styled.div`
   color: #FFFFFF;
   width: 480px;
-  margin: 100px auto 140px;
+  margin: 48px auto 140px;
   padding: 0 10px;
   box-sizing: border-box;
   position: relative;
@@ -156,10 +160,18 @@ const StyledContent = styled.div`
     font-weight: 500;
     color: #FFFFFF;
     padding: 0;
-    margin: 10px 0 40px 0;
+    margin: 0;
   }
   .ant-form-item-label > label {
     color: #FFFFFF;
+  }
+  .description {
+    font-size: 14px;
+    font-weight: 400;
+    color: #B2B2B2;
+    line-height: 20px;
+    padding: 0;
+    margin: 8px 0 24px 0;
   }
 `
 const StyledBackPage = styled(Link)`
@@ -170,6 +182,11 @@ const StyledBackPage = styled(Link)`
     &:hover {
       text-decoration: underline;
     }
+`
+const StyledCover = styled.img`
+  display: block;
+  height: 128px;
+  margin: 24px 0 0 0;
 `
 
 export default PublishType
