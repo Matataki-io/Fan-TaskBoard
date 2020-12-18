@@ -226,11 +226,11 @@ const Publish: React.FC = () => {
                 <StyledBCInfo>
                   <span className="info-title">去关注</span>
                   <div className="twitter-info">
-                    <Avatar src={`${process.env.REACT_APP_MTTK_IMG_CDN}/${questDetail.avatar}`}></Avatar>
-                    <span className="twitter-account">{questDetail.twitter_id}</span>
+                    <Avatar src={`${questDetail.twitter_profile_image_url_https}`}></Avatar>
+                    <span className="twitter-account">{questDetail.twitter_name || questDetail.twitter_screen_name || questDetail.twitter_id}</span>
                   </div>
                   <a
-                    href={`https://twitter.com/${questDetail.twitter_screen_name || questDetail.twitter_id}`}
+                    href={`https://twitter.com/${questDetail.twitter_name || questDetail.twitter_screen_name || questDetail.twitter_id}`}
                     target="_blank" rel="noopener noreferrer"
                   >
                     <StyledButtonAntd className="follow">前往推特去关注</StyledButtonAntd>
