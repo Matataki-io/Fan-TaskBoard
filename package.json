@@ -20,6 +20,7 @@
     "numeral": "^2.0.6",
     "react": "^16.13.1",
     "react-circular-progressbar": "^2.0.3",
+    "react-copy-to-clipboard": "^5.0.2",
     "react-countdown": "^2.2.1",
     "react-countup": "^4.3.3",
     "react-dom": "^16.13.1",

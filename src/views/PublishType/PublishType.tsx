@@ -47,6 +47,7 @@ const PublishType: React.FC = () => {
       if (result.code === 0) {
         message.info('创建成功，可返回首页查询任务')
         form.resetFields()
+        history.push(`/publish/done?${process.env.REACT_APP_FE}/${result.data}`)
       } else {
         message.error('创建失败')
         console.log(result)

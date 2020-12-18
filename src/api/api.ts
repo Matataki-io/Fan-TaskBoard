@@ -14,7 +14,7 @@ export interface questInterface {
 }
 
 export interface receiveProps {
-  qid: number
+  qid: string|number
 }
 
 export interface getAllQuestsProps {
@@ -22,6 +22,9 @@ export interface getAllQuestsProps {
   size: number,
   sort: string,
   token: string|number
+}
+export interface getQuestDetailProps {
+  type: string|number
 }
 
 export interface tokenListProps {
@@ -47,6 +50,14 @@ export function tokenTokenList(params: tokenListProps) {
 // 获取所有任务列表
 export function getAllQuests(params: getAllQuestsProps) {
   return client.get(`/quest`, { params });
+}
+// 获取任务详情
+export function getQuestDetail(id: string|number, params: getQuestDetailProps) {
+  return client.get(`/quest/${id}`, { params });
+}
+// 获取任务详情列表
+export function getQuestDetailList(id: string|number, params: getQuestDetailProps) {
+  return client.get(`/quest/${id}/list`, { params });
 }
 // 创建任务
 export function createQuest(data: questInterface) {

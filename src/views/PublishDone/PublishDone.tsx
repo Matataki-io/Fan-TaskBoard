@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { Link, useHistory } from 'react-router-dom'
 import { Button, message, Input } from 'antd'
 import { useSelector, useDispatch } from "react-redux";
+import {CopyToClipboard} from 'react-copy-to-clipboard';
 
 import publishDone from '../../assets/img/publish-done.png';
 import publish1 from '../../assets/img/publish-1.png';
@@ -16,15 +17,6 @@ const Publish: React.FC = () => {
   const history = useHistory();
   const user: any = useSelector(selectUser)
 
-  const toPublish = () => {
-    if (!user.id) {
-      message.info('请先登陆')
-      return
-    }
-
-    history.push('/publish/twitter')
-  }
-
   return (
     <Page>
       <StyledContent>
@@ -33,9 +25,13 @@ const Publish: React.FC = () => {
         <StyledSubtitle>分享链接给你的社区，即可开始获取</StyledSubtitle>
 
         <StyledInputContent>
-          <Input type="text" value={ window.location.href } />
-          <Button className="input-btn" type="primary" onClick={ () => message.info('暂未对接复制功能') }>复制</Button>
-          <Button className="input-btn" type="primary" onClick={ () => history.push('/') }>打开</Button>
+          <Input type="text" value={ window.location.search.slice(1) } />
+          <CopyToClipboard
+            text={`立即领取奖励：${window.location.search.slice(1)}`}
+            onCopy={() => message.info('复制成功，立即分享！')}>
+              <Button className="input-btn" type="primary">复制</Button>
+          </CopyToClipboard>
+          <Button className="input-btn" type="primary" onClick={ () => window.open(window.location.search.slice(1)) }>打开</Button>
         </StyledInputContent>
         <StyledButtonAntd onClick={ () => history.push('/publish/twitter') } className="create">再创建一个</StyledButtonAntd>
         <StyledButtonAntd onClick={ () => history.push('/') } className="back">返回任务大厅</StyledButtonAntd>

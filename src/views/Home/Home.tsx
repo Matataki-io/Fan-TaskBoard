@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js'
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Input, Select, Form, message, Spin, Pagination } from 'antd'
 import { getCookie } from '../../utils/cookie'
-import { useHistory } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 
 import logo from '../../assets/img/logo.png'
 // import chef from '../../assets/img/chef.png'
@@ -19,7 +19,6 @@ import { selectUser } from '../../store/userSlice';
 import TwitterUserSearch from './components/TwitterUserSearch'
 import TokenSearch from './components/TokenSearch'
 import SearchToken from './components/SearchToken'
-
 import { SystemIcon, CreateIcon } from '../../components/IconAnt'
 
 
@@ -342,7 +341,7 @@ const Home: React.FC = () => {
           <StyledList>
             {
               quests.map(i => (
-                <StyledListItem key={i.id}>
+                <StyledListItem to={`/${i.id}`} key={i.id}>
                   <StyledListItemInfo>
                     <span className="tips">Twitter关注</span>
                     <StyledListItemUser href={ `https://twitter.com/${i.twitter_id}`} target="_blank" rel="noopener noreferrer">
@@ -454,7 +453,7 @@ const StyledList = styled.div`
   grid-row-gap: 24px;
   grid-column-gap: 24px;
 `
-const StyledListItem = styled.div`
+const StyledListItem = styled(Link)`
   background: #132D5E;
   border-radius: 8px;
   box-sizing: border-box;
