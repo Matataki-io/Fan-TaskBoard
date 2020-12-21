@@ -457,6 +457,9 @@ const StyledListItem = styled(Link)`
   background: #132D5E;
   border-radius: 8px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   .tips {
     font-size: 12px;
     font-weight: 400;
