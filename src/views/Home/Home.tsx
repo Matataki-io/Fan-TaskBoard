@@ -209,9 +209,9 @@ const Home: React.FC = () => {
     } else if (i.receive) {
       return (<StyledButton type="primary" disabled={true}>已经领取</StyledButton>)
     } else if (i.following) {
-      return (<StyledButton type="primary" onClick={() => receiveFn(i.id)}>领取奖励</StyledButton>)
+      return (<StyledButton type="primary" onClick={(e) => { e.preventDefault();receiveFn(i.id) }}>领取奖励</StyledButton>)
     } else if (!i.following) {
-      return (<StyledButton type="primary" onClick={ () => window.open(`https://twitter.com/${i.screen_name || i.twitter_id}`) }>去做任务</StyledButton>)
+      return (<StyledButton type="primary" onClick={ (e) => { e.preventDefault();window.open(`https://twitter.com/${i.screen_name || i.twitter_id}`) } }>去做任务</StyledButton>)
     } else {
       return (<StyledButton type="primary">其他</StyledButton>)
     }
@@ -344,13 +344,13 @@ const Home: React.FC = () => {
                 <StyledListItem to={`/${i.id}`} key={i.id}>
                   <StyledListItemInfo>
                     <span className="tips">Twitter关注</span>
-                    <StyledListItemUser href={ `https://twitter.com/${i.twitter_id}`} target="_blank" rel="noopener noreferrer">
+                    <StyledListItemUser onClick={ e => e.stopPropagation() } href={ `https://twitter.com/${i.twitter_id}`} target="_blank" rel="noopener noreferrer">
                       <div className="user">
                         <img src={processTwitterImage(i.profile_image_url_https)} alt="avatar" />
                       </div>
-                      <span className="user-name">{i.twitter_id}</span>
+                      <span className="user-name">{i.name || i.twitter_id}</span>
                     </StyledListItemUser>
-                    <a href={ `${process.env.REACT_APP_MATATAKI}/user/${i.uid}` } target="_blank" rel="noopener noreferrer" className="user-by"><span>by</span>{i.username}</a>
+                    <a onClick={ e => e.stopPropagation() } href={ `${process.env.REACT_APP_MATATAKI}/user/${i.uid}` } target="_blank" rel="noopener noreferrer" className="user-by"><span>by</span>{i.username}</a>
                   </StyledListItemInfo>
 
                   <StyledListItemBox>
