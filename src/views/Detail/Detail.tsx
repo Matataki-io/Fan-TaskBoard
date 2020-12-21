@@ -232,7 +232,7 @@ const Publish: React.FC = () => {
                     <span className="twitter-account">{questDetail.twitter_name || questDetail.twitter_screen_name || questDetail.twitter_id}</span>
                   </div>
                   <a
-                    href={`https://twitter.com/${questDetail.twitter_name || questDetail.twitter_screen_name || questDetail.twitter_id}`}
+                    href={`https://twitter.com/${questDetail.twitter_screen_name || questDetail.twitter_id}`}
                     target="_blank" rel="noopener noreferrer"
                   >
                     <StyledButtonAntd className="follow">前往推特去关注</StyledButtonAntd>
