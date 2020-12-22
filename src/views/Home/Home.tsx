@@ -256,10 +256,10 @@ const Home: React.FC = () => {
           <ul>
             <li><h3>任务分类</h3></li>
             <li>
-              <a href="/" className="active">所有任务（{ questsCount }）</a>
+              <a href="/" className="active">所有任务（{ count.all }）</a>
             </li>
             <li>
-              <a href="/">Twitter关注（{questsCount}）</a>
+              <a href="/">Twitter关注（{ count.type_twitter }）</a>
             </li>
           </ul>
 
