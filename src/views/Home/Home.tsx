@@ -237,6 +237,8 @@ const Home: React.FC = () => {
       return (<StyledButton type="primary" disabled={true}>自己发布</StyledButton>)
     } else if (i.receive) {
       return (<StyledButton type="primary" disabled={true}>已经领取</StyledButton>)
+    } else if (( String(i.received) === String(i.reward_people))) {
+      return (<StyledButton type="primary" disabled={true}>领取完毕</StyledButton>)
     } else if (i.following) {
       return (<StyledButton type="primary" onClick={(e) => { e.preventDefault();receiveFn(i.id) }}>领取奖励</StyledButton>)
     } else if (!i.following) {
