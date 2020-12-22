@@ -25,6 +25,12 @@ const Footer: React.FC = () => (
           <li>
             <a href="https://github.com/Matataki-io/Fan-TaskBoard" rel="noopener noreferrer" target="_blank">Github</a>
           </li>
+          <li>
+            <a href="http://andoromeda.mikecrm.com/a93Le8z" rel="noopener noreferrer" target="_blank">立即反馈</a>
+          </li>
+          <li>
+            <a href="https://www.yuque.com/matataki/matataki/pmpeoi" rel="noopener noreferrer" target="_blank">帮助文档</a>
+          </li>
         </StyledFooterUl>
       </StyledFooterUlContent>
     </StyledFooterContainer>
@@ -92,11 +98,10 @@ const StyledFooterUl = styled.ul`
   margin: 0;
   list-style: none;
   li {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
     color: #FFFFFF;
-    line-height: 22px;
-    margin: 16px 0;
+    margin: 8px 0;
     @media screen and (max-width: 576px) {
       font-size: 12px;
     }
@@ -106,6 +111,5 @@ const StyledFooterUl = styled.ul`
     }
   }
 `
-
 
 export default Footer
