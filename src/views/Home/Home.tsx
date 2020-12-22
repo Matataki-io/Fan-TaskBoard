@@ -13,7 +13,7 @@ import logo from '../../assets/img/logo.png'
 import Page from '../../components/Page'
 import {
   questInterface, getAllQuestsProps, receiveProps,
-  getAllQuests, createQuest, receive, getAccountList
+  getAllQuests, createQuest, receive, getAccountList, getQuestCount
 } from '../../api/api'
 import { selectUser } from '../../store/userSlice';
 import TwitterUserSearch from './components/TwitterUserSearch'
@@ -35,6 +35,10 @@ const Home: React.FC = () => {
   const [bindTwitter, setBindTwitter] = useState<boolean>(false)
   const [questSort, setQuestSort] = useState<string>('new') // 排序
   const [questSearchToken, setQuestSearchToken] = useState<string|number>('') // 根据token搜索
+  const [questFilter, setQuestFilter] = useState<string>('all') // 筛选
+
+  const [count, setCount] = useState<any>({}) // 筛选统计
+
   const user: any = useSelector(selectUser)
   const history = useHistory();
 
@@ -42,6 +46,13 @@ const Home: React.FC = () => {
   const handleChange = (value: string) => {
     setQuestSort(value)
   };
+
+  // 切换筛选
+  const toggleFilter = (e: any, value: string) => {
+    // console.log(1111, value)
+    e.preventDefault()
+    setQuestFilter(value)
+  }
 
   useEffect(() => {
     // 获取任务列表
@@ -51,7 +62,8 @@ const Home: React.FC = () => {
           page: questsCurrent,
           size: 6,
           sort: questSort,
-          token: questSearchToken
+          token: questSearchToken,
+          filter: questFilter
         }
         setQuestGetLoading(true)
         const result: any = await getAllQuests(params)
@@ -66,7 +78,7 @@ const Home: React.FC = () => {
     }
 
     getData()
-  }, [questsReload, questsCurrent, questSort, questSearchToken])
+  }, [questsReload, questsCurrent, questSort, questSearchToken, questFilter])
 
   useEffect(() => {
     // 获取用户的绑定信息
@@ -76,7 +88,7 @@ const Home: React.FC = () => {
       try {
         const result: any = await getAccountList()
         if (result.code === 0) {
-          console.log('res', result)
+          // console.log('res', result)
           if (result.data.find((i: any) => i.platform === "twitter")) {
             setBindTwitter(true)
           }
@@ -86,6 +98,23 @@ const Home: React.FC = () => {
       }
     }
     getAccountBind()
+
+  }, [])
+
+  useEffect(() => {
+    // 获取统计信息
+    const getData = async () => {
+      try {
+        const result: any = await getQuestCount()
+        if (result.code === 0) {
+          console.log('res', result)
+          setCount(result.data)
+        }
+      } catch (error) {
+        console.log('error', error)
+      }
+    }
+    getData()
 
   }, [])
 
@@ -227,31 +256,36 @@ const Home: React.FC = () => {
           <ul>
             <li><h3>任务分类</h3></li>
             <li>
-              <a href="">所有任务（{ questsCount }）</a>
+              <a href="/" className="active">所有任务（{ questsCount }）</a>
             </li>
             <li>
-              <a href="">Twitter关注（{questsCount}）</a>
+              <a href="/">Twitter关注（{questsCount}）</a>
             </li>
           </ul>
 
-          {/* <ul>
+          <ul>
             <li><h3>筛选</h3></li>
             <li>
-              <a href="" className="action">全部（{ questsCount }）</a>
+              <a href="/" onClick={ e => toggleFilter(e, 'all') } className={  questFilter === 'all' ? 'active' : '' }>全部（{ count.all }）</a>
             </li>
             <li>
-              <a href="">待完成（{questsCount}）</a>
+              <a href="/" onClick={ e => toggleFilter(e, 'undone') } className={  questFilter === 'undone' ? 'active' : '' }>待完成（{count.undone}）</a>
             </li>
             <li>
-              <a href="">已完成（{questsCount}）</a>
+              <a href="/" onClick={ e => toggleFilter(e, 'completed') } className={  questFilter === 'completed' ? 'active' : '' }>领取完毕（{count.completed}）</a>
             </li>
-            <li>
-              <a href="">领取完毕（{questsCount}）</a>
-            </li>
-            <li>
-              <a href="">我创建的（{questsCount}）</a>
-            </li>
-          </ul> */}
+            {
+              (user.id) ?
+                (<>
+                  <li>
+                    <a href="/" onClick={ e => toggleFilter(e, 'received') } className={  questFilter === 'received' ? 'active' : '' }>已经领取（{count.received}）</a>
+                  </li>
+                  <li>
+                    <a href="/" onClick={ e => toggleFilter(e, 'created') } className={  questFilter === 'created' ? 'active' : '' }>我创建的（{count.created}）</a>
+                  </li>
+                </>) : ''
+            }
+          </ul>
         </StyledMenu>
 
         <StyledHall>
@@ -498,6 +532,7 @@ const StyledListItemUser = styled.a`
     border-radius: 100%;
     overflow: hidden;
     margin: 0 8px 0 0;
+    flex: 0 0 32px;
     img {
       width: 100%;
       height: 100%;
@@ -576,7 +611,7 @@ const StyledMenu = styled.div`
         color: #FFFFFF;
         line-height: 20px;
         text-decoration: none;
-        &.action {
+        &.active {
           color: #6236FF;
         }
       }
