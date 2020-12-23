@@ -157,7 +157,7 @@ const Publish: React.FC = () => {
     if (String(questDetail.uid) === String(user.id)) {
       return (<StyledButtonAntd className="receive">自己发布</StyledButtonAntd>)
     } else if (questDetail.receive) {
-      return (<StyledButtonAntd className="receive">已经领取</StyledButtonAntd>)
+      return (<StyledButtonAntd className="receive">我已领取</StyledButtonAntd>)
     } else if (( String(questDetail.received) === String(questDetail.reward_people))) {
       return (<StyledButtonAntd className="receive">领取完毕</StyledButtonAntd>)
     } else {

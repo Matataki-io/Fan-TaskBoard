@@ -60,7 +60,7 @@ const Home: React.FC = () => {
       try {
         let params: getAllQuestsProps = {
           page: questsCurrent,
-          size: 6,
+          size: 9,
           sort: questSort,
           token: questSearchToken,
           filter: questFilter
@@ -236,7 +236,7 @@ const Home: React.FC = () => {
     if (String(i.uid) === String(user.id)) {
       return (<StyledButton type="primary" disabled={true}>自己发布</StyledButton>)
     } else if (i.receive) {
-      return (<StyledButton type="primary" disabled={true}>已经领取</StyledButton>)
+      return (<StyledButton type="primary" disabled={true}>我已领取</StyledButton>)
     } else if (( String(i.received) === String(i.reward_people))) {
       return (<StyledButton type="primary" disabled={true}>领取完毕</StyledButton>)
     } else if (i.following) {
@@ -280,7 +280,7 @@ const Home: React.FC = () => {
               (user.id) ?
                 (<>
                   <li>
-                    <a href="/" onClick={ e => toggleFilter(e, 'received') } className={  questFilter === 'received' ? 'active' : '' }>已经领取（{count.received}）</a>
+                    <a href="/" onClick={ e => toggleFilter(e, 'received') } className={  questFilter === 'received' ? 'active' : '' }>我已领取（{count.received}）</a>
                   </li>
                   <li>
                     <a href="/" onClick={ e => toggleFilter(e, 'created') } className={  questFilter === 'created' ? 'active' : '' }>我创建的（{count.created}）</a>
@@ -405,7 +405,7 @@ const Home: React.FC = () => {
                     }
                     {/* <StyledButton>去关注</StyledButton> */}
                     {/* <StyledButton>领取奖励</StyledButton> */}
-                    {/* <StyledButton>已经领取</StyledButton> */}
+                    {/* <StyledButton>我已领取</StyledButton> */}
                     {/* <StyledButton>取消任务</StyledButton> */}
                     {/* <StyledButton>自己发布</StyledButton> */}
                   </StyledListItemBox>
@@ -414,7 +414,7 @@ const Home: React.FC = () => {
             }
           </StyledList>
         </Spin>
-        <Pagination style={{ textAlign: 'center', marginTop: 20 }} hideOnSinglePage={true} defaultPageSize={6} current={questsCurrent} total={questsCount} onChange={handlePaginationChange}></Pagination>
+        <Pagination style={{ textAlign: 'center', marginTop: 20 }} hideOnSinglePage={true} defaultPageSize={9} current={questsCurrent} total={questsCount} onChange={handlePaginationChange}></Pagination>
       </StyledContent>
     </Page>
   )

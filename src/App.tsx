@@ -24,7 +24,7 @@ import Header from './components/Header/index'
 import { initUser } from './store/userSlice';
 import { useMount } from "ahooks";
 import { useSelector, useDispatch } from "react-redux";
-import { Alert } from 'antd'
+// import { Alert } from 'antd'
 
 const App: React.FC = () => {
   const [mobileMenu, setMobileMenu] = useState(false)
@@ -51,11 +51,11 @@ const App: React.FC = () => {
         {/* <MobileMenu onDismiss={handleDismissMobileMenu} visible={mobileMenu} /> */}
         <Switch>
           <Route path="/" exact>
-            <Alert
+            {/* <Alert
               message="可能因为调用Twitter API 次数过多无法查询关注状态！可以稍后再来重试！"
               banner
               closable
-            />
+            /> */}
             <Home />
           </Route>
           <Route path="/oauth" exact>
