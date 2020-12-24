@@ -1,29 +1,40 @@
 import React from 'react'
 import styled from 'styled-components'
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
 import { selectUser, setUser } from '../../../store/userSlice'
 import { removeCookie } from '../../../utils/cookie'
+import { setOAuthRedirectUri } from '../../../api/developer'
 
 interface AccountButtonProps {}
 
 const AccountButton: React.FC<AccountButtonProps> = (props) => {
   let history = useHistory();
   const user: any = useSelector(selectUser)
-    const dispatch = useDispatch()
-
+  const dispatch = useDispatch()
+  let location = useLocation();
 
   const logout = () => {
     dispatch(setUser({}))
     removeCookie("x-access-token")
   }
 
+  const jumpToMttkOAuth = async () => {
+    try {
+      console.log('from', location)
+      await setOAuthRedirectUri(location.pathname);
+    } catch (error) {
+      console.log('error', error)
+    }
+    (window as any).location = process.env.REACT_APP_OAuthUrl;
+  };
+
   console.log('user', user)
   return (
     <StyledAccountButton>
       {!user.username ? (
-        <StyledButton onClick={() => history.push("/login")}>Login</StyledButton>
+        <StyledButton onClick={jumpToMttkOAuth}>一键登陆</StyledButton>
       ) : (
         <StyledAccount>
           <div className="avatar">

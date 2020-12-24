@@ -10,11 +10,13 @@ const Oauth = () => {
   // const store = useStore();
   const router = useHistory();
 
+  let location = useLocation();
+  console.log('location', location)
+
   const accessToken = query.get("token");
-  // const toPath = query.get("path")
-  //   ? decodeURIComponent(query.get("path"))
-  //   : "/";
-  const toPath = '/'
+  const toPath = query.get("path")
+    ? decodeURIComponent(query.get("path"))
+    : "/";
 
   useMount(() => {
     console.log("mounted", accessToken);
@@ -40,5 +42,3 @@ const Oauth = () => {
 }
 
 export default Oauth
-
-
