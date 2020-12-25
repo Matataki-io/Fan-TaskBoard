@@ -20,7 +20,7 @@ import TwitterUserSearch from './components/TwitterUserSearch'
 import TokenSearch from './components/TokenSearch'
 import SearchToken from './components/SearchToken'
 import { SystemIcon, CreateIcon } from '../../components/IconAnt'
-
+import taskLogoCustom from '../../assets/img/task-logo-custom.png'
 
 const { Option } = Select;
 
@@ -379,13 +379,31 @@ const Home: React.FC = () => {
               quests.map(i => (
                 <StyledListItem to={`/${i.id}`} key={i.id}>
                   <StyledListItemInfo>
-                    <span className="tips">Twitter关注</span>
-                    <StyledListItemUser onClick={ e => e.stopPropagation() } href={ `https://twitter.com/${i.twitter_id}`} target="_blank" rel="noopener noreferrer">
-                      <div className="user">
-                        <img src={processTwitterImage(i.profile_image_url_https)} alt="avatar" />
-                      </div>
-                      <span className="user-name">{i.name || i.twitter_id}</span>
-                    </StyledListItemUser>
+                    <span className="tips">
+                      {
+                        Number(i.type) === 0 ? 'Twitter关注' : Number(i.type) === 1 ? '自定义' : ''
+                      }
+                    </span>
+                    {
+                      Number(i.type) === 0 ?
+                      (
+                        <StyledListItemUser onClick={ e => e.stopPropagation() } href={ `https://twitter.com/${i.twitter_id}`} target="_blank" rel="noopener noreferrer">
+                          <div className="user">
+                            <img src={processTwitterImage(i.profile_image_url_https)} alt="avatar" />
+                          </div>
+                          <span className="user-name">{i.name || i.twitter_id}</span>
+                        </StyledListItemUser>
+                      ) :
+                      Number(i.type) === 1 ?
+                      (
+                        <StyledListItemUser onClick={ e => e.stopPropagation() } target="_blank" rel="noopener noreferrer">
+                          <div className="user" style={{ borderRadius: 0 }}>
+                            <img src={ taskLogoCustom } alt="avatar" />
+                          </div>
+                          <span className="user-name">{i.title}</span>
+                        </StyledListItemUser>
+                      ) : ''
+                    }
                     <a onClick={ e => e.stopPropagation() } href={ `${process.env.REACT_APP_MATATAKI}/user/${i.uid}` } target="_blank" rel="noopener noreferrer" className="user-by"><span>by</span>{i.username}</a>
                   </StyledListItemInfo>
 
