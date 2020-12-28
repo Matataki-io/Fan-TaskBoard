@@ -3,6 +3,8 @@ import styled from 'styled-components'
 import { Link, useParams, useHistory } from 'react-router-dom'
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Input, Select, Form, message, Spin, Pagination } from 'antd'
+import ReactMarkdown from 'react-markdown'
+import { debounce } from 'lodash';
 
 import { selectUser } from '../../store/userSlice';
 import {
@@ -13,6 +15,7 @@ import Page from '../../components/Page'
 import TwitterUserSearch from './components/TwitterUserSearch'
 import TokenSearch from './components/TokenSearch'
 import publish1 from '../../assets/img/publish-1.png'
+import publish3 from '../../assets/img/publish-3.png'
 
 const PublishType: React.FC = () => {
   const { type }: { type: string } = useParams();
@@ -20,11 +23,15 @@ const PublishType: React.FC = () => {
   const [form] = Form.useForm();
   const [questCreateLoading, setQuestCreateLoading] = useState<boolean>(false)
   const user: any = useSelector(selectUser)
+  const [mdContent, setMdContent] = useState<string>('')
+
 
 
   // 判断任务类型
   useEffect(() => {
-    if (type !== 'twitter') {
+
+    let list = ['twitter', 'customtask']
+    if (!list.includes(type)) {
       history.go(-1)
     }
   }, [history, type])
@@ -59,15 +66,31 @@ const PublishType: React.FC = () => {
       }
     }
 
-    let data: any = {
-      type: 0,
-      twitter_id: value.account ? value.account.value : '',
-      token_id: value.token,
-      reward_people: value.rewardPeople,
-      reward_price: value.rewardPrice
+    let data: any = {}
+
+    if (type === 'twitter') {
+      data = {
+        type: 0,
+        twitter_id: value.account ? value.account.value : '',
+        token_id: value.token,
+        reward_people: value.rewardPeople,
+        reward_price: value.rewardPrice
+      }
+    } else if (type === 'customtask') {
+      data = {
+        type: 1,
+        title: value.title,
+        content: value.content,
+        token_id: value.token,
+        reward_people: value.rewardPeople,
+        reward_price: value.rewardPrice
+      }
+    } else {
+      message.info(`任务类型错误`)
+      return
     }
 
-    let typeList = [0]
+    let typeList = [0, 1]
     if (!typeList.includes(data.type)) {
       message.info(`请选择任务类型`)
       return
@@ -93,13 +116,31 @@ const PublishType: React.FC = () => {
     createQuestFn(data)
   };
 
+  const handleContent = () => {
+    const val = form.getFieldsValue()
+    setMdContent(val.content)
+  }
+  const debounceHandleContent = debounce(handleContent, 300)
+
   return (
     <Page>
       <StyledContent>
         <StyledBackPage to="/publish"> { '<' } 返回选择创建任务类型</StyledBackPage>
-        <StyledCover src={ publish1 } alt="logo"/>
+        <StyledCover src={
+          type === 'twitter' ?
+          publish1 :
+          type === 'customtask' ?
+          publish3 : ''
+        } alt="logo"/>
 
-        <p className="title">创建Twitter关注任务</p>
+        <p className="title">
+          {
+            type === 'twitter' ?
+            '创建Twitter关注任务' :
+            type === 'customtask' ?
+            '创建自定义任务' : ''
+          }
+        </p>
         <p className="description">只要1分钟即可发布属于你的有奖任务</p>
 
         <Form
@@ -108,9 +149,36 @@ const PublishType: React.FC = () => {
           form={form}
           onFinish={onFinish}
         >
-          <Form.Item label="关注账户" name="account" rules={[{ required: true, message: '请输入关注账户!' }]}>
-            <TwitterUserSearch />
-          </Form.Item>
+          {
+            type === 'twitter' ?
+            (
+              <Form.Item label="关注账户" name="account" rules={[{ required: true, message: '请输入关注账户!' }]}>
+                <TwitterUserSearch />
+              </Form.Item>
+            ) :
+            type === 'customtask' ?
+            (
+              <>
+                <Form.Item label="任务标题" name="title" rules={[{ required: true, message: '请输入任务标题!' }]}>
+                  <Input size="large" placeholder="请输入任务标题" />
+                </Form.Item>
+                <Form.Item label="任务介绍（支持markdown）" name="content" rules={[{ required: true, message: '请输入任务介绍!' }]}>
+                  <Input.TextArea rows={6} size="large" placeholder="请输入任务介绍" onChange={ debounceHandleContent } />
+                </Form.Item>
+                {
+                  mdContent ?
+                  (
+                    <StyledMDContent>
+                      <h3>Preview</h3>
+                      <ReactMarkdown>
+                        { mdContent }
+                      </ReactMarkdown>
+                    </StyledMDContent>
+                  ) : null
+                }
+              </>
+            ) : ''
+          }
           <Form.Item label="奖励Fan票类型" name="token" rules={[{ required: true, message: '请选择奖励Fan票类型!' }]}>
             <TokenSearch />
           </Form.Item>
@@ -188,6 +256,19 @@ const StyledCover = styled.img`
   display: block;
   height: 128px;
   margin: 24px 0 0 0;
+`
+const StyledMDContent = styled.div`
+  margin: 40px 0;
+  h3 {
+    font-size: 22px;
+    font-weight: bold;
+    padding: 0;
+    margin: 0 0 20px 0;
+  }
+  * {
+    color: #FFFFFF;
+    max-width: 100%;
+  }
 `
 
 export default PublishType

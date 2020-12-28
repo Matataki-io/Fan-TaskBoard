@@ -6,14 +6,16 @@ import { useSelector, useDispatch } from "react-redux";
 import { useMount } from 'ahooks';
 import moment from 'moment'
 import BigNumber from 'bignumber.js'
-import {CopyToClipboard} from 'react-copy-to-clipboard';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import ReactMarkdown from 'react-markdown'
 
 import publish1 from '../../assets/img/publish-1.png';
+import publish3 from '../../assets/img/publish-3.png';
 import Page from '../../components/Page'
 import { selectUser } from '../../store/userSlice';
 import {
   getQuestDetailProps, receiveProps,
-  getQuestDetail, getQuestDetailList, receive
+  getQuestDetail, getQuestDetailList, receive, getQuestDetailApplyList
 } from '../../api/api'
 import { DetailInfoIcon, DetailReceivedIcon, DetailShareIcon } from '../../components/IconAnt'
 
@@ -25,13 +27,14 @@ const Publish: React.FC = () => {
   const [reload, setReload] = useState<number>(0)
   const [questDetail, setQuestDetail] = useState<any>({})
   const [receivedList, setReceivedList] = useState<any[]>([])
+  const [receivedApplyList, setReceivedApplyList] = useState<any[]>([])
 
   // 获取详情
   useEffect(() => {
 
     const getData = async () => {
       try {
-        const result: any = await getQuestDetail(id, { type: 0 })
+        const result: any = await getQuestDetail(id)
         console.log('result', result)
         if (result.code === 0) {
           setQuestDetail(result.data)
@@ -69,6 +72,29 @@ const Publish: React.FC = () => {
 
   }, [id, reload])
 
+  // 获取申请领取记录
+  useEffect(() => {
+
+    const getData = async () => {
+      try {
+        const result: any = await getQuestDetailApplyList(id)
+        console.log('result', result)
+        if (result.code === 0) {
+          let list = result.data.list.map((i: any, idx: number) => ({
+            key: idx + 1,
+            ...i
+          }))
+          setReceivedApplyList(list)
+        }
+      } catch (error) {
+        console.log('error', error)
+      }
+    }
+
+    getData()
+
+  }, [id, reload])
+
   // 计算获取奖励
   const processReward = (price: string, people: string) => {
     // console.log('1111', price, people)
@@ -85,7 +111,7 @@ const Publish: React.FC = () => {
     return single.toString()
   }
 
-  const columns = [
+  const columnsList = [
     {
       title: '领取人',
       dataIndex: 'username',
@@ -129,7 +155,51 @@ const Publish: React.FC = () => {
     },
   ];
 
-  const ReceivedFn = async (qid: string|number): Promise<void> => {
+  const columnsApply = [
+    {
+      title: '申请人',
+      dataIndex: 'username',
+      key: 'username',
+      render: (text: string, record: any) => {
+        // console.log('text', text, record)
+        return (
+          <a href={`${process.env.REACT_APP_MATATAKI}/user/${record.uid}`} target="_blank" rel="noopener noreferrer">
+            <Avatar src={`${process.env.REACT_APP_MTTK_IMG_CDN}/${record.avatar}`}></Avatar>
+            <span style={{ marginLeft: 8, color: '#fff', fontSize: 14 }}>{text}</span>
+          </a>
+        )
+      }
+    },
+    {
+      title: '申请时间',
+      dataIndex: 'create_time',
+      key: 'create_time',
+      render: (text: string, record: any) => {
+        // console.log('text', text, record)
+        return (
+          <span style={{ color: '#fff', fontSize: 14 }}>
+            { moment(text).format('YYYY-MM-DD HH:mm:ss')}
+          </span>
+        )
+      }
+    },
+    {
+      title: '',
+      width: 180,
+      render: (text: string, record: any) => {
+        // console.log('text', text, record)
+        return (
+          <>
+            <Button type="primary">同意</Button>
+            &nbsp;
+            <Button>拒绝</Button>
+          </>
+        )
+      }
+    },
+  ];
+
+  const ReceivedFn = async (qid: string | number): Promise<void> => {
     if (!user.id) {
       message.info('请先登陆')
       return
@@ -153,16 +223,85 @@ const Publish: React.FC = () => {
 
   }
 
-  const ReceivedButton = () => {
+  // 领取按钮
+  const ReceivedButtonTwitter = () => {
     if (String(questDetail.uid) === String(user.id)) {
       return (<StyledButtonAntd className="receive">自己发布</StyledButtonAntd>)
     } else if (questDetail.receive) {
       return (<StyledButtonAntd className="receive">我已领取</StyledButtonAntd>)
-    } else if (( String(questDetail.received) === String(questDetail.reward_people))) {
+    } else if ((String(questDetail.received) === String(questDetail.reward_people))) {
       return (<StyledButtonAntd className="receive">领取完毕</StyledButtonAntd>)
     } else {
-      return (<StyledButtonAntd onClick={ () => ReceivedFn(id) } className="receive">领取奖励</StyledButtonAntd>)
+      return (<StyledButtonAntd onClick={() => ReceivedFn(id)} className="receive">领取奖励</StyledButtonAntd>)
     }
+  }
+  // 领取按钮 自定义任务
+  const ReceivedButtonCustomTask = () => {
+    if (String(questDetail.uid) === String(user.id)) {
+      return (<StyledButtonAntd className="receive">自己发布</StyledButtonAntd>)
+    } else if (questDetail.receive) {
+      return (<StyledButtonAntd className="receive">我已领取</StyledButtonAntd>)
+    } else if ((String(questDetail.received) === String(questDetail.reward_people))) {
+      return (<StyledButtonAntd className="receive">领取完毕</StyledButtonAntd>)
+    } else {
+      return (<StyledButtonAntd onClick={() => ReceivedFn(id)} className="receive">我已完成任务并申请发放奖励</StyledButtonAntd>)
+    }
+  }
+
+  // 任务详情 twitter
+  const QuestDetailTwitter = () => {
+    return (
+      <>
+        <StyledBCInfo>
+          <StyledBCInfoCenter>
+            <div className="info-content">
+              <p className="info-title">你可得到</p>
+              <p className="info-amount">{processReward(questDetail.reward_price, questDetail.reward_people)}<sub>{questDetail.symbol}</sub></p>
+            </div>
+            <div className="info-content">
+              <p className="info-title">总奖励数量</p>
+              <p className="info-amount">{processRewardShare(questDetail.reward_people, questDetail.received)}<sub>/{questDetail.reward_people}</sub></p>
+            </div>
+          </StyledBCInfoCenter>
+          {ReceivedButtonTwitter()}
+        </StyledBCInfo>
+        <StyledLine></StyledLine>
+        <StyledBCInfo>
+          <span className="info-title">去关注</span>
+          <div className="twitter-info">
+            <Avatar src={`${questDetail.twitter_profile_image_url_https}`}></Avatar>
+            <span className="twitter-account">{questDetail.twitter_name || questDetail.twitter_screen_name || questDetail.twitter_id}</span>
+          </div>
+          <a
+            href={`https://twitter.com/${questDetail.twitter_screen_name || questDetail.twitter_id}`}
+            target="_blank" rel="noopener noreferrer"
+          >
+            <StyledButtonAntd className="follow">前往推特去关注</StyledButtonAntd>
+          </a>
+        </StyledBCInfo>
+      </>
+    )
+  }
+
+  // 任务详情 custom
+  const QuestDetailCustomTask = () => {
+    return (
+      <>
+        <StyledCustomTaskInfo>
+          <StyledBCInfoCenter>
+            <div className="info-content">
+              <p className="info-title">你可得到</p>
+              <p className="info-amount">{processReward(questDetail.reward_price, questDetail.reward_people)}<sub>{questDetail.symbol}</sub></p>
+            </div>
+            <div className="info-content">
+              <p className="info-title">总奖励数量</p>
+              <p className="info-amount">{processRewardShare(questDetail.reward_people, questDetail.received)}<sub>/{questDetail.reward_people}</sub></p>
+            </div>
+          </StyledBCInfoCenter>
+          {ReceivedButtonCustomTask()}
+        </StyledCustomTaskInfo>
+      </>
+    )
   }
 
   return (
@@ -173,21 +312,29 @@ const Publish: React.FC = () => {
         </StyledBackHead>
         <StyledInfo>
           <StyledInfoBox>
-            <StyledInfoCover src={publish1} alt="cover" />
+            <StyledInfoCover src={
+              Number(questDetail.type) === 0 ? publish1 :
+              Number(questDetail.type) === 1 ? publish3 : ''
+            } alt="cover" />
           </StyledInfoBox>
           <StyledInfoBox>
             <StyledInfoHead>
-              <span className="title">Twitter关注任务</span>
+              <span className="title">
+                {
+                  Number(questDetail.type) === 0 ? 'Twitter关注任务' :
+                  Number(questDetail.type) === 1 ? questDetail.title : ''
+                }
+              </span>
               <span className="status">
-                {( String(questDetail.received) === String(questDetail.reward_people)) ? '领取完毕' : '进行中' }
+                {(String(questDetail.received) === String(questDetail.reward_people)) ? '领取完毕' : '进行中'}
               </span>
 
               <CopyToClipboard
                 text={`立即领取奖励：${window.location.href}`}
                 onCopy={() => message.info('复制成功，立即分享！')}>
-                  <StyledInfoShare>
-                    <DetailShareIcon className="icon"></DetailShareIcon>
-                  </StyledInfoShare>
+                <StyledInfoShare>
+                  <DetailShareIcon className="icon"></DetailShareIcon>
+                </StyledInfoShare>
               </CopyToClipboard>
 
             </StyledInfoHead>
@@ -211,44 +358,48 @@ const Publish: React.FC = () => {
                 <span className="box-title">任务详情</span>
               </StyledBoxHead>
               <StyledBoxContent className="receive-content">
-                <StyledBCInfo>
-                  <StyledBCInfoCenter>
-                    <div className="info-content">
-                      <p className="info-title">你可得到</p>
-                      <p className="info-amount">{processReward(questDetail.reward_price, questDetail.reward_people)}<sub>{questDetail.symbol}</sub></p>
-                    </div>
-                    <div className="info-content">
-                      <p className="info-title">总奖励数量</p>
-                      <p className="info-amount">{processRewardShare(questDetail.reward_people, questDetail.received)}<sub>/{questDetail.reward_people}</sub></p>
-                    </div>
-                  </StyledBCInfoCenter>
-                  { ReceivedButton() }
-                </StyledBCInfo>
-                <StyledLine></StyledLine>
-                <StyledBCInfo>
-                  <span className="info-title">去关注</span>
-                  <div className="twitter-info">
-                    <Avatar src={`${questDetail.twitter_profile_image_url_https}`}></Avatar>
-                    <span className="twitter-account">{questDetail.twitter_name || questDetail.twitter_screen_name || questDetail.twitter_id}</span>
-                  </div>
-                  <a
-                    href={`https://twitter.com/${questDetail.twitter_screen_name || questDetail.twitter_id}`}
-                    target="_blank" rel="noopener noreferrer"
-                  >
-                    <StyledButtonAntd className="follow">前往推特去关注</StyledButtonAntd>
-                  </a>
-                </StyledBCInfo>
+                {
+                  Number(questDetail.type) === 0 ? QuestDetailTwitter() :
+                  Number(questDetail.type) === 1 ? QuestDetailCustomTask() : ''
+                }
               </StyledBoxContent>
             </StyledBox>
           </StyledInfoBox>
         </StyledInfo>
+        {
+          Number(questDetail.type) === 1 ?
+          (
+            <>
+              <StyledBox className="list">
+                <StyledBoxHead>
+                  <DetailReceivedIcon className="icon"></DetailReceivedIcon>
+                  <span className="box-title">任务简介</span>
+                </StyledBoxHead>
+                <StyledBoxContent className="md">
+                  <ReactMarkdown>
+                    { questDetail.content }
+                  </ReactMarkdown>
+                </StyledBoxContent>
+              </StyledBox>
+              <StyledBox className="list">
+                <StyledBoxHead>
+                  <DetailReceivedIcon className="icon"></DetailReceivedIcon>
+                  <span className="box-title">申请详情</span>
+                </StyledBoxHead>
+                <StyledBoxContent>
+                  <StyledBCTable columns={columnsApply} dataSource={receivedApplyList} pagination={false} />
+                </StyledBoxContent>
+              </StyledBox>
+            </>
+          ) : ''
+        }
         <StyledBox className="list">
           <StyledBoxHead>
             <DetailReceivedIcon className="icon"></DetailReceivedIcon>
             <span className="box-title">奖励详情</span>
           </StyledBoxHead>
           <StyledBoxContent>
-            <StyledBCTable columns={columns} dataSource={receivedList} pagination={false} />
+            <StyledBCTable columns={columnsList} dataSource={receivedList} pagination={false} />
           </StyledBoxContent>
         </StyledBox>
       </StyledContent>
@@ -334,52 +485,54 @@ const StyledInfoHead = styled.div`
   display: flex;
   align-items: center;
   margin: 8px 0 0 0;
-.title {
-  font-size: 36px;
-  font-weight: 600;
-  color: #FFFFFF;
-  line-height: 50px;
-}
-.status {
-  display: inline-block;
-  height: 30px;
-  background: #E3FCF6;
-  border-radius: 4px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #2EAFB4;
-  line-height: 30px;
-  padding: 0 10px;
-  margin: 0 0 0 16px;
-}
-.icon {
-  color: #FFFFFF;
-}
-
-.item-title {
-  font-size: 16px;
-  font-weight: 400;
-  color: #B2B2B2;
-  line-height: 22px;
-  margin-right: 8px;
-}
-.account {
-  font-size: 16px;
-  font-weight: 500;
-  color: #6236FF;
-  line-height: 22px;
-  display: flex;
-  align-items: center;
-  span {
-    margin-left: 8px;
+  .title {
+    font-size: 36px;
+    font-weight: 600;
+    color: #FFFFFF;
+    line-height: 50px;
+    word-break: break-word;
+    max-width: 400px;
   }
-}
-.time {
-  font-size: 16px;
-  font-weight: 400;
-  color: #FFFFFF;
-  line-height: 22px;
-}
+  .status {
+    display: inline-block;
+    height: 30px;
+    background: #E3FCF6;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #2EAFB4;
+    line-height: 30px;
+    padding: 0 10px;
+    margin: 0 0 0 16px;
+  }
+  .icon {
+    color: #FFFFFF;
+  }
+
+  .item-title {
+    font-size: 16px;
+    font-weight: 400;
+    color: #B2B2B2;
+    line-height: 22px;
+    margin-right: 8px;
+  }
+  .account {
+    font-size: 16px;
+    font-weight: 500;
+    color: #6236FF;
+    line-height: 22px;
+    display: flex;
+    align-items: center;
+    span {
+      margin-left: 8px;
+    }
+  }
+  .time {
+    font-size: 16px;
+    font-weight: 400;
+    color: #FFFFFF;
+    line-height: 22px;
+  }
 `
 
 const StyledBox = styled.div`
@@ -417,6 +570,14 @@ const StyledBoxContent = styled.div`
     justify-content: space-between;
     padding: 16px;
   }
+  &.md {
+    padding: 16px;
+    box-sizing: border-box;
+    color: #fff;
+    * {
+      color: #fff;
+    }
+  }
 `
 const StyledBCInfo = styled.div`
   width: calc(50% - 1px);
@@ -438,13 +599,56 @@ const StyledBCInfo = styled.div`
     line-height: 33px;
     padding: 0;
     margin: 8px 0 0 0;
-sub {
-  bottom: 0;
+    sub {
+      bottom: 0;
+      font-size: 14px;
+      color: #e3e3e3;
+      font-weight: 400;
+      margin-left: 2px;
+    }
+  }
+
+  .twitter-account {
+    font-size: 24px;
+    font-weight: 600;
+    color: #FFFFFF;
+    line-height: 33px;
+    margin-left: 4px;
+  }
+  .twitter-info {
+    display: flex;
+    align-items: center;
+    margin: 8px 0 0 0;
+  }
+`
+const StyledCustomTaskInfo = styled.div`
+  width: 50%;
+  margin: 0 auto;
+  .info-title {
     font-size: 14px;
-    color: #e3e3e3;
     font-weight: 400;
-    margin-left: 2px;
-}
+    color: #B2B2B2;
+    line-height: 20px;
+    padding: 0;
+    margin: 0;
+  }
+  .info-content {
+    flex: 1;
+  }
+  .info-amount {
+    font-size: 24px;
+    font-weight: 600;
+    color: #FFFFFF;
+    line-height: 33px;
+    padding: 0;
+    margin: 8px 0 0 0;
+    sub {
+      bottom: 0;
+      font-size: 14px;
+      color: #e3e3e3;
+      font-weight: 400;
+      margin-left: 2px;
+    }
   }
 
   .twitter-account {

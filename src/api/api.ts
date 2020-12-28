@@ -53,8 +53,8 @@ export function getAllQuests(params: getAllQuestsProps) {
   return client.get(`/quest`, { params });
 }
 // 获取任务详情
-export function getQuestDetail(id: string|number, params: getQuestDetailProps) {
-  return client.get(`/quest/${id}`, { params });
+export function getQuestDetail(id: string|number) {
+  return client.get(`/quest/${id}`);
 }
 // 获取任务统计
 export function getQuestCount() {
@@ -63,6 +63,10 @@ export function getQuestCount() {
 // 获取任务详情列表
 export function getQuestDetailList(id: string|number, params: getQuestDetailProps) {
   return client.get(`/quest/${id}/list`, { params });
+}
+// 获取任务详情申请列表
+export function getQuestDetailApplyList(id: string|number) {
+  return client.get(`/apply/${id}/list`);
 }
 // 创建任务
 export function createQuest(data: questInterface) {
