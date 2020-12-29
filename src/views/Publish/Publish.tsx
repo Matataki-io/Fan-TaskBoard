@@ -16,13 +16,13 @@ const Publish: React.FC = () => {
   const history = useHistory();
   const user: any = useSelector(selectUser)
 
-  const toPublish = () => {
+  const toPublish = (url: string) => {
     if (!user.id) {
       message.info('请先登陆')
       return
     }
 
-    history.push('/publish/twitter')
+    history.push(url)
   }
 
   return (
@@ -36,7 +36,7 @@ const Publish: React.FC = () => {
             <p className="title">Twitter关注任务</p>
             <p className="description">此任务要求用户完成关注后即可领取奖励</p>
             <div className="btn">
-              <StyledButtonAntd onClick={ toPublish }>创建任务</StyledButtonAntd>
+              <StyledButtonAntd onClick={ () => toPublish('/publish/twitter') }>创建任务</StyledButtonAntd>
             </div>
           </StyledItemBox>
           <StyledItemBox>
@@ -52,7 +52,7 @@ const Publish: React.FC = () => {
             <p className="title">自定义任务</p>
             <p className="description">发布你的有奖任务，由你亲自判断任务完成情况并发放奖励</p>
             <div className="btn">
-              <StyledButtonAntd disabled={true}>创建任务</StyledButtonAntd>
+              <StyledButtonAntd onClick={ () => toPublish('/publish/customtask') }>创建任务</StyledButtonAntd>
             </div>
           </StyledItemBox>
         </StyledItem>

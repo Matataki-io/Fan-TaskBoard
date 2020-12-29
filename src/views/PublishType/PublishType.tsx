@@ -160,10 +160,10 @@ const PublishType: React.FC = () => {
             (
               <>
                 <Form.Item label="任务标题" name="title" rules={[{ required: true, message: '请输入任务标题!' }]}>
-                  <Input size="large" placeholder="请输入任务标题" />
+                  <Input size="large" placeholder="请输入任务标题" maxLength={20} />
                 </Form.Item>
                 <Form.Item label="任务介绍（支持markdown）" name="content" rules={[{ required: true, message: '请输入任务介绍!' }]}>
-                  <Input.TextArea rows={6} size="large" placeholder="请输入任务介绍" onChange={ debounceHandleContent } />
+                  <Input.TextArea className="textarea-content" rows={6} size="large" placeholder="请输入任务介绍" onChange={ debounceHandleContent } showCount maxLength={1000} />
                 </Form.Item>
                 {
                   mdContent ?
@@ -241,6 +241,11 @@ const StyledContent = styled.div`
     line-height: 20px;
     padding: 0;
     margin: 8px 0 24px 0;
+  }
+  .hall-create {
+    .ant-input-textarea-show-count::after {
+      color: #FFFFFF;
+    }
   }
 `
 const StyledBackPage = styled(Link)`

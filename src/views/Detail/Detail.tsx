@@ -14,8 +14,8 @@ import publish3 from '../../assets/img/publish-3.png';
 import Page from '../../components/Page'
 import { selectUser } from '../../store/userSlice';
 import {
-  getQuestDetailProps, receiveProps,
-  getQuestDetail, getQuestDetailList, receive, getQuestDetailApplyList
+  getQuestDetailProps, receiveProps, applyProps,
+  getQuestDetail, getQuestDetailList, receive, getQuestDetailApplyList, apply, applyAgree, applyReject
 } from '../../api/api'
 import { DetailInfoIcon, DetailReceivedIcon, DetailShareIcon } from '../../components/IconAnt'
 
@@ -53,7 +53,7 @@ const Publish: React.FC = () => {
 
     const getData = async () => {
       try {
-        let params: getQuestDetailProps = { type: 0 }
+        let params: any = { }
         const result: any = await getQuestDetailList(id, params)
         console.log('result', result)
         if (result.code === 0) {
@@ -187,18 +187,19 @@ const Publish: React.FC = () => {
       title: '',
       width: 180,
       render: (text: string, record: any) => {
-        // console.log('text', text, record)
+        console.log('text', text, record)
         return (
           <>
-            <Button type="primary">同意</Button>
+            <Button type="primary" onClick={ () => applyAgreeFn({ qid: record.qid, uid: record.uid }) }>同意</Button>
             &nbsp;
-            <Button>拒绝</Button>
+            <Button onClick={ () => applyRejectFn({ qid: record.qid, uid: record.uid }) }>拒绝</Button>
           </>
         )
       }
     },
   ];
 
+  // 领取奖励
   const ReceivedFn = async (qid: string | number): Promise<void> => {
     if (!user.id) {
       message.info('请先登陆')
@@ -213,6 +214,80 @@ const Publish: React.FC = () => {
       console.log('result', result)
       if (result.code === 0) {
         message.success('领取成功')
+        setReload(Date.now())
+      } else {
+        message.error(result.message)
+      }
+    } catch (error) {
+      console.log('error', error)
+    }
+
+  }
+  // 申请
+  const ApplyFn = async (qid: string | number): Promise<void> => {
+    if (!user.id) {
+      message.info('请先登陆')
+      return
+    }
+
+    try {
+      const data: receiveProps = {
+        qid: qid
+      }
+      const result: any = await apply(data)
+      console.log('result', result)
+      if (result.code === 0) {
+        message.success('领取成功')
+        setReload(Date.now())
+      } else {
+        message.error(result.message)
+      }
+    } catch (error) {
+      console.log('error', error)
+    }
+
+  }
+  // 申请同意
+  const applyAgreeFn = async ({ qid, uid }: applyProps): Promise<void> => {
+    if (!user.id) {
+      message.info('请先登陆')
+      return
+    }
+
+    try {
+      const data: applyProps = {
+        qid: qid,
+        uid: uid
+      }
+      const result: any = await applyAgree(data)
+      console.log('result', result)
+      if (result.code === 0) {
+        message.success('同意成功')
+        setReload(Date.now())
+      } else {
+        message.error(result.message)
+      }
+    } catch (error) {
+      console.log('error', error)
+    }
+
+  }
+  // 申请拒绝
+  const applyRejectFn = async ({ qid, uid }: applyProps): Promise<void> => {
+    if (!user.id) {
+      message.info('请先登陆')
+      return
+    }
+
+    try {
+      const data: applyProps = {
+        qid: qid,
+        uid: uid
+      }
+      const result: any = await applyReject(data)
+      console.log('result', result)
+      if (result.code === 0) {
+        message.success('拒绝成功')
         setReload(Date.now())
       } else {
         message.error(result.message)
@@ -243,8 +318,10 @@ const Publish: React.FC = () => {
       return (<StyledButtonAntd className="receive">我已领取</StyledButtonAntd>)
     } else if ((String(questDetail.received) === String(questDetail.reward_people))) {
       return (<StyledButtonAntd className="receive">领取完毕</StyledButtonAntd>)
+    } else if (questDetail.apply) {
+      return (<StyledButtonAntd className="receive">我已申请</StyledButtonAntd>)
     } else {
-      return (<StyledButtonAntd onClick={() => ReceivedFn(id)} className="receive">我已完成任务并申请发放奖励</StyledButtonAntd>)
+      return (<StyledButtonAntd onClick={() => ApplyFn(id)} className="receive">我已完成任务并申请发放奖励</StyledButtonAntd>)
     }
   }
 
@@ -367,7 +444,7 @@ const Publish: React.FC = () => {
           </StyledInfoBox>
         </StyledInfo>
         {
-          Number(questDetail.type) === 1 ?
+          (Number(questDetail.type) === 1 && String(questDetail.uid) === String(user.id)) ?
           (
             <>
               <StyledBox className="list">
@@ -391,7 +468,7 @@ const Publish: React.FC = () => {
                 </StyledBoxContent>
               </StyledBox>
             </>
-          ) : ''
+          ) : null
         }
         <StyledBox className="list">
           <StyledBoxHead>

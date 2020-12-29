@@ -248,6 +248,24 @@ const Home: React.FC = () => {
     }
   }
 
+  const customtaskButton = (i: any) => {
+    // console.log('i', i)
+
+    if (String(i.uid) === String(user.id)) {
+      return (<StyledButton type="primary" disabled={true}>自己发布</StyledButton>)
+    } else if (i.receive) {
+      return (<StyledButton type="primary" disabled={true}>我已领取</StyledButton>)
+    } else if (( String(i.received) === String(i.reward_people))) {
+      return (<StyledButton type="primary" disabled={true}>领取完毕</StyledButton>)
+    } else if (i.apply) {
+      return (<StyledButton type="primary">我已申请</StyledButton>)
+    } else if (!i.apply) {
+      return (<StyledButton type="primary">查看任务</StyledButton>)
+    } else {
+      return (<StyledButton type="primary">其他</StyledButton>)
+    }
+  }
+
   const setSearchTokenFn = (tokenId: string | number): void => setQuestSearchToken(tokenId)
 
   return (
@@ -419,7 +437,7 @@ const Home: React.FC = () => {
                       </div>
                     </StyledListItemBoxReward>
                     {
-                      rewardButton(i)
+                      Number(i.type) === 0 ? rewardButton(i) : Number(i.type) === 1 ? customtaskButton(i) : null
                     }
                     {/* <StyledButton>去关注</StyledButton> */}
                     {/* <StyledButton>领取奖励</StyledButton> */}

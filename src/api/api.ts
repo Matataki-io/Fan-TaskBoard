@@ -16,6 +16,10 @@ export interface questInterface {
 export interface receiveProps {
   qid: string|number
 }
+export interface applyProps {
+  qid: string|number,
+  uid: string|number,
+}
 
 export interface getAllQuestsProps {
   page: number,
@@ -76,6 +80,16 @@ export function createQuest(data: questInterface) {
 // 创建任务
 export function receive(data: receiveProps) {
   return client.post(`/receive`, data);
+}
+// 申请领取
+export function apply(data: receiveProps) {
+  return client.post(`/apply`, data);
+}
+export function applyAgree(data: applyProps) {
+  return client.post(`/apply/agree`, data);
+}
+export function applyReject(data: applyProps) {
+  return client.delete(`/apply/reject`, { data });
 }
 export function twitterUsersSearch(q: string, count: number = 5) {
   return client.get(`/users/search/twitter`, { params: { q, count } })
