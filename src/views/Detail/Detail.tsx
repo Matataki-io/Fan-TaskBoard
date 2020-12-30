@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Link, useHistory, useParams } from 'react-router-dom'
-import { Button, message, Avatar, Table, Tag, Space, Input } from 'antd'
+import { Button, message, Avatar, Table, Tag, Space, Input, Popconfirm } from 'antd'
 import { useSelector, useDispatch } from "react-redux";
 import { useMount } from 'ahooks';
 import moment from 'moment'
@@ -205,7 +205,14 @@ const Publish: React.FC = () => {
           <>
             <Button type="primary" onClick={ () => applyAgreeFn({ qid: record.qid, uid: record.uid }) }>同意</Button>
             &nbsp;
-            <Button onClick={ () => applyRejectFn({ qid: record.qid, uid: record.uid }) }>拒绝</Button>
+            <Popconfirm
+              placement="top"
+              title={ "您确定拒绝这条申请？" }
+              onConfirm={ () => applyRejectFn({ qid: record.qid, uid: record.uid }) } 
+              okText="Yes"
+              cancelText="No">
+              <Button>拒绝</Button>
+            </Popconfirm>
           </>
         )
       }
