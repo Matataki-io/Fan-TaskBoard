@@ -30,10 +30,14 @@ export interface getAllQuestsProps {
   size: number,
   sort: string,
   token: string|number
+  type: string
   filter: string
 }
 export interface getQuestDetailProps {
   type: string|number
+}
+export interface getQuestCountProps {
+  type: string
 }
 
 export interface tokenListProps {
@@ -65,8 +69,8 @@ export function getQuestDetail(id: string|number) {
   return client.get(`/quest/${id}`);
 }
 // 获取任务统计
-export function getQuestCount() {
-  return client.get(`/quest/count`);
+export function getQuestCount(params: getQuestCountProps) {
+  return client.get(`/quest/count`, { params });
 }
 // 获取任务详情列表
 export function getQuestDetailList(id: string|number, params: getQuestDetailProps) {

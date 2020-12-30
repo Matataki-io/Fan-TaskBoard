@@ -12,7 +12,7 @@ import logo from '../../assets/img/logo.png'
 // import Container from '../../components/Container'
 import Page from '../../components/Page'
 import {
-  questInterface, getAllQuestsProps, receiveProps,
+  questInterface, getAllQuestsProps, receiveProps, getQuestCountProps,
   getAllQuests, createQuest, receive, getAccountList, getQuestCount
 } from '../../api/api'
 import { selectUser } from '../../store/userSlice';
@@ -35,6 +35,7 @@ const Home: React.FC = () => {
   const [bindTwitter, setBindTwitter] = useState<boolean>(false)
   const [questSort, setQuestSort] = useState<string>('new') // 排序
   const [questSearchToken, setQuestSearchToken] = useState<string|number>('') // 根据token搜索
+  const [questType, setQuestType] = useState<string>('all') // 筛选
   const [questFilter, setQuestFilter] = useState<string>('all') // 筛选
 
   const [count, setCount] = useState<any>({}) // 筛选统计
@@ -47,7 +48,12 @@ const Home: React.FC = () => {
     setQuestSort(value)
   };
 
-  // 切换筛选
+  // 切换类型
+  const toggleType = (e: any, value: string) => {
+    // console.log(1111, value)
+    e.preventDefault()
+    setQuestType(value)
+  }
   const toggleFilter = (e: any, value: string) => {
     // console.log(1111, value)
     e.preventDefault()
@@ -63,6 +69,7 @@ const Home: React.FC = () => {
           size: 9,
           sort: questSort,
           token: questSearchToken,
+          type: questType,
           filter: questFilter
         }
         setQuestGetLoading(true)
@@ -78,7 +85,7 @@ const Home: React.FC = () => {
     }
 
     getData()
-  }, [questsReload, questsCurrent, questSort, questSearchToken, questFilter])
+  }, [questsReload, questsCurrent, questSort, questSearchToken, questFilter, questType])
 
   useEffect(() => {
     // 获取用户的绑定信息
@@ -105,7 +112,10 @@ const Home: React.FC = () => {
     // 获取统计信息
     const getData = async () => {
       try {
-        const result: any = await getQuestCount()
+        let params: getQuestCountProps = {
+          type: questType
+        }
+        const result: any = await getQuestCount(params)
         if (result.code === 0) {
           console.log('res', result)
           setCount(result.data)
@@ -116,7 +126,7 @@ const Home: React.FC = () => {
     }
     getData()
 
-  }, [])
+  }, [questType])
 
   // 完成表单
   const onFinish = (value: any) => {
@@ -276,10 +286,13 @@ const Home: React.FC = () => {
           <ul>
             <li><h3>任务分类</h3></li>
             <li>
-              <a href="/" className="active">所有任务（{ count.all }）</a>
+              <a href="/" onClick={ e => toggleType(e, 'all') } className={  questType === 'all' ? 'active' : '' }>所有任务（{ count.type_all }）</a>
             </li>
             <li>
-              <a href="/">Twitter关注（{ count.type_twitter }）</a>
+              <a href="/" onClick={ e => toggleType(e, 'twitter') } className={  questType === 'twitter' ? 'active' : '' }>Twitter关注（{ count.type_twitter }）</a>
+            </li>
+            <li>
+              <a href="/" onClick={ e => toggleType(e, 'customtask') } className={  questType === 'customtask' ? 'active' : '' }>自定义任务（{ count.type_customtask }）</a>
             </li>
           </ul>
 

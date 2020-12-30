@@ -264,6 +264,7 @@ const StyledCover = styled.img`
 `
 const StyledMDContent = styled.div`
   margin: 40px 0;
+  color: #fff;
   h3 {
     font-size: 22px;
     font-weight: bold;
