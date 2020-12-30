@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Link, useHistory, useParams } from 'react-router-dom'
-import { Button, message, Avatar, Table, Tag, Space } from 'antd'
+import { Button, message, Avatar, Table, Tag, Space, Input } from 'antd'
 import { useSelector, useDispatch } from "react-redux";
 import { useMount } from 'ahooks';
 import moment from 'moment'
@@ -14,7 +14,7 @@ import publish3 from '../../assets/img/publish-3.png';
 import Page from '../../components/Page'
 import { selectUser } from '../../store/userSlice';
 import {
-  getQuestDetailProps, receiveProps, applyProps,
+  getQuestDetailProps, receiveProps, applyHandleProps, applyProps,
   getQuestDetail, getQuestDetailList, receive, getQuestDetailApplyList, apply, applyAgree, applyReject
 } from '../../api/api'
 import { DetailInfoIcon, DetailReceivedIcon, DetailShareIcon } from '../../components/IconAnt'
@@ -28,6 +28,7 @@ const Publish: React.FC = () => {
   const [questDetail, setQuestDetail] = useState<any>({})
   const [receivedList, setReceivedList] = useState<any[]>([])
   const [receivedApplyList, setReceivedApplyList] = useState<any[]>([])
+  const [remark, setRemark] = useState<string>('')
 
   // 获取详情
   useEffect(() => {
@@ -171,6 +172,18 @@ const Publish: React.FC = () => {
       }
     },
     {
+      title: '申请备注',
+      dataIndex: 'remark',
+      key: 'remark',
+      render: (text: string, record: any) => {
+        return (
+          <span style={{ color: '#fff', fontSize: 14, maxWidth: 300, wordBreak: "break-word", display: "inline-block" }}>
+            { text || '暂无' }
+          </span>
+        )
+      }
+    },
+    {
       title: '申请时间',
       dataIndex: 'create_time',
       key: 'create_time',
@@ -231,8 +244,9 @@ const Publish: React.FC = () => {
     }
 
     try {
-      const data: receiveProps = {
-        qid: qid
+      const data: applyProps = {
+        qid: qid,
+        remark: remark
       }
       const result: any = await apply(data)
       console.log('result', result)
@@ -248,14 +262,14 @@ const Publish: React.FC = () => {
 
   }
   // 申请同意
-  const applyAgreeFn = async ({ qid, uid }: applyProps): Promise<void> => {
+  const applyAgreeFn = async ({ qid, uid }: applyHandleProps): Promise<void> => {
     if (!user.id) {
       message.info('请先登陆')
       return
     }
 
     try {
-      const data: applyProps = {
+      const data: applyHandleProps = {
         qid: qid,
         uid: uid
       }
@@ -273,14 +287,14 @@ const Publish: React.FC = () => {
 
   }
   // 申请拒绝
-  const applyRejectFn = async ({ qid, uid }: applyProps): Promise<void> => {
+  const applyRejectFn = async ({ qid, uid }: applyHandleProps): Promise<void> => {
     if (!user.id) {
       message.info('请先登陆')
       return
     }
 
     try {
-      const data: applyProps = {
+      const data: applyHandleProps = {
         qid: qid,
         uid: uid
       }
@@ -296,6 +310,11 @@ const Publish: React.FC = () => {
       console.log('error', error)
     }
 
+  }
+
+  const handleRemarkChange = (e: any) => {
+    let val: string = e.target.value
+    setRemark(val.trim())
   }
 
   // 领取按钮
@@ -321,7 +340,19 @@ const Publish: React.FC = () => {
     } else if (questDetail.apply) {
       return (<StyledButtonAntd className="receive">我已申请</StyledButtonAntd>)
     } else {
-      return (<StyledButtonAntd onClick={() => ApplyFn(id)} className="receive">我已完成任务并申请发放奖励</StyledButtonAntd>)
+      return (
+        <>
+          <Input.TextArea
+            className="remark"
+            placeholder="请输入备注"
+            showCount
+            maxLength={100}
+            rows={4}
+            onChange={ e => handleRemarkChange(e) }
+            />
+          <StyledButtonAntd onClick={() => ApplyFn(id)} className="receive">我已完成任务并申请发放奖励</StyledButtonAntd>
+        </>
+      )
     }
   }
 
@@ -739,6 +770,12 @@ const StyledCustomTaskInfo = styled.div`
     display: flex;
     align-items: center;
     margin: 8px 0 0 0;
+  }
+  .remark {
+    margin: 10px 0 0;
+    &.ant-input-textarea-show-count::after {
+      color: #FFFFFF;
+    }
   }
 `
 const StyledLine = styled.div`

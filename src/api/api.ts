@@ -16,9 +16,13 @@ export interface questInterface {
 export interface receiveProps {
   qid: string|number
 }
-export interface applyProps {
+export interface applyHandleProps {
   qid: string|number,
   uid: string|number,
+}
+export interface applyProps {
+  qid: string|number,
+  remark: string|number,
 }
 
 export interface getAllQuestsProps {
@@ -85,10 +89,10 @@ export function receive(data: receiveProps) {
 export function apply(data: receiveProps) {
   return client.post(`/apply`, data);
 }
-export function applyAgree(data: applyProps) {
+export function applyAgree(data: applyHandleProps) {
   return client.post(`/apply/agree`, data);
 }
-export function applyReject(data: applyProps) {
+export function applyReject(data: applyHandleProps) {
   return client.delete(`/apply/reject`, { data });
 }
 export function twitterUsersSearch(q: string, count: number = 5) {
