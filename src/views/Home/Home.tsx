@@ -7,9 +7,6 @@ import { getCookie } from '../../utils/cookie'
 import { Link, useHistory } from 'react-router-dom'
 
 import logo from '../../assets/img/logo.png'
-// import chef from '../../assets/img/chef.png'
-// import Button from '../../components/Button'
-// import Container from '../../components/Container'
 import Page from '../../components/Page'
 import {
   questInterface, getAllQuestsProps, receiveProps, getQuestCountProps,

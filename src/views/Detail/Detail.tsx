@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { Link, useHistory, useParams } from 'react-router-dom'
-import { Button, message, Avatar, Table, Tag, Space, Input, Popconfirm } from 'antd'
-import { useSelector, useDispatch } from "react-redux";
-import { useMount } from 'ahooks';
+import { Link, useParams } from 'react-router-dom'
+import { Button, message, Avatar, Table, Input, Popconfirm } from 'antd'
+import { useSelector } from "react-redux";
 import moment from 'moment'
 import BigNumber from 'bignumber.js'
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -14,13 +13,12 @@ import publish3 from '../../assets/img/publish-3.png';
 import Page from '../../components/Page'
 import { selectUser } from '../../store/userSlice';
 import {
-  getQuestDetailProps, receiveProps, applyHandleProps, applyProps,
+  receiveProps, applyHandleProps, applyProps,
   getQuestDetail, getQuestDetailList, receive, getQuestDetailApplyList, apply, applyAgree, applyReject
 } from '../../api/api'
 import { DetailInfoIcon, DetailReceivedIcon, DetailShareIcon } from '../../components/IconAnt'
 
 const Publish: React.FC = () => {
-  const history = useHistory();
   const user: any = useSelector(selectUser)
   const { id }: { id: string } = useParams()
 
@@ -112,6 +110,7 @@ const Publish: React.FC = () => {
     return single.toString()
   }
 
+  // 领取 columns
   const columnsList = [
     {
       title: '领取人',
@@ -155,7 +154,7 @@ const Publish: React.FC = () => {
       }
     },
   ];
-
+  // 申请 columns
   const columnsApply = [
     {
       title: '申请人',
@@ -319,6 +318,7 @@ const Publish: React.FC = () => {
 
   }
 
+  // 处理申请备注信息
   const handleRemarkChange = (e: any) => {
     let val: string = e.target.value
     setRemark(val.trim())
