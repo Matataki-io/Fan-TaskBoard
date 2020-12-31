@@ -54,7 +54,7 @@ const Publish: React.FC = () => {
 
     const getData = async () => {
       try {
-        let params: any = { }
+        let params: any = {}
         const result: any = await getQuestDetailList(id, params)
         console.log('result', result)
         if (result.code === 0) {
@@ -178,7 +178,7 @@ const Publish: React.FC = () => {
       render: (text: string, record: any) => {
         return (
           <span style={{ color: '#fff', fontSize: 14, maxWidth: 300, wordBreak: "break-word", display: "inline-block" }}>
-            { text || '暂无' }
+            { text || '暂无'}
           </span>
         )
       }
@@ -203,12 +203,12 @@ const Publish: React.FC = () => {
         console.log('text', text, record)
         return (
           <>
-            <Button type="primary" onClick={ () => applyAgreeFn({ qid: record.qid, uid: record.uid }) }>同意</Button>
+            <Button type="primary" onClick={() => applyAgreeFn({ qid: record.qid, uid: record.uid })}>同意</Button>
             &nbsp;
             <Popconfirm
               placement="top"
-              title={ "您确定拒绝这条申请？" }
-              onConfirm={ () => applyRejectFn({ qid: record.qid, uid: record.uid }) } 
+              title={"您确定拒绝这条申请？"}
+              onConfirm={() => applyRejectFn({ qid: record.qid, uid: record.uid })}
               okText="Yes"
               cancelText="No">
               <Button>拒绝</Button>
@@ -355,8 +355,8 @@ const Publish: React.FC = () => {
             showCount
             maxLength={100}
             rows={4}
-            onChange={ e => handleRemarkChange(e) }
-            />
+            onChange={e => handleRemarkChange(e)}
+          />
           <StyledButtonAntd onClick={() => ApplyFn(id)} className="receive">我已完成任务并申请发放奖励</StyledButtonAntd>
         </>
       )
@@ -429,7 +429,7 @@ const Publish: React.FC = () => {
           <StyledInfoBox>
             <StyledInfoCover src={
               Number(questDetail.type) === 0 ? publish1 :
-              Number(questDetail.type) === 1 ? publish3 : ''
+                Number(questDetail.type) === 1 ? publish3 : ''
             } alt="cover" />
           </StyledInfoBox>
           <StyledInfoBox>
@@ -437,7 +437,7 @@ const Publish: React.FC = () => {
               <span className="title">
                 {
                   Number(questDetail.type) === 0 ? 'Twitter关注任务' :
-                  Number(questDetail.type) === 1 ? questDetail.title : ''
+                    Number(questDetail.type) === 1 ? questDetail.title : ''
                 }
               </span>
               <span className="status">
@@ -475,37 +475,40 @@ const Publish: React.FC = () => {
               <StyledBoxContent className="receive-content">
                 {
                   Number(questDetail.type) === 0 ? QuestDetailTwitter() :
-                  Number(questDetail.type) === 1 ? QuestDetailCustomTask() : ''
+                    Number(questDetail.type) === 1 ? QuestDetailCustomTask() : ''
                 }
               </StyledBoxContent>
             </StyledBox>
           </StyledInfoBox>
         </StyledInfo>
         {
+          Number(questDetail.type) === 1 ?
+          (
+            <StyledBox className="list">
+              <StyledBoxHead>
+                <DetailReceivedIcon className="icon"></DetailReceivedIcon>
+                <span className="box-title">任务简介</span>
+              </StyledBoxHead>
+              <StyledBoxContent className="md">
+                <ReactMarkdown>
+                  {questDetail.content}
+                </ReactMarkdown>
+              </StyledBoxContent>
+            </StyledBox>
+          ) : null
+        }
+        {
           (Number(questDetail.type) === 1 && String(questDetail.uid) === String(user.id)) ?
           (
-            <>
-              <StyledBox className="list">
-                <StyledBoxHead>
-                  <DetailReceivedIcon className="icon"></DetailReceivedIcon>
-                  <span className="box-title">任务简介</span>
-                </StyledBoxHead>
-                <StyledBoxContent className="md">
-                  <ReactMarkdown>
-                    { questDetail.content }
-                  </ReactMarkdown>
-                </StyledBoxContent>
-              </StyledBox>
-              <StyledBox className="list">
-                <StyledBoxHead>
-                  <DetailReceivedIcon className="icon"></DetailReceivedIcon>
-                  <span className="box-title">申请详情</span>
-                </StyledBoxHead>
-                <StyledBoxContent>
-                  <StyledBCTable columns={columnsApply} dataSource={receivedApplyList} pagination={false} />
-                </StyledBoxContent>
-              </StyledBox>
-            </>
+            <StyledBox className="list">
+              <StyledBoxHead>
+                <DetailReceivedIcon className="icon"></DetailReceivedIcon>
+                <span className="box-title">申请详情</span>
+              </StyledBoxHead>
+              <StyledBoxContent>
+                <StyledBCTable columns={columnsApply} dataSource={receivedApplyList} pagination={false} />
+              </StyledBoxContent>
+            </StyledBox>
           ) : null
         }
         <StyledBox className="list">
