@@ -305,6 +305,9 @@ const Home: React.FC = () => {
             <li>
               <a href="/" onClick={ e => toggleType(e, 'customtask') } className={  questType === 'customtask' ? 'active' : '' }>自定义任务（{ count.type_customtask }）</a>
             </li>
+            <li>
+              <a href="/" onClick={ e => toggleType(e, 'key') } className={  questType === 'key' ? 'active' : '' }>口令任务（{ count.type_key }）</a>
+            </li>
           </ul>
 
           <ul>
