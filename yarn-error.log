@@ -1,5 +1,5 @@
 Arguments: 
-  /Users/xiaotian/.nvm/versions/node/v12.19.0/bin/node /Users/xiaotian/.nvm/versions/node/v12.19.0/bin/yarn
+  /Users/xiaotian/.nvm/versions/node/v12.19.0/bin/node /Users/xiaotian/.nvm/versions/node/v12.19.0/bin/yarn add string-random
 
 PATH: 
   /Users/xiaotian/.nvm/versions/node/v12.19.0/bin:/usr/local/sbin:/usr/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/Library/Apple/usr/bin:/Users/xiaotian/.nvm/versions/node/v12.19.0/bin:/usr/local/sbin
@@ -14,7 +14,7 @@ Platform:
   darwin x64
 
 Trace: 
-  Error: EACCES: permission denied, unlink '/Users/xiaotian/Andoromeda/uniscam/Fan-TaskBoard/node_modules/.bin/ansi-html'
+  Error: EACCES: permission denied, unlink '/Users/xiaotian/Andoromeda/uniscam/Fan-TaskBoard/node_modules/.bin/acorn'
 
 npm manifest: 
   {

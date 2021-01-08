@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Link, useParams, useHistory } from 'react-router-dom'
 import { useSelector, useDispatch } from "react-redux";
-import { Button, Input, Select, Form, message, Spin, Pagination } from 'antd'
+import { Button, Input, Radio, Form, message, Spin, Pagination } from 'antd'
 import ReactMarkdown from 'react-markdown'
 import { debounce } from 'lodash';
+import random from 'string-random';
 
 import { selectUser } from '../../store/userSlice';
 import {
@@ -25,7 +26,8 @@ const PublishType: React.FC = () => {
   const [questCreateLoading, setQuestCreateLoading] = useState<boolean>(false)
   const user: any = useSelector(selectUser)
   const [mdContent, setMdContent] = useState<string>('')
-
+  const [radioKey, setRadioKey] = React.useState('default');
+  const [keyVal, setKeyVal] = React.useState('');
 
 
   // 判断任务类型
@@ -91,6 +93,7 @@ const PublishType: React.FC = () => {
         type: 2,
         title: value.title,
         content: value.content,
+        key: radioKey === 'custom' ? keyVal : '',
         token_id: value.token,
         reward_people: value.rewardPeople,
         reward_price: value.rewardPrice
@@ -106,13 +109,6 @@ const PublishType: React.FC = () => {
       return
     }
 
-    for (const key in data) {
-      // 忽略type
-      if (key !== 'type' && !data[key]) {
-        message.info(`${key} 不能为空`)
-        return
-      }
-    }
 
     if (!(Number.isInteger(Number(data.reward_people)) && Number(data.reward_people) > 0)) {
       message.info(`奖励人数必须为整数并大于0`)
@@ -131,6 +127,19 @@ const PublishType: React.FC = () => {
     setMdContent(val.content)
   }
   const debounceHandleContent = debounce(handleContent, 300)
+
+  // key model input handle change
+  const handleKeyModelChange = (e: any) => {
+    setRadioKey(e.target.value);
+  };
+  const handleKeyModelInputChange = (e: any) => {
+    setKeyVal(e.target.value);
+  };
+
+  const randomKey = () => {
+    const _key = random(32, { numbers: false });
+    setKeyVal(_key);
+  }
 
   return (
     <Page>
@@ -191,6 +200,33 @@ const PublishType: React.FC = () => {
                   ) : null
                 }
               </>
+            ) : ''
+          }
+          {
+            type === 'key' ?
+            (
+              <Form.Item label="口令模式" name="keyModel" rules={[{ required: true, message: '请输入任务标题!' }]} className="radio-keymodel">
+                <Radio.Group defaultValue={radioKey} onChange={handleKeyModelChange}>
+                  <Radio value={'default'}>
+                    <span className="text">默认</span></Radio>
+                  <Radio value={'custom'}>
+                    <span className="text">自定义</span>
+                    {
+                      radioKey === 'custom' ?
+                      <>
+                        <Input
+                          onChange={handleKeyModelInputChange}
+                          style={{ marginLeft: 10, maxWidth: 240 }}
+                          placeholder="请输入自定义口令"
+                          maxLength={32}
+                          value={keyVal}
+                          />
+                        <Button onClick={ () => randomKey() } style={{ marginLeft: 10 }}>随机</Button>
+                      </> : null
+                    }
+                  </Radio>
+                </Radio.Group>
+              </Form.Item>
             ) : ''
           }
           <Form.Item label="奖励Fan票类型" name="token" rules={[{ required: true, message: '请选择奖励Fan票类型!' }]}>
@@ -258,6 +294,11 @@ const StyledContent = styled.div`
   }
   .hall-create {
     .ant-input-textarea-show-count::after {
+      color: #FFFFFF;
+    }
+  }
+  .radio-keymodel {
+    .ant-radio-wrapper .text {
       color: #FFFFFF;
     }
   }

@@ -17,7 +17,7 @@ import {
   receiveProps, applyHandleProps, applyProps, receiveKeyProps,
   getQuestDetail, getQuestDetailList, receive, receiveKey, getQuestDetailApplyList, apply, applyAgree, applyReject
 } from '../../api/api'
-import { DetailInfoIcon, DetailReceivedIcon, DetailShareIcon } from '../../components/IconAnt'
+import { DetailInfoIcon, DetailReceivedIcon, DetailShareIcon, CopyIcon } from '../../components/IconAnt'
 
 const Publish: React.FC = () => {
   const user: any = useSelector(selectUser)
@@ -540,6 +540,23 @@ const Publish: React.FC = () => {
               <span className="item-title">创建时间</span>
               <span className="time">{moment(questDetail.create_time).format('YYYY-MM-DD HH:mm:ss')}</span>
             </StyledInfoHead>
+            {
+              questDetail.key ?
+              (
+                <StyledInfoHead>
+                  <span className="item-title">口&emsp;&emsp;令</span>
+                  <span className="key">{ questDetail.key }
+                    <CopyToClipboard
+                      text={`口令：${questDetail.key}`}
+                      onCopy={() => message.info('复制成功，立即分享！')}>
+                      <StyledInfoCopy>
+                        <CopyIcon className="icon"></CopyIcon>
+                      </StyledInfoCopy>
+                    </CopyToClipboard>
+                  </span>
+                </StyledInfoHead>
+              ): ''
+            }
             <StyledBox className="info">
               <StyledBoxHead>
                 <DetailInfoIcon className="icon"></DetailInfoIcon>
@@ -675,6 +692,21 @@ const StyledInfoShare = styled.div`
   margin-left: auto;
   cursor: pointer;
 `
+const StyledInfoCopy = styled.div`
+  width: 26px;
+  height: 26px;
+  background: #6236FF;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  cursor: pointer;
+  margin-left: 10px;
+  .icon {
+    fill: #fff;
+  }
+`
 
 const StyledInfoHead = styled.div`
   display: flex;
@@ -727,6 +759,14 @@ const StyledInfoHead = styled.div`
     font-weight: 400;
     color: #FFFFFF;
     line-height: 22px;
+  }
+  .key {
+    font-size: 16px;
+    font-weight: 400;
+    color: #FFFFFF;
+    line-height: 22px;
+    display: flex;
+    align-items: center;
   }
 `
 

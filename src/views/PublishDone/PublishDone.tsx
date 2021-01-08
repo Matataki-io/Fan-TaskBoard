@@ -33,7 +33,7 @@ const Publish: React.FC = () => {
           </CopyToClipboard>
           <Button className="input-btn" type="primary" onClick={ () => window.open(window.location.search.slice(1)) }>打开</Button>
         </StyledInputContent>
-        <StyledButtonAntd onClick={ () => history.push('/publish/twitter') } className="create">再创建一个</StyledButtonAntd>
+        <StyledButtonAntd onClick={ () => history.push('/publish') } className="create">再创建一个</StyledButtonAntd>
         <StyledButtonAntd onClick={ () => history.push('/') } className="back">返回任务大厅</StyledButtonAntd>
 
         <StyledTips>
