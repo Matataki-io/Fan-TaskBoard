@@ -18,6 +18,7 @@ import TokenSearch from './components/TokenSearch'
 import SearchToken from './components/SearchToken'
 import { SystemIcon, CreateIcon } from '../../components/IconAnt'
 import taskLogoCustom from '../../assets/img/task-logo-custom.png'
+import taskLogoKey from '../../assets/img/task-logo-key.png'
 
 const { Option } = Select;
 
@@ -272,6 +273,19 @@ const Home: React.FC = () => {
       return (<StyledButton type="primary">其他</StyledButton>)
     }
   }
+  const keyButton = (i: any) => {
+    // console.log('i', i)
+
+    if (String(i.uid) === String(user.id)) {
+      return (<StyledButton type="primary" disabled={true}>自己发布</StyledButton>)
+    } else if (i.receive) {
+      return (<StyledButton type="primary" disabled={true}>我已领取</StyledButton>)
+    } else if (( String(i.received) === String(i.reward_people))) {
+      return (<StyledButton type="primary" disabled={true}>领取完毕</StyledButton>)
+    } else {
+      return (<StyledButton type="primary">查看任务</StyledButton>)
+    }
+  }
 
   const setSearchTokenFn = (tokenId: string | number): void => setQuestSearchToken(tokenId)
 
@@ -409,7 +423,9 @@ const Home: React.FC = () => {
                   <StyledListItemInfo>
                     <span className="tips">
                       {
-                        Number(i.type) === 0 ? 'Twitter关注' : Number(i.type) === 1 ? '自定义' : ''
+                        Number(i.type) === 0 ? 'Twitter关注' :
+                        Number(i.type) === 1 ? '自定义' :
+                        Number(i.type) === 2 ? '口令' : ''
                       }
                     </span>
                     {
@@ -430,6 +446,15 @@ const Home: React.FC = () => {
                           </div>
                           <span className="user-name">{i.title}</span>
                         </StyledListItemUser>
+                      ) :
+                      Number(i.type) === 2 ?
+                      (
+                        <StyledListItemUser onClick={ e => e.stopPropagation() } target="_blank" rel="noopener noreferrer">
+                          <div className="user" style={{ borderRadius: 0 }}>
+                            <img src={ taskLogoKey } alt="avatar" />
+                          </div>
+                          <span className="user-name">{i.title}</span>
+                        </StyledListItemUser>
                       ) : ''
                     }
                     <a onClick={ e => e.stopPropagation() } href={ `${process.env.REACT_APP_MATATAKI}/user/${i.uid}` } target="_blank" rel="noopener noreferrer" className="user-by"><span>by</span>{i.username}</a>
@@ -447,7 +472,9 @@ const Home: React.FC = () => {
                       </div>
                     </StyledListItemBoxReward>
                     {
-                      Number(i.type) === 0 ? rewardButton(i) : Number(i.type) === 1 ? customtaskButton(i) : null
+                      Number(i.type) === 0 ? rewardButton(i) :
+                      Number(i.type) === 1 ? customtaskButton(i) :
+                      Number(i.type) === 2 ? keyButton(i) : null
                     }
                     {/* <StyledButton>去关注</StyledButton> */}
                     {/* <StyledButton>领取奖励</StyledButton> */}

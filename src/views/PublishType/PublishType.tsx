@@ -15,6 +15,7 @@ import Page from '../../components/Page'
 import TwitterUserSearch from './components/TwitterUserSearch'
 import TokenSearch from './components/TokenSearch'
 import publish1 from '../../assets/img/publish-1.png'
+import publish2 from '../../assets/img/publish-2.png'
 import publish3 from '../../assets/img/publish-3.png'
 
 const PublishType: React.FC = () => {
@@ -30,7 +31,7 @@ const PublishType: React.FC = () => {
   // 判断任务类型
   useEffect(() => {
 
-    let list = ['twitter', 'customtask']
+    let list = ['twitter', 'customtask', 'key']
     if (!list.includes(type)) {
       history.go(-1)
     }
@@ -85,12 +86,21 @@ const PublishType: React.FC = () => {
         reward_people: value.rewardPeople,
         reward_price: value.rewardPrice
       }
+    } else if (type === 'key') {
+      data = {
+        type: 2,
+        title: value.title,
+        content: value.content,
+        token_id: value.token,
+        reward_people: value.rewardPeople,
+        reward_price: value.rewardPrice
+      }
     } else {
       message.info(`任务类型错误`)
       return
     }
 
-    let typeList = [0, 1]
+    let typeList = [0, 1, 2]
     if (!typeList.includes(data.type)) {
       message.info(`请选择任务类型`)
       return
@@ -129,6 +139,8 @@ const PublishType: React.FC = () => {
         <StyledCover src={
           type === 'twitter' ?
           publish1 :
+          type === 'key' ?
+          publish2 :
           type === 'customtask' ?
           publish3 : ''
         } alt="logo"/>
@@ -137,6 +149,8 @@ const PublishType: React.FC = () => {
           {
             type === 'twitter' ?
             '创建Twitter关注任务' :
+            type === 'key' ?
+            '口令任务' :
             type === 'customtask' ?
             '创建自定义任务' : ''
           }
@@ -156,7 +170,7 @@ const PublishType: React.FC = () => {
                 <TwitterUserSearch />
               </Form.Item>
             ) :
-            type === 'customtask' ?
+            type === 'customtask' || type === 'key' ?
             (
               <>
                 <Form.Item label="任务标题" name="title" rules={[{ required: true, message: '请输入任务标题!' }]}>

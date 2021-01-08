@@ -8,13 +8,14 @@ import BigNumber from 'bignumber.js'
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import ReactMarkdown from 'react-markdown'
 
-import publish1 from '../../assets/img/publish-1.png';
-import publish3 from '../../assets/img/publish-3.png';
+import publishTwitter from '../../assets/img/publish-1.png';
+import publishKey from '../../assets/img/publish-2.png';
+import publishCustomtask from '../../assets/img/publish-3.png';
 import Page from '../../components/Page'
 import { selectUser } from '../../store/userSlice';
 import {
-  receiveProps, applyHandleProps, applyProps,
-  getQuestDetail, getQuestDetailList, receive, getQuestDetailApplyList, apply, applyAgree, applyReject
+  receiveProps, applyHandleProps, applyProps, receiveKeyProps,
+  getQuestDetail, getQuestDetailList, receive, receiveKey, getQuestDetailApplyList, apply, applyAgree, applyReject
 } from '../../api/api'
 import { DetailInfoIcon, DetailReceivedIcon, DetailShareIcon } from '../../components/IconAnt'
 
@@ -27,6 +28,7 @@ const Publish: React.FC = () => {
   const [receivedList, setReceivedList] = useState<any[]>([])
   const [receivedApplyList, setReceivedApplyList] = useState<any[]>([])
   const [remark, setRemark] = useState<string>('')
+  const [key, setKey] = useState<string>('')
 
   // 获取详情
   useEffect(() => {
@@ -37,6 +39,27 @@ const Publish: React.FC = () => {
         console.log('result', result)
         if (result.code === 0) {
           setQuestDetail(result.data)
+
+          if (result.data.type === 1) {
+            getDataApplyList()
+          }
+
+        }
+      } catch (error) {
+        console.log('error', error)
+      }
+    }
+  // 获取申请领取记录
+    const getDataApplyList = async () => {
+      try {
+        const result: any = await getQuestDetailApplyList(id)
+        console.log('result', result)
+        if (result.code === 0) {
+          let list = result.data.list.map((i: any, idx: number) => ({
+            key: idx + 1,
+            ...i
+          }))
+          setReceivedApplyList(list)
         }
       } catch (error) {
         console.log('error', error)
@@ -61,29 +84,6 @@ const Publish: React.FC = () => {
             ...i
           }))
           setReceivedList(list)
-        }
-      } catch (error) {
-        console.log('error', error)
-      }
-    }
-
-    getData()
-
-  }, [id, reload])
-
-  // 获取申请领取记录
-  useEffect(() => {
-
-    const getData = async () => {
-      try {
-        const result: any = await getQuestDetailApplyList(id)
-        console.log('result', result)
-        if (result.code === 0) {
-          let list = result.data.list.map((i: any, idx: number) => ({
-            key: idx + 1,
-            ...i
-          }))
-          setReceivedApplyList(list)
         }
       } catch (error) {
         console.log('error', error)
@@ -267,6 +267,31 @@ const Publish: React.FC = () => {
     }
 
   }
+  // 领取
+  const rewardKey = async (qid: string | number): Promise<void> => {
+    if (!user.id) {
+      message.info('请先登陆')
+      return
+    }
+
+    try {
+      const data: receiveKeyProps = {
+        qid: qid,
+        key: key
+      }
+      const result: any = await receiveKey(data)
+      console.log('result', result)
+      if (result.code === 0) {
+        message.success('领取成功')
+        setReload(Date.now())
+      } else {
+        message.error(result.message)
+      }
+    } catch (error) {
+      console.log('error', error)
+    }
+
+  }
   // 申请同意
   const applyAgreeFn = async ({ qid, uid }: applyHandleProps): Promise<void> => {
     if (!user.id) {
@@ -323,6 +348,11 @@ const Publish: React.FC = () => {
     let val: string = e.target.value
     setRemark(val.trim())
   }
+  // 处理领取Key
+  const handleKeyChange = (e: any) => {
+    let val: string = e.target.value
+    setKey(val.trim())
+  }
 
   // 领取按钮
   const ReceivedButtonTwitter = () => {
@@ -358,6 +388,27 @@ const Publish: React.FC = () => {
             onChange={e => handleRemarkChange(e)}
           />
           <StyledButtonAntd onClick={() => ApplyFn(id)} className="receive">我已完成任务并申请发放奖励</StyledButtonAntd>
+        </>
+      )
+    }
+  }
+  // 领取按钮 key
+  const ReceivedButtonKey = () => {
+    if (String(questDetail.uid) === String(user.id)) {
+      return (<StyledButtonAntd className="receive">自己发布</StyledButtonAntd>)
+    } else if (questDetail.receive) {
+      return (<StyledButtonAntd className="receive">我已领取</StyledButtonAntd>)
+    } else if ((String(questDetail.received) === String(questDetail.reward_people))) {
+      return (<StyledButtonAntd className="receive">领取完毕</StyledButtonAntd>)
+    } else {
+      return (
+        <>
+          <Input
+            className="remark"
+            placeholder="请输入Key"
+            onChange={e => handleKeyChange(e)}
+          />
+          <StyledButtonAntd onClick={() => rewardKey(id)} className="receive">立即领取</StyledButtonAntd>
         </>
       )
     }
@@ -419,6 +470,27 @@ const Publish: React.FC = () => {
     )
   }
 
+    // 任务详情 key
+  const QuestDetailKey = () => {
+    return (
+      <>
+        <StyledCustomTaskInfo>
+          <StyledBCInfoCenter>
+            <div className="info-content">
+              <p className="info-title">你可得到</p>
+              <p className="info-amount">{processReward(questDetail.reward_price, questDetail.reward_people)}<sub>{questDetail.symbol}</sub></p>
+            </div>
+            <div className="info-content">
+              <p className="info-title">总奖励数量</p>
+              <p className="info-amount">{processRewardShare(questDetail.reward_people, questDetail.received)}<sub>/{questDetail.reward_people}</sub></p>
+            </div>
+          </StyledBCInfoCenter>
+          {ReceivedButtonKey()}
+        </StyledCustomTaskInfo>
+      </>
+    )
+  }
+
   return (
     <Page>
       <StyledContent>
@@ -428,8 +500,9 @@ const Publish: React.FC = () => {
         <StyledInfo>
           <StyledInfoBox>
             <StyledInfoCover src={
-              Number(questDetail.type) === 0 ? publish1 :
-                Number(questDetail.type) === 1 ? publish3 : ''
+              Number(questDetail.type) === 0 ? publishTwitter :
+                Number(questDetail.type) === 1 ? publishCustomtask :
+                Number(questDetail.type) === 2 ? publishKey : ''
             } alt="cover" />
           </StyledInfoBox>
           <StyledInfoBox>
@@ -437,7 +510,7 @@ const Publish: React.FC = () => {
               <span className="title">
                 {
                   Number(questDetail.type) === 0 ? 'Twitter关注任务' :
-                    Number(questDetail.type) === 1 ? questDetail.title : ''
+                    (Number(questDetail.type) === 1 || Number(questDetail.type) === 2) ? questDetail.title : ''
                 }
               </span>
               <span className="status">
@@ -475,14 +548,15 @@ const Publish: React.FC = () => {
               <StyledBoxContent className="receive-content">
                 {
                   Number(questDetail.type) === 0 ? QuestDetailTwitter() :
-                    Number(questDetail.type) === 1 ? QuestDetailCustomTask() : ''
+                  Number(questDetail.type) === 1 ? QuestDetailCustomTask() :
+                  Number(questDetail.type) === 2 ? QuestDetailKey() : ''
                 }
               </StyledBoxContent>
             </StyledBox>
           </StyledInfoBox>
         </StyledInfo>
         {
-          Number(questDetail.type) === 1 ?
+          (Number(questDetail.type) === 1 || Number(questDetail.type) === 2) ?
           (
             <StyledBox className="list">
               <StyledBoxHead>
@@ -498,7 +572,10 @@ const Publish: React.FC = () => {
           ) : null
         }
         {
-          (Number(questDetail.type) === 1 && String(questDetail.uid) === String(user.id)) ?
+          (
+            Number(questDetail.type) === 1 &&
+            (String(questDetail.uid) === String(user.id))
+          ) ?
           (
             <StyledBox className="list">
               <StyledBoxHead>

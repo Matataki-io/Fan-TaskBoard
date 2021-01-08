@@ -16,6 +16,10 @@ export interface questInterface {
 export interface receiveProps {
   qid: string|number
 }
+export interface receiveKeyProps extends receiveProps {
+  key: string
+}
+
 export interface applyHandleProps {
   qid: string|number,
   uid: string|number,
@@ -85,9 +89,13 @@ export function createQuest(data: questInterface) {
   return client.post(`/quest`, data);
 }
 
-// 创建任务
+// 领取奖励
 export function receive(data: receiveProps) {
   return client.post(`/receive`, data);
+}
+// 领取奖励key
+export function receiveKey(data: receiveKeyProps) {
+  return client.post(`/receive/key`, data);
 }
 // 申请领取
 export function apply(data: receiveProps) {

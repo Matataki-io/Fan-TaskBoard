@@ -41,10 +41,10 @@ const Publish: React.FC = () => {
           </StyledItemBox>
           <StyledItemBox>
             <img src={publish2} alt="cover"/>
-            <p className="title">红包奖励</p>
-            <p className="description">知道红包链接的用户即可领取红包</p>
+            <p className="title">口令任务</p>
+            <p className="description">知道口令的用户即可领取红包</p>
             <div className="btn">
-              <StyledButtonAntd disabled={true}>创建任务</StyledButtonAntd>
+              <StyledButtonAntd onClick={ () => toPublish('/publish/key') }>创建任务</StyledButtonAntd>
             </div>
           </StyledItemBox>
           <StyledItemBox>
