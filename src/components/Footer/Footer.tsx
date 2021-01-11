@@ -17,7 +17,7 @@ const Footer: React.FC = () => (
           <img className="logo" src={logo} alt="logo" aria-label="logo" />
           <img className="logo-text" src={logoText} alt="logo" aria-label="logo" />
         </StyledFooterLogo>
-        <StyledFooterCopyright>© 2020 MATATAKI QUEST All Rights Served </StyledFooterCopyright>
+        <StyledFooterCopyright>© 2020 - 2021 MATATAKI QUEST All Rights Served </StyledFooterCopyright>
       </div>
 
       <StyledFooterUlContent>
