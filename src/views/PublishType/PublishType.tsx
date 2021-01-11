@@ -160,7 +160,7 @@ const PublishType: React.FC = () => {
             type === 'twitter' ?
             '创建Twitter关注任务' :
             type === 'key' ?
-            '口令任务' :
+            '解谜任务' :
             type === 'customtask' ?
             '创建自定义任务' : ''
           }

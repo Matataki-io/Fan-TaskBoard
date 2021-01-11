@@ -42,8 +42,8 @@ const Publish: React.FC = () => {
           </StyledItemBox>
           <StyledItemBox>
             <img src={publish2} alt="cover"/>
-            <p className="title">口令任务</p>
-            <p className="description">知道口令的用户即可领取红包</p>
+            <p className="title">红包任务</p>
+            <p className="description">知道红包链接的用户即可领取红包</p>
             <div className="btn">
               <StyledButtonAntd disabled={ true }>使用此模版</StyledButtonAntd>
             </div>

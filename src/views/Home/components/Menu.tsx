@@ -29,7 +29,7 @@ const Menu: React.FC<MenuProps> = ({ count, user, questType, questFilter, toggle
           <StyledMenuLink active={ questType === 'customtask' } href="/" onClick={ e => toggleType(e, 'customtask') }>自定义任务（{ count.type_customtask }）</StyledMenuLink>
         </li>
         <li>
-          <StyledMenuLink active={ questType === 'key' } href="/" onClick={ e => toggleType(e, 'key') }>口令任务（{ count.type_key }）</StyledMenuLink>
+          <StyledMenuLink active={ questType === 'key' } href="/" onClick={ e => toggleType(e, 'key') }>解谜任务（{ count.type_key }）</StyledMenuLink>
         </li>
       </ul>
 
