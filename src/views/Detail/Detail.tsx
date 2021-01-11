@@ -51,7 +51,7 @@ const Publish: React.FC = () => {
         console.log('error', error)
       }
     }
-  // 获取申请领取记录
+    // 获取申请领取记录
     const getDataApplyList = async () => {
       try {
         const result: any = await getQuestDetailApplyList(id)
@@ -472,7 +472,7 @@ const Publish: React.FC = () => {
     )
   }
 
-    // 任务详情 key
+  // 任务详情 key
   const QuestDetailKey = () => {
     return (
       <>
@@ -504,7 +504,7 @@ const Publish: React.FC = () => {
             <StyledInfoCover src={
               Number(questDetail.type) === 0 ? publishTwitter :
                 Number(questDetail.type) === 1 ? publishCustomtask :
-                Number(questDetail.type) === 2 ? publishDecrypt : ''
+                  Number(questDetail.type) === 2 ? publishDecrypt : ''
             } alt="cover" />
           </StyledInfoBox>
           <StyledInfoBox>
@@ -544,20 +544,20 @@ const Publish: React.FC = () => {
             </StyledInfoHead>
             {
               questDetail.key ?
-              (
-                <StyledInfoHead>
-                  <span className="item-title">口&emsp;&emsp;令</span>
-                  <span className="key">{ questDetail.key }
-                    <CopyToClipboard
-                      text={`口令：${questDetail.key}`}
-                      onCopy={() => message.info('复制成功，立即分享！')}>
-                      <StyledInfoCopy>
-                        <CopyIcon className="icon"></CopyIcon>
-                      </StyledInfoCopy>
-                    </CopyToClipboard>
-                  </span>
-                </StyledInfoHead>
-              ): ''
+                (
+                  <StyledInfoHead>
+                    <span className="item-title">口&emsp;&emsp;令</span>
+                    <span className="key">{questDetail.key}
+                      <CopyToClipboard
+                        text={`口令：${questDetail.key}`}
+                        onCopy={() => message.info('复制成功，立即分享！')}>
+                        <StyledInfoCopy>
+                          <CopyIcon className="icon"></CopyIcon>
+                        </StyledInfoCopy>
+                      </CopyToClipboard>
+                    </span>
+                  </StyledInfoHead>
+                ) : ''
             }
             <StyledBox className="info">
               <StyledBoxHead>
@@ -567,8 +567,8 @@ const Publish: React.FC = () => {
               <StyledBoxContent className="receive-content">
                 {
                   Number(questDetail.type) === 0 ? QuestDetailTwitter() :
-                  Number(questDetail.type) === 1 ? QuestDetailCustomTask() :
-                  Number(questDetail.type) === 2 ? QuestDetailKey() : ''
+                    Number(questDetail.type) === 1 ? QuestDetailCustomTask() :
+                      Number(questDetail.type) === 2 ? QuestDetailKey() : ''
                 }
               </StyledBoxContent>
             </StyledBox>
@@ -576,36 +576,36 @@ const Publish: React.FC = () => {
         </StyledInfo>
         {
           (Number(questDetail.type) === 1 || Number(questDetail.type) === 2) ?
-          (
-            <StyledBox className="list">
-              <StyledBoxHead>
-                <DetailReceivedIcon className="icon"></DetailReceivedIcon>
-                <span className="box-title">任务简介</span>
-              </StyledBoxHead>
-              <StyledBoxContent className="md">
-                <ReactMarkdown>
-                  {questDetail.content}
-                </ReactMarkdown>
-              </StyledBoxContent>
-            </StyledBox>
-          ) : null
+            (
+              <StyledBox className="list">
+                <StyledBoxHead>
+                  <DetailReceivedIcon className="icon"></DetailReceivedIcon>
+                  <span className="box-title">任务简介</span>
+                </StyledBoxHead>
+                <StyledBoxContent className="md">
+                  <ReactMarkdown>
+                    {questDetail.content}
+                  </ReactMarkdown>
+                </StyledBoxContent>
+              </StyledBox>
+            ) : null
         }
         {
           (
             Number(questDetail.type) === 1 &&
             (String(questDetail.uid) === String(user.id))
           ) ?
-          (
-            <StyledBox className="list">
-              <StyledBoxHead>
-                <DetailReceivedIcon className="icon"></DetailReceivedIcon>
-                <span className="box-title">申请详情</span>
-              </StyledBoxHead>
-              <StyledBoxContent>
-                <StyledBCTable columns={columnsApply} dataSource={receivedApplyList} pagination={false} />
-              </StyledBoxContent>
-            </StyledBox>
-          ) : null
+            (
+              <StyledBox className="list">
+                <StyledBoxHead>
+                  <DetailReceivedIcon className="icon"></DetailReceivedIcon>
+                  <span className="box-title">申请详情</span>
+                </StyledBoxHead>
+                <StyledBoxContent>
+                  <StyledBCTable columns={columnsApply} dataSource={receivedApplyList} pagination={false} />
+                </StyledBoxContent>
+              </StyledBox>
+            ) : null
         }
         <StyledBox className="list">
           <StyledBoxHead>
@@ -648,7 +648,7 @@ const StyledButtonAntd = styled(Button)`
 const StyledContent = styled.div`
   width: 1100px;
   margin: 0 auto 100px;
-  padding: 0 10px;
+  /* padding: 0 10px; */
   box-sizing: border-box;
   position: relative;
   .title-img {
@@ -672,12 +672,16 @@ const StyledLinkBack = styled(Link)`
   margin: 0;
 `
 const StyledInfo = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
 `
 const StyledInfoBox = styled.div`
   width: calc(50% - 12px);
+  @media screen and (max-width: 992px) {
+    width: 100%;
+  }
 `
 
 const StyledInfoCover = styled.img`
@@ -769,6 +773,7 @@ const StyledInfoHead = styled.div`
     line-height: 22px;
     display: flex;
     align-items: center;
+    word-break: break-all;
   }
 `
 
@@ -811,8 +816,12 @@ const StyledBoxContent = styled.div`
     padding: 16px;
     box-sizing: border-box;
     color: #fff;
+    word-break: break-all;
     * {
       color: #fff;
+    }
+    a {
+      color: #1890ff;
     }
   }
 `
