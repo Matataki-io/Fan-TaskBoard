@@ -215,9 +215,8 @@ const PublishType: React.FC = () => {
                     {
                       radioKey === 'custom' ?
                       <>
-                        <Input
+                        <StyledKeyInput
                           onChange={handleKeyModelInputChange}
-                          style={{ marginLeft: 10, maxWidth: 240 }}
                           placeholder="请输入自定义口令"
                           maxLength={32}
                           value={keyVal}
@@ -330,6 +329,14 @@ const StyledMDContent = styled.div`
   * {
     color: #FFFFFF;
     max-width: 100%;
+  }
+`
+
+const StyledKeyInput = styled(Input)`
+  margin-left: 10px;
+  max-width: 240px;
+  @media screen and (max-width: 768px) {
+    max-width: 168px;
   }
 `
 
