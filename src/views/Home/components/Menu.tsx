@@ -114,6 +114,9 @@ const StyledMenuMini = styled.div<{ active: boolean }>`
     fill: #fff;
     transform: ${({ active }) => active ? 'rotate(180deg)' : 'rotate(0)'}
   }
+  @media screen and (min-width: 1400px) {
+    display: none
+  }
 `
 const StyledMenuLink = styled.a<{ active: boolean }>`
   font-size: 14px;

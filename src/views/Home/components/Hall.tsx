@@ -182,6 +182,9 @@ const StyledHallSystemMini = styled.div`
   .icon {
     color: #fff;
   }
+  @media screen and (min-width: 1400px) {
+    display: none
+  }
 `
 const StyledHallCreate = styled.div`
   width: 100%;
