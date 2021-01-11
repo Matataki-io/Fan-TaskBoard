@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import BigNumber from 'bignumber.js'
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Input, Select, Form, message, Spin, Pagination } from 'antd'
-import { getCookie } from '../../utils/cookie'
 import { Link, useHistory } from 'react-router-dom'
 
 import logo from '../../assets/img/logo.png'
@@ -13,10 +12,8 @@ import {
   getAllQuests, createQuest, receive, getAccountList, getQuestCount
 } from '../../api/api'
 import { selectUser } from '../../store/userSlice';
-import TwitterUserSearch from './components/TwitterUserSearch'
-import TokenSearch from './components/TokenSearch'
-import SearchToken from './components/SearchToken'
-import { SystemIcon, CreateIcon } from '../../components/IconAnt'
+import Hall from './components/Hall';
+import Menu from './components/Menu';
 import taskLogoCustom from '../../assets/img/task-logo-custom.png'
 import taskLogoKey from '../../assets/img/task-logo-key.png'
 
@@ -24,13 +21,10 @@ const { Option } = Select;
 
 const Home: React.FC = () => {
   const [form] = Form.useForm();
-  const [questsReload, setQuestsReload] = useState<number>(0)
   const [quests, setQuests] = useState<any[]>([])
   const [questsCount, setQuestsCount] = useState<number>(0) // 任务 总数量
   const [questsCurrent, setQuestsCurrent] = useState<number>(1) // 任务 当前页
-  const [questCreateLoading, setQuestCreateLoading] = useState<boolean>(false)
   const [questGetLoading, setQuestGetLoading] = useState<boolean>(false)
-  const [bindTwitter, setBindTwitter] = useState<boolean>(false)
   const [questSort, setQuestSort] = useState<string>('new') // 排序
   const [questSearchToken, setQuestSearchToken] = useState<string|number>('') // 根据token搜索
   const [questType, setQuestType] = useState<string>('all') // 筛选
@@ -39,7 +33,6 @@ const Home: React.FC = () => {
   const [count, setCount] = useState<any>({}) // 筛选统计
 
   const user: any = useSelector(selectUser)
-  const history = useHistory();
 
   // 任务排序处理
   const handleChange = (value: string) => {
@@ -83,28 +76,8 @@ const Home: React.FC = () => {
     }
 
     getData()
-  }, [questsReload, questsCurrent, questSort, questSearchToken, questFilter, questType])
+  }, [questsCurrent, questSort, questSearchToken, questFilter, questType])
 
-  useEffect(() => {
-    // 获取用户的绑定信息
-    const getAccountBind = async () => {
-    if (!getCookie("x-access-token")) return
-
-      try {
-        const result: any = await getAccountList()
-        if (result.code === 0) {
-          // console.log('res', result)
-          if (result.data.find((i: any) => i.platform === "twitter")) {
-            setBindTwitter(true)
-          }
-        }
-      } catch (error) {
-        console.log('error', error)
-      }
-    }
-    getAccountBind()
-
-  }, [])
 
   useEffect(() => {
     // 获取统计信息
@@ -126,63 +99,6 @@ const Home: React.FC = () => {
 
   }, [questType])
 
-  // 完成表单
-  const onFinish = (value: any) => {
-    console.log(value);
-
-    if (!user.id) {
-      message.info('请登陆')
-      return
-    }
-
-    const createQuestFn = async (data: questInterface) => {
-      setQuestCreateLoading(true)
-      message.info('正在支付并且创建任务，请耐心等待...')
-      const result: any = await createQuest(data)
-      setQuestCreateLoading(false)
-      if (result.code === 0) {
-        message.info('创建成功')
-        setQuestsReload(Date.now()) // 刷新列表
-        form.resetFields()
-      } else {
-        message.error('创建失败')
-        console.log(result)
-      }
-    }
-
-    let data: any = {
-      type: 0,
-      twitter_id: value.account ? value.account.value : '',
-      token_id: value.token.value,
-      reward_people: value.rewardPeople,
-      reward_price: value.rewardPrice
-    }
-
-    let typeList = [0]
-    if (!typeList.includes(data.type)) {
-      message.info(`请选择任务类型`)
-      return
-    }
-
-    for (const key in data) {
-      // 忽略type
-      if (key !== 'type' && !data[key]) {
-        message.info(`${key} 不能为空`)
-        return
-      }
-    }
-
-    if (!(Number.isInteger(Number(data.reward_people)) && Number(data.reward_people) > 0)) {
-      message.info(`奖励人数必须为整数并大于0`)
-      return
-    }
-    if (!(Number(data.reward_price) > 0)) {
-      message.info(`奖励金额必须大于0`)
-      return
-    }
-
-    createQuestFn(data)
-  };
   // 处理twitter图片
   const processTwitterImage = (url: string) => {
     try {
@@ -292,112 +208,8 @@ const Home: React.FC = () => {
   return (
     <Page>
       <StyledContent>
-        <StyledMenu>
-          <SearchToken setSearchTokenFn={ setSearchTokenFn }></SearchToken>
-          <ul>
-            <li><h3>任务分类</h3></li>
-            <li>
-              <StyledMenuLink active={ questType === 'all' } href="/" onClick={ e => toggleType(e, 'all') }>所有任务（{ count.type_all }）</StyledMenuLink>
-            </li>
-            <li>
-              <StyledMenuLink active={ questType === 'twitter' } href="/" onClick={ e => toggleType(e, 'twitter') }>Twitter关注（{ count.type_twitter }）</StyledMenuLink>
-            </li>
-            <li>
-              <StyledMenuLink active={ questType === 'customtask' } href="/" onClick={ e => toggleType(e, 'customtask') }>自定义任务（{ count.type_customtask }）</StyledMenuLink>
-            </li>
-            <li>
-              <StyledMenuLink active={ questType === 'key' } href="/" onClick={ e => toggleType(e, 'key') }>口令任务（{ count.type_key }）</StyledMenuLink>
-            </li>
-          </ul>
-
-          <ul>
-            <li><h3>筛选</h3></li>
-            <li>
-              <StyledMenuLink active={ questFilter === 'all' } href="/" onClick={ e => toggleFilter(e, 'all') }>全部（{ count.all }）</StyledMenuLink>
-            </li>
-            <li>
-              <StyledMenuLink active={ questFilter === 'undone' } href="/" onClick={ e => toggleFilter(e, 'undone') }>待完成（{count.undone}）</StyledMenuLink>
-            </li>
-            <li>
-              <StyledMenuLink active={ questFilter === 'completed' } href="/" onClick={ e => toggleFilter(e, 'completed') }>领取完毕（{count.completed}）</StyledMenuLink>
-            </li>
-            {
-              (user.id) ?
-                (<>
-                  <li>
-                    <StyledMenuLink active={ questFilter === 'received' } href="/" onClick={ e => toggleFilter(e, 'received') }>我已领取（{count.received}）</StyledMenuLink>
-                  </li>
-                  <li>
-                    <StyledMenuLink active={ questFilter === 'created' } href="/" onClick={ e => toggleFilter(e, 'created') }>我创建的（{count.created}）</StyledMenuLink>
-                  </li>
-                </>) : ''
-            }
-          </ul>
-        </StyledMenu>
-
-        <StyledHall>
-          <StyledHallSystem>
-            <StyledListItemInfo>
-              <div className="head">
-                <SystemIcon className="head-icon"></SystemIcon>
-                <span className="head-title">系统任务</span>
-              </div>
-              <p className="hall-description">完成下方任务即可开始获取奖励</p>
-              <ul className="item">
-                <li>1. <a href={`${process.env.REACT_APP_MATATAKI}/setting/account`} target="_blank" rel="noopener noreferrer">完成Twitter账户绑定</a>
-                  <span>{ bindTwitter ? '✅' : '❌' } </span>
-                </li>
-                {/* <li>2.前往 <a>这里</a> 授权获取Twitter消息</li> */}
-              </ul>
-            </StyledListItemInfo>
-
-            {/* <StyledListItemBox>
-              <StyledListItemBoxReward>
-                <div className="box-reward">
-                  <p className="box-reward-token">2<sub>DPC</sub></p>
-                  <p className="box-reward-title">你可得</p>
-                </div>
-                <div className="box-reward">
-                  <p className="box-reward-token">2<sub>DPC</sub></p>
-                  <p className="box-reward-title">你可得</p>
-                </div>
-              </StyledListItemBoxReward>
-              <StyledButton>领取奖励</StyledButton>
-            </StyledListItemBox> */}
-
-          </StyledHallSystem>
-          <StyledHallCreate>
-            <div className="head">
-              <CreateIcon className="head-icon"></CreateIcon>
-              <span className="head-title">创建任务</span>
-            </div>
-            {/* <Form
-              className="hall-create"
-              layout="vertical"
-              form={form}
-              onFinish={onFinish}
-            >
-              <Form.Item label="关注账户" name="account" rules={[{ required: true, message: '请输入关注账户!' }]}>
-                <TwitterUserSearch />
-              </Form.Item>
-              <Form.Item label="奖励Fan票类型" name="token" rules={[{ required: true, message: '请选择奖励Fan票类型!' }]}>
-                <TokenSearch />
-              </Form.Item>
-              <Form.Item label="奖励设置">
-                <Form.Item style={{ display: 'inline-block', width: 'calc(50% - 8px)' }} name="rewardPeople" rules={[{ required: true, message: '请输入奖励人数!' }]}>
-                  <Input placeholder="奖励人数" />
-                </Form.Item>
-                <Form.Item style={{ display: 'inline-block', width: 'calc(50% - 8px)', margin: '0 8px' }} name="rewardPrice" rules={[{ required: true, message: '请输入奖励总金额!' }]}>
-                  <Input placeholder="奖励总金额" />
-                </Form.Item>
-              </Form.Item>
-              <Form.Item style={{ margin: "-24px 0 0 0" }}>
-                <StyledButtonAntd loading={questCreateLoading} type="primary" htmlType="submit">支付并创建</StyledButtonAntd>
-              </Form.Item>
-            </Form> */}
-            <StyledButton onClick={ () => history.push('/publish') }>创建任务</StyledButton>
-          </StyledHallCreate>
-        </StyledHall>
+        <Menu count={ count } user={ user } questType={ questType } questFilter={ questFilter } toggleType={ toggleType } toggleFilter={ toggleFilter } setSearchTokenFn={ setSearchTokenFn }></Menu>
+        <Hall></Hall>
 
         <StyledContentHead>
           <div>
@@ -504,7 +316,7 @@ const StyledButton = styled(Button)`
   outline: none;
   font-size: 14px;
   font-weight: 500;
-  color: #FFFFFF;
+  color: #fff;
   height: 40px;
   padding: 10px 0;
   margin: 34px 0 0 0;
@@ -518,7 +330,7 @@ const StyledButtonAntd = styled(Button)`
   outline: none;
   font-size: 14px;
   font-weight: 500;
-  color: #FFFFFF;
+  color: #fff;
   line-height: 1;
   cursor: pointer;
   height: 40px;
@@ -547,7 +359,7 @@ const StyledContentHead = styled.div`
   .head-title {
     font-size: 24px;
     font-weight: 600;
-    color: #FFFFFF;
+    color: #fff;
     line-height: 33px;
   }
   .head-description {
@@ -581,7 +393,7 @@ const StyledListItem = styled(Link)`
   .user-by {
     font-size: 12px;
     font-weight: 500;
-    color: #FFFFFF;
+    color: #fff;
     line-height: 17px;
     margin: 0;
     display: block;
@@ -620,14 +432,14 @@ const StyledListItemUser = styled.a`
   .user-name {
     font-size: 20px;
     font-weight: 500;
-    color: #FFFFFF;
+    color: #fff;
     line-height: 28px;
     word-break: break-word;
   }
   .user-by {
     font-size: 12px;
     font-weight: 500;
-    color: #FFFFFF;
+    color: #fff;
     line-height: 17px;
   }
 `
@@ -645,7 +457,7 @@ const StyledListItemBoxReward = styled.div`
     &-token {
       font-size: 24px;
       font-weight: 500;
-      color: #FFFFFF;
+      color: #fff;
       line-height: 33px;
       margin: 0;
       font-weight: bold;
@@ -662,102 +474,6 @@ const StyledListItemBoxReward = styled.div`
       color: #B2B2B2;
       line-height: 17px;
       margin: 4px 0 0 0;
-    }
-  }
-`
-
-// left 部分
-const StyledMenu = styled.div`
-  position: fixed;
-  margin: 60px 0 0 -240px;
-  ul {
-    margin: 24px 0 0 0;
-    padding: 0;
-    list-style: none;
-    li {
-      margin: 16px 0;
-      h3 {
-        font-size: 16px;
-        font-weight: 500;
-        color: #B2B2B2;
-        line-height: 22px;
-        padding: 0;
-        margin: 0;
-      }
-    }
-  }
-`
-const StyledMenuLink = styled.a<{ active: boolean }>`
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 20px;
-  text-decoration: none;
-  color: ${({active}) => active ? '#6236FF' : '#FFFFFF'}
-`
-
-const StyledHall = styled.div`
-  position: fixed;
-  margin: 40px 0 0 860px;
-  width: 256px;
-  .head {
-    display: flex;
-    align-items: center;
-    &-icon {
-      margin-right: 7px;
-      color: #FFFFFF;
-    }
-    &-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #FFFFFF;
-      line-height: 22px;
-    }
-  }
-  .hall-description {
-    font-size: 12px;
-    font-weight: 400;
-    color: #B2B2B2;
-    line-height: 17px;
-    padding: 0;
-    margin: 7px 0;
-  }
-`
-const StyledHallSystem = styled.div`
-  width: 100%;
-  background: #132D5E;
-  border-radius: 8px;
-  .item {
-    padding: 0;
-    margin: 0;
-    list-style: none;
-
-    li {
-      font-size: 14px;
-      font-weight: 400;
-      color: #FFFFFF;
-      line-height: 20px;
-      margin: 16px 0 0;
-      a {
-        color: #fff;
-        text-decoration: underline;
-      }
-      span {
-        margin: 0 0 0 6px;
-      }
-    }
-  }
-`
-const StyledHallCreate = styled.div`
-  width: 100%;
-  background: #132D5E;
-  color: #fff;
-  border-radius: 8px;
-  margin-top: 24px;
-  padding: 24px;
-  .hall-create {
-    margin-top: 16px;
-    .ant-form-item-label > label {
-      color: #fff;
     }
   }
 `
