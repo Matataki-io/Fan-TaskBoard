@@ -80,3 +80,8 @@ const CopySvg = () => (
 );
 export const CopyIcon = (props: any) => <Icon component={CopySvg} {...props} />;
 
+const UnfoldSvg = () => (
+<svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2549" width="20" height="20"><path d="M849 509.3L456.27 904.74a32 32 0 0 0 45.41 45.1L917 531.7a32 32 0 0 0-0.16-45.25L501.53 74a32 32 0 1 0-45.1 45.41z" p-id="2550"></path><path d="M499.78 509.3L107.05 904.74a32 32 0 0 0 45.41 45.1L567.74 531.7a32 32 0 0 0-0.16-45.25L152.31 74a32 32 0 0 0-45.1 45.41z" p-id="2551"></path></svg>
+);
+export const UnfoldIcon = (props: any) => <Icon component={UnfoldSvg} {...props} />;
+

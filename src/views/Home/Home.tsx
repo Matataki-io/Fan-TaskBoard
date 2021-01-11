@@ -240,7 +240,7 @@ const Home: React.FC = () => {
                       {
                         Number(i.type) === 0 ? 'Twitter关注' :
                         Number(i.type) === 1 ? '自定义' :
-                        Number(i.type) === 2 ? '口令' : ''
+                        Number(i.type) === 2 ? '解谜' : ''
                       }
                     </span>
                     {

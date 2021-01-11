@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 
+import { UnfoldIcon } from '../../../components/IconAnt';
 import SearchToken from './SearchToken'
 
 interface MenuProps {
@@ -14,8 +15,10 @@ interface MenuProps {
 }
 
 const Menu: React.FC<MenuProps> = ({ count, user, questType, questFilter, toggleType, toggleFilter, setSearchTokenFn }) => {
+  const [showMenu, setShowMenu] = useState<boolean>(false)
+
   return (
-    <StyledMenu>
+    <StyledMenu active={ showMenu }>
       <SearchToken setSearchTokenFn={ setSearchTokenFn }></SearchToken>
       <ul>
         <li><h3>任务分类</h3></li>
@@ -56,15 +59,26 @@ const Menu: React.FC<MenuProps> = ({ count, user, questType, questFilter, toggle
             </>) : ''
         }
       </ul>
+      <StyledMenuMini onClick={ () => setShowMenu(!showMenu) } active={ showMenu }>
+          <UnfoldIcon className="icon"></UnfoldIcon>
+      </StyledMenuMini>
     </StyledMenu>
   )
 }
 
 export default Menu
 
-const StyledMenu = styled.div`
+const StyledMenu = styled.div<{ active: boolean }>`
   position: fixed;
   margin: 60px 0 0 -240px;
+  @media screen and (max-width: 1400px) {
+    margin: 0;
+    left: 0;
+    top: 80px;
+    padding: 0 0 0 10px;
+    transform: ${({ active }) => active ? 'translateX(0)' : 'translateX(-100%)'};
+    transition: transform .3s;
+  }
   ul {
     margin: 24px 0 0 0;
     padding: 0;
@@ -80,6 +94,25 @@ const StyledMenu = styled.div`
         margin: 0;
       }
     }
+  }
+`
+const StyledMenuMini = styled.div<{ active: boolean }>`
+  position: absolute;
+  right: -44px;
+  top: 0;
+  width: 40px;
+  height: 40px;
+  background: #132d5e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  cursor: pointer;
+  z-index: 10;
+  .icon {
+    color: #fff;
+    fill: #fff;
+    transform: ${({ active }) => active ? 'rotate(180deg)' : 'rotate(0)'}
   }
 `
 const StyledMenuLink = styled.a<{ active: boolean }>`

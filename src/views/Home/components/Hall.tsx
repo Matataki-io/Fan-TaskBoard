@@ -141,7 +141,7 @@ const StyledHallSystem = styled.div<{ active: boolean }>`
     right: 0;
     top: 80px;
     width: 256px;
-    transform: ${({ active }) => active ? 'translateX(0)' : 'translateX(256px)'};
+    transform: ${({ active }) => active ? 'translateX(0)' : 'translateX(100%)'};
     transition: transform .3s;
   }
 
