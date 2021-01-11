@@ -41,7 +41,7 @@ const AccountButton: React.FC<AccountButtonProps> = (props) => {
             <img src={ `${process.env.REACT_APP_MTTK_IMG_CDN}/${user.avatar}` } alt="avatar"/>
           </div>
           <span className="username">{ user.username }</span>
-          <span className="logout" onClick={logout}>Log out</span>
+          <span className="logout" onClick={logout}>Sign Out</span>
         </StyledAccount>
       )}
     </StyledAccountButton>

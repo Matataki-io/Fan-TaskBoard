@@ -66,7 +66,7 @@ const AccountButton: React.FC<AccountButtonProps> = (props) => {
               创建任务
             </StyledItem>
             <StyledItem onClick={logout}>
-              Sign Outt
+              Sign Out
             </StyledItem>
           </>
         )}
