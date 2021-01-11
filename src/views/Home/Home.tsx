@@ -342,6 +342,9 @@ const StyledContent = styled.div`
   padding: 0 10px;
   box-sizing: border-box;
   position: relative;
+  @media screen and (max-width: 992px) {
+    width: 90%;
+  }
 `
 const StyledContentHead = styled.div`
   display: flex;
@@ -373,9 +376,12 @@ const StyledContentHead = styled.div`
 const StyledList = styled.div`
   min-height: 300px;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   grid-row-gap: 24px;
   grid-column-gap: 24px;
+  @media screen and (max-width: 992px) {
+    grid-template-columns: repeat(1, 1fr);
+  }
 `
 const StyledListItem = styled(Link)`
   background: #132D5E;
