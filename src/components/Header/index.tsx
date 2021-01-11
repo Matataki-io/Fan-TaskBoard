@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Link, useHistory } from 'react-router-dom'
-import { Button } from 'antd'
+import { Button, Drawer } from 'antd'
 
 import logo from "../../assets/img/logo.png";
 import logoText from "../../assets/img/logo-text.png";
 import AccountButton from './components/AccountButton'
+import AccountDrawer from './components/AccountDrawer'
 
 
 
@@ -21,9 +22,10 @@ const Header: React.FC = () => {
           <img className="logo-text" src={logoText} alt="logo" aria-label="logo" />
         </StyledHeaderLogoLink>
         <StyledHeaderUser>
-          <StyledCreateButton type="primary" onClick={ () => history.push('/publish') }>创建任务</StyledCreateButton>
+          <StyledCreateButton type="primary" onClick={() => history.push('/publish')}>创建任务</StyledCreateButton>
           <AccountButton />
         </StyledHeaderUser>
+        <AccountDrawer></AccountDrawer>
       </StyledHeaderContainer>
     </StyledHeader>
   )
@@ -69,7 +71,11 @@ const StyledHeaderLogoLink = styled(Link)`
 const StyledHeaderUser = styled.div`
   display: flex;
   align-items: center;
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
 `
+
 const StyledCreateText = styled.p`
   font-size: 14px;
   margin: -10px 0 10px;
