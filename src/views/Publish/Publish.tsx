@@ -93,13 +93,18 @@ const StyledButtonAntd = styled(Button)`
 const StyledContent = styled.div`
   width: 100%;
   margin: 0 auto 100px;
-  padding: 0 10px;
+  /* padding: 0 10px; */
   box-sizing: border-box;
   position: relative;
   .title-img {
     height: 60px;
     margin: 100px auto 0;
     display: block;
+    @media screen and (max-width: 768px) {
+      height: auto;
+      width: 70%;
+      margin-top: 60px;
+    }
   }
 `
 const StyledSubtitle = styled.p`
@@ -109,15 +114,27 @@ const StyledSubtitle = styled.p`
   padding: 0;
   margin: 14px 0 40px;
   text-align: center;
+  line-height: 1.2;
+  @media screen and (max-width: 768px) {
+    font-size: 14px;
+    margin-top: 10px;
+  }
 `
 const StyledItem = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-column-gap: 20px;
+  grid-row-gap: 20px;
   width: 1400px;
   margin: 0 auto;
   @media screen and (max-width: 1400px) {
     width: 90%;
+  }
+  @media screen and (max-width: 992px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media screen and (max-width: 768px) {
+    grid-template-columns: repeat(1, 1fr);
   }
 `
 const StyledItemBox = styled.div`
