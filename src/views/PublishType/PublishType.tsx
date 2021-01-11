@@ -18,6 +18,7 @@ import TokenSearch from './components/TokenSearch'
 import publish1 from '../../assets/img/publish-1.png'
 import publish2 from '../../assets/img/publish-2.png'
 import publish3 from '../../assets/img/publish-3.png'
+import publishDecrypt from '../../assets/img/publish-decrypt.png'
 
 const PublishType: React.FC = () => {
   const { type }: { type: string } = useParams();
@@ -149,7 +150,7 @@ const PublishType: React.FC = () => {
           type === 'twitter' ?
           publish1 :
           type === 'key' ?
-          publish2 :
+          publishDecrypt :
           type === 'customtask' ?
           publish3 : ''
         } alt="logo"/>

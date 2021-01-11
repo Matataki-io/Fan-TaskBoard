@@ -8,6 +8,7 @@ import publishTitle from '../../assets/img/publish-title.png';
 import publish1 from '../../assets/img/publish-1.png';
 import publish2 from '../../assets/img/publish-2.png';
 import publish3 from '../../assets/img/publish-3.png';
+import publishDecrypt from '../../assets/img/publish-decrypt.png';
 import Page from '../../components/Page'
 
 import { selectUser } from '../../store/userSlice';
@@ -36,7 +37,7 @@ const Publish: React.FC = () => {
             <p className="title">Twitter关注任务</p>
             <p className="description">此任务要求用户完成关注后即可领取奖励</p>
             <div className="btn">
-              <StyledButtonAntd onClick={ () => toPublish('/publish/twitter') }>创建任务</StyledButtonAntd>
+              <StyledButtonAntd onClick={ () => toPublish('/publish/twitter') }>使用此模版</StyledButtonAntd>
             </div>
           </StyledItemBox>
           <StyledItemBox>
@@ -44,7 +45,15 @@ const Publish: React.FC = () => {
             <p className="title">口令任务</p>
             <p className="description">知道口令的用户即可领取红包</p>
             <div className="btn">
-              <StyledButtonAntd onClick={ () => toPublish('/publish/key') }>创建任务</StyledButtonAntd>
+              <StyledButtonAntd disabled={ true }>使用此模版</StyledButtonAntd>
+            </div>
+          </StyledItemBox>
+          <StyledItemBox>
+            <img src={publishDecrypt} alt="cover"/>
+            <p className="title">解谜任务</p>
+            <p className="description">用户根据你布下的线索去找寻密码，输入密码后即可打开宝箱获得奖励</p>
+            <div className="btn">
+              <StyledButtonAntd onClick={ () => toPublish('/publish/key') }>使用此模版</StyledButtonAntd>
             </div>
           </StyledItemBox>
           <StyledItemBox>
@@ -52,7 +61,7 @@ const Publish: React.FC = () => {
             <p className="title">自定义任务</p>
             <p className="description">发布你的有奖任务，由你亲自判断任务完成情况并发放奖励</p>
             <div className="btn">
-              <StyledButtonAntd onClick={ () => toPublish('/publish/customtask') }>创建任务</StyledButtonAntd>
+              <StyledButtonAntd onClick={ () => toPublish('/publish/customtask') }>使用此模版</StyledButtonAntd>
             </div>
           </StyledItemBox>
         </StyledItem>
@@ -103,11 +112,11 @@ const StyledSubtitle = styled.p`
 `
 const StyledItem = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-column-gap: 48px;
-  width: 1248px;
+  grid-template-columns: repeat(4, 1fr);
+  grid-column-gap: 20px;
+  width: 1400px;
   margin: 0 auto;
-  @media screen and (max-width: 1300px) {
+  @media screen and (max-width: 1400px) {
     width: 90%;
   }
 `
@@ -131,6 +140,9 @@ const StyledItemBox = styled.div`
   }
   &:nth-of-type(3) {
     animation-delay: 0.28s;
+  }
+  &:nth-of-type(4) {
+    animation-delay: 0.32s;
   }
   width: 100%;
   background: #132D5E;

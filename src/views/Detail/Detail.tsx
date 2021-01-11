@@ -11,6 +11,8 @@ import ReactMarkdown from 'react-markdown'
 import publishTwitter from '../../assets/img/publish-1.png';
 import publishKey from '../../assets/img/publish-2.png';
 import publishCustomtask from '../../assets/img/publish-3.png';
+import publishDecrypt from '../../assets/img/publish-decrypt.png';
+
 import Page from '../../components/Page'
 import { selectUser } from '../../store/userSlice';
 import {
@@ -502,7 +504,7 @@ const Publish: React.FC = () => {
             <StyledInfoCover src={
               Number(questDetail.type) === 0 ? publishTwitter :
                 Number(questDetail.type) === 1 ? publishCustomtask :
-                Number(questDetail.type) === 2 ? publishKey : ''
+                Number(questDetail.type) === 2 ? publishDecrypt : ''
             } alt="cover" />
           </StyledInfoBox>
           <StyledInfoBox>
