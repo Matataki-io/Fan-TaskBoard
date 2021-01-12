@@ -45,6 +45,7 @@ export interface getQuestDetailProps {
 }
 export interface getQuestCountProps {
   type: string
+  token: string|number
 }
 
 export interface tokenListProps {

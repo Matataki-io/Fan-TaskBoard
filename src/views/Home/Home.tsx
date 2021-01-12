@@ -84,7 +84,8 @@ const Home: React.FC = () => {
     const getData = async () => {
       try {
         let params: getQuestCountProps = {
-          type: questType
+          type: questType,
+          token: questSearchToken,
         }
         const result: any = await getQuestCount(params)
         if (result.code === 0) {
@@ -97,7 +98,7 @@ const Home: React.FC = () => {
     }
     getData()
 
-  }, [questType])
+  }, [questSearchToken, questType])
 
   // 处理twitter图片
   const processTwitterImage = (url: string) => {
