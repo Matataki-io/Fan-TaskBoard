@@ -427,7 +427,7 @@ const Publish: React.FC = () => {
               <p className="info-amount">{processReward(questDetail.reward_price, questDetail.reward_people)}<sub>{questDetail.symbol}</sub></p>
             </div>
             <div className="info-content">
-              <p className="info-title">总奖励数量</p>
+              <p className="info-title">奖励份数</p>
               <p className="info-amount">{processRewardShare(questDetail.reward_people, questDetail.received)}<sub>/{questDetail.reward_people}</sub></p>
             </div>
           </StyledBCInfoCenter>
@@ -462,7 +462,7 @@ const Publish: React.FC = () => {
               <p className="info-amount">{processReward(questDetail.reward_price, questDetail.reward_people)}<sub>{questDetail.symbol}</sub></p>
             </div>
             <div className="info-content">
-              <p className="info-title">总奖励数量</p>
+              <p className="info-title">奖励份数</p>
               <p className="info-amount">{processRewardShare(questDetail.reward_people, questDetail.received)}<sub>/{questDetail.reward_people}</sub></p>
             </div>
           </StyledBCInfoCenter>
@@ -483,7 +483,7 @@ const Publish: React.FC = () => {
               <p className="info-amount">{processReward(questDetail.reward_price, questDetail.reward_people)}<sub>{questDetail.symbol}</sub></p>
             </div>
             <div className="info-content">
-              <p className="info-title">总奖励数量</p>
+              <p className="info-title">奖励份数</p>
               <p className="info-amount">{processRewardShare(questDetail.reward_people, questDetail.received)}<sub>/{questDetail.reward_people}</sub></p>
             </div>
           </StyledBCInfoCenter>
