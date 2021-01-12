@@ -267,7 +267,7 @@ const Home: React.FC = () => {
                       (
                         <StyledListItemUser onClick={ e => e.stopPropagation() } target="_blank" rel="noopener noreferrer">
                           <div className="user" style={{ borderRadius: 0 }}>
-                            <img src={ taskLogoKey } alt="avatar" />
+                            <img src={ taskLogoKey } alt="avatar" style={{ objectFit: "contain" }} />
                           </div>
                           <span className="user-name">{i.title}</span>
                         </StyledListItemUser>
