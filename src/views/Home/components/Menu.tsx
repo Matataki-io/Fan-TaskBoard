@@ -78,6 +78,9 @@ const StyledMenu = styled.div<{ active: boolean }>`
     padding: 0 0 0 10px;
     transform: ${({ active }) => active ? 'translateX(0)' : 'translateX(-100%)'};
     transition: transform .3s;
+    background: #132d5e;
+    border-radius: 0 4px 4px 0;
+    z-index: 10;
   }
   ul {
     margin: 24px 0 0 0;
