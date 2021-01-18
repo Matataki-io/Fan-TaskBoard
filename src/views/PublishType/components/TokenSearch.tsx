@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import styled from 'styled-components'
 import { useMount } from 'ahooks'
 import BigNumber from 'bignumber.js'
@@ -8,14 +8,17 @@ import { Select, Spin, Avatar } from 'antd';
 import debounce from 'lodash/debounce'
 import { getCookie } from '../../../utils/cookie'
 
-
-
 const { Option } = Select;
 
+interface TokenSearchProps {
+  token: string|number
+}
 
-const Home: React.FC = ({ value = {}, onChange }: any) => {
+const Home: React.FC<any> = ({value = {}, onChange, token }) => {
   // Fan票搜索框相关变量
   const [searchData, setSearchData] = useState<any[]>([])
+
+  const memoToken = useMemo(() => !!token, [ token ])
 
   // 获取数据
   useMount(() => {
@@ -53,11 +56,11 @@ const Home: React.FC = ({ value = {}, onChange }: any) => {
   }
 
   /** Fan票搜索框用到的展示卡片 */
-  function TwitterUserCard (props: any) {
+  function Card (props: any) {
     const { card } = props
 
     return (
-      <StyledTwitterUserCard>
+      <StyledCard>
         <div className="token-main">
           <Avatar className="token-logo" size={28} src={process.env.REACT_APP_MTTK_IMG_CDN + card.logo} />
           <span style={{ fontSize: 14, color: '#333' }}>
@@ -66,7 +69,7 @@ const Home: React.FC = ({ value = {}, onChange }: any) => {
             <span>{ amount(card.amount, card.decimals) }</span>
           </span>
         </div>
-      </StyledTwitterUserCard>
+      </StyledCard>
     )
   }
 
@@ -79,17 +82,19 @@ const Home: React.FC = ({ value = {}, onChange }: any) => {
       onChange={handleUserSearchChange}
       filterOption={(input, option) => (option.val.name + ' ' + option.val.symbol).toLowerCase().indexOf(input.toLowerCase()) >= 0}
       style={{ width: '100%' }}
+      defaultValue={token}
+      disabled={ memoToken }
     >
       {searchData.map(i => (
         <Option key={i.token_id} value={i.token_id} val={ i }>
-          <TwitterUserCard card={i} />
+          <Card card={i} />
         </Option>
       ))}
     </Select>
   )
 }
 
-const StyledTwitterUserCard = styled.div`
+const StyledCard = styled.div`
   display: flex;
   height: 38px;
 

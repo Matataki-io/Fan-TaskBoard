@@ -76,6 +76,9 @@ const App: React.FC = () => {
           <Route path="/publish/:type" exact>
             <PublishType />
           </Route>
+          <Route path="/publish/:type/:id" exact>
+            <PublishType />
+          </Route>
         </Switch>
       </Router>
       <Disclaimer />

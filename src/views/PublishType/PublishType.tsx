@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import styled from 'styled-components'
 import { Link, useParams, useHistory } from 'react-router-dom'
 import { useSelector, useDispatch } from "react-redux";
@@ -9,7 +9,8 @@ import random from 'string-random';
 
 import { selectUser } from '../../store/userSlice';
 import {
-  questInterface, createQuest
+  questInterface, createQuest, getQuestDetail, updateQuest,
+  UpdateQuestProps
 } from '../../api/api'
 
 import Page from '../../components/Page'
@@ -21,15 +22,15 @@ import publish3 from '../../assets/img/publish-3.png'
 import publishDecrypt from '../../assets/img/publish-decrypt.png'
 
 const PublishType: React.FC = () => {
-  const { type }: { type: string } = useParams();
+  const { type, id }: { type: string, id: string } = useParams();
   const history = useHistory();
   const [form] = Form.useForm();
   const [questCreateLoading, setQuestCreateLoading] = useState<boolean>(false)
   const user: any = useSelector(selectUser)
   const [mdContent, setMdContent] = useState<string>('')
-  const [radioKey, setRadioKey] = React.useState('default');
-  const [keyVal, setKeyVal] = React.useState('');
-
+  const [radioKey, setRadioKey] = React.useState('default'); // 单选
+  const [keyVal, setKeyVal] = React.useState(''); // 自定义口令value
+  const [questDetail, setQuestDetail] = useState<any>({})
 
   // 判断任务类型
   useEffect(() => {
@@ -40,16 +41,46 @@ const PublishType: React.FC = () => {
     }
   }, [history, type])
 
+  const memoDisabled = useMemo(() => !!id, [id])
 
-  // 完成表单
-  const onFinish = (value: any) => {
-    console.log(value);
+  useEffect(() => {
+    // 获取任务信息
+    const getData = async () => {
+      const result: any = await getQuestDetail(id)
+      console.log('result', result)
+      if (result.code === 0) {
+        const data = result.data
 
-    if (!user.id) {
-      message.info('请登陆')
-      return
+        // 不是自己发布的
+        if (String(data.uid) !== String(user.id)) {
+          history.push('/')
+        }
+
+        setQuestDetail(data)
+
+        if (data.key) {
+          setRadioKey('custom')
+          setKeyVal(data.key)
+        }
+
+        form.setFieldsValue({
+          title: data.title,
+          content: data.content,
+          keyModel: data.key ? "custom" : 'default',
+          token: data.token_id,
+          rewardPeople: data.reward_people,
+          rewardPrice: data.reward_price,
+        })
+      }
     }
 
+    if (id && user.id) {
+      getData()
+    }
+  }, [form, history, id, memoDisabled, user.id])
+
+  // 发布任务
+  const publishQuestFinsh = (value: any) => {
     const createQuestFn = async (data: questInterface) => {
       setQuestCreateLoading(true)
       try {
@@ -110,7 +141,6 @@ const PublishType: React.FC = () => {
       return
     }
 
-
     if (!(Number.isInteger(Number(data.reward_people)) && Number(data.reward_people) > 0)) {
       message.info(`奖励人数必须为整数并大于0`)
       return
@@ -121,6 +151,64 @@ const PublishType: React.FC = () => {
     }
 
     createQuestFn(data)
+  }
+
+  // 更新任务
+  const updateQuestFinsh = (value: any) => {
+    const updateQuestFn = async (data: UpdateQuestProps) => {
+      setQuestCreateLoading(true)
+      try {
+      const result: any = await updateQuest(id, data)
+      if (result.code === 0) {
+        message.info('更新成功')
+        form.resetFields()
+        history.push(`/${id}`)
+      } else {
+        message.error('更新失败')
+        console.log(result)
+      }
+      } catch (error) {
+        console.log('updateQuestFn error', error)
+      } finally {
+        setQuestCreateLoading(false)
+      }
+    }
+
+    let data: UpdateQuestProps = Object.create(null)
+    if(String(questDetail.type) === '0' || String(questDetail.type) === '1') {
+      data = {
+        type: questDetail.type,
+        title: value.title,
+        content: value.content,
+      }
+    } else if (String(questDetail.type) === '2' ) {
+      data = {
+        type: questDetail.type,
+        title: value.title,
+        content: value.content,
+        key: keyVal
+      }
+    } else {
+      console.log('其他类型')
+      return
+    }
+    updateQuestFn(data)
+  }
+
+
+  // 完成表单
+  const onFinish = (value: any) => {
+    console.log(value);
+    if (!user.id) {
+      message.info('请登陆')
+      return
+    }
+
+    if (id) {
+      updateQuestFinsh(value)
+    } else {
+      publishQuestFinsh(value)
+    }
   };
 
   const handleContent = () => {
@@ -206,7 +294,7 @@ const PublishType: React.FC = () => {
           {
             type === 'key' ?
             (
-              <Form.Item label="口令模式" name="keyModel" rules={[{ required: true, message: '请输入任务标题!' }]} className="radio-keymodel">
+              <Form.Item label="口令模式" name="keyModel" rules={[{ required: true, message: '请输入口令!' }]} className="radio-keymodel">
                 <Radio.Group defaultValue={radioKey} onChange={handleKeyModelChange}>
                   <Radio value={'default'}>
                     <span className="text">默认</span></Radio>
@@ -230,16 +318,18 @@ const PublishType: React.FC = () => {
             ) : ''
           }
           <Form.Item label="奖励Fan票类型" name="token" rules={[{ required: true, message: '请选择奖励Fan票类型!' }]}>
-            <TokenSearch />
+            <TokenSearch token={ questDetail.token_id } />
           </Form.Item>
           <Form.Item label="奖励人数" name="rewardPeople" rules={[{ required: true, message: '请输入奖励人数!' }]}>
-            <Input size="large" placeholder="奖励人数" />
+            <Input disabled={memoDisabled} size="large" placeholder="奖励人数" />
           </Form.Item>
           <Form.Item label="奖励总金额" name="rewardPrice" rules={[{ required: true, message: '请输入奖励总金额!' }]}>
-            <Input size="large" placeholder="奖励总金额" />
+            <Input disabled={memoDisabled} size="large" placeholder="奖励总金额" />
           </Form.Item>
           <Form.Item>
-            <StyledButtonAntd loading={questCreateLoading} type="primary" htmlType="submit">支付并创建</StyledButtonAntd>
+            <StyledButtonAntd loading={questCreateLoading} type="primary" htmlType="submit">
+              { memoDisabled ? '更新' : '支付并创建' }
+            </StyledButtonAntd>
           </Form.Item>
         </Form>
 

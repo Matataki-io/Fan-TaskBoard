@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useHistory } from 'react-router-dom'
 import { Button, message, Avatar, Table, Input, Popconfirm } from 'antd'
 import { useSelector } from "react-redux";
 import moment from 'moment'
@@ -19,12 +19,12 @@ import {
   receiveProps, applyHandleProps, applyProps, receiveKeyProps,
   getQuestDetail, getQuestDetailList, receive, receiveKey, getQuestDetailApplyList, apply, applyAgree, applyReject
 } from '../../api/api'
-import { DetailInfoIcon, DetailReceivedIcon, DetailShareIcon, CopyIcon } from '../../components/IconAnt'
+import { DetailInfoIcon, DetailReceivedIcon, DetailShareIcon, CopyIcon, EditIcon } from '../../components/IconAnt'
 
 const Publish: React.FC = () => {
   const user: any = useSelector(selectUser)
   const { id }: { id: string } = useParams()
-
+  const history = useHistory();
   const [reload, setReload] = useState<number>(0)
   const [questDetail, setQuestDetail] = useState<any>({})
   const [receivedList, setReceivedList] = useState<any[]>([])
@@ -493,6 +493,20 @@ const Publish: React.FC = () => {
     )
   }
 
+  const handleEdit = () => {
+    let type = ''
+    if (String(questDetail.type) === '0') {
+      return
+    } else if (String(questDetail.type) === '1') {
+      type = 'customtask'
+    } else if (String(questDetail.type) === '2') {
+      type = 'key'
+    } else {
+      return
+    }
+    history.push(`/publish/${type}/${id}`)
+  }
+
   return (
     <Page>
       <StyledContent>
@@ -519,13 +533,25 @@ const Publish: React.FC = () => {
                 {(String(questDetail.received) === String(questDetail.reward_people)) ? '领取完毕' : '进行中'}
               </span>
 
-              <CopyToClipboard
-                text={`立即领取奖励：${window.location.href}`}
-                onCopy={() => message.info('复制成功，立即分享！')}>
-                <StyledInfoShare>
-                  <DetailShareIcon className="icon"></DetailShareIcon>
-                </StyledInfoShare>
-              </CopyToClipboard>
+              <StyledInfoIconContent>
+                {
+                  (
+                    String(user.id) === String(questDetail.uid) &&
+                    String(questDetail.type) !== '0'
+                  ) ? (
+                    <StyledInfoIcon onClick={ handleEdit }>
+                      <EditIcon className="icon"></EditIcon>
+                    </StyledInfoIcon>
+                  ) : null
+                }
+                <CopyToClipboard
+                  text={`立即领取奖励：${window.location.href}`}
+                  onCopy={() => message.info('复制成功，立即分享！')}>
+                  <StyledInfoIcon>
+                    <DetailShareIcon className="icon"></DetailShareIcon>
+                  </StyledInfoIcon>
+                </CopyToClipboard>
+              </StyledInfoIconContent>
 
             </StyledInfoHead>
             <StyledInfoHead>
@@ -684,10 +710,15 @@ const StyledInfoBox = styled.div`
   }
 `
 
+const StyledInfoIconContent = styled.div`
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+`
 const StyledInfoCover = styled.img`
   width: 100%;
 `
-const StyledInfoShare = styled.div`
+const StyledInfoIcon = styled.div`
   width: 32px;
   height: 32px;
   background: #6236FF;
@@ -695,7 +726,7 @@ const StyledInfoShare = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: auto;
+  margin-left: 6px;
   cursor: pointer;
 `
 const StyledInfoCopy = styled.div`

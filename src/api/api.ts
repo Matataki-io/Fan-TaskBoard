@@ -53,6 +53,13 @@ export interface tokenListProps {
   order: number
 }
 
+export interface UpdateQuestProps {
+  type: string|number,
+  title: string,
+  content: string,
+  key?: string,
+}
+
 // =========== MTK ===========
 // 获取用户信息
 export function getUserProfile() {
@@ -92,7 +99,10 @@ export function getQuestDetailApplyList(id: string|number) {
 export function createQuest(data: questInterface) {
   return client.post(`/quest`, data);
 }
-
+// 更新任务
+export function updateQuest(id: string, data: UpdateQuestProps) {
+  return client.put(`/quest/${id}`, data);
+}
 // 领取奖励
 export function receive(data: receiveProps) {
   return client.post(`/receive`, data);
