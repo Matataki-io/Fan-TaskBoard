@@ -82,7 +82,7 @@ const Home: React.FC<any> = ({value = {}, onChange, token }) => {
       onChange={handleUserSearchChange}
       filterOption={(input, option) => (option.val.name + ' ' + option.val.symbol).toLowerCase().indexOf(input.toLowerCase()) >= 0}
       style={{ width: '100%' }}
-      defaultValue={token}
+      value={token}
       disabled={ memoToken }
     >
       {searchData.map(i => (
