@@ -43,6 +43,16 @@ const PublishType: React.FC = () => {
 
   const memoDisabled = useMemo(() => !!id, [id])
 
+  // 设置默认单选
+  useEffect(() => {
+    // 发布情况下
+    if (type && !id) {
+      form.setFieldsValue({
+        keyModel: 'default'
+      })
+    }
+  }, [form, id, type])
+
   useEffect(() => {
     // 获取任务信息
     const getData = async () => {
@@ -194,7 +204,6 @@ const PublishType: React.FC = () => {
     }
     updateQuestFn(data)
   }
-
 
   // 完成表单
   const onFinish = (value: any) => {
