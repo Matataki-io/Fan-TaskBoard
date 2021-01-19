@@ -42,7 +42,7 @@ const Publish: React.FC = () => {
         if (result.code === 0) {
           setQuestDetail(result.data)
 
-          if (result.data.type === 1) {
+          if (result.data.type === 1 && String(user.id) === String(result.data.uid)) {
             getDataApplyList()
           }
 
@@ -70,7 +70,7 @@ const Publish: React.FC = () => {
 
     getData()
 
-  }, [id, reload])
+  }, [id, reload, user.id])
 
   // 获取领取记录
   useEffect(() => {
@@ -385,7 +385,7 @@ const Publish: React.FC = () => {
             className="remark"
             placeholder="请输入备注"
             showCount
-            maxLength={100}
+            maxLength={500}
             rows={4}
             onChange={e => handleRemarkChange(e)}
           />
@@ -768,6 +768,7 @@ const StyledInfoHead = styled.div`
     line-height: 30px;
     padding: 0 10px;
     margin: 0 0 0 16px;
+    word-break: keep-all;
   }
   .icon {
     color: #FFFFFF;
