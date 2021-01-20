@@ -7,6 +7,7 @@ import { Drawer, Button } from 'antd'
 import { selectUser, setUser } from '../../../store/userSlice'
 import { removeCookie } from '../../../utils/cookie'
 import { setOAuthRedirectUri } from '../../../api/developer'
+import { removeCookieService } from '../../../api/api'
 
 interface AccountButtonProps {}
 
@@ -26,7 +27,7 @@ const AccountButton: React.FC<AccountButtonProps> = (props) => {
 
   const logout = () => {
     dispatch(setUser({}))
-    removeCookie("x-access-token")
+    removeCookieService()
   }
 
   const jumpToMttkOAuth = async () => {

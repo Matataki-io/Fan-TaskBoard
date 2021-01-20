@@ -10,8 +10,6 @@ const client = axios.create({
 // Just copy from matataki-fe
 client.interceptors.request.use(
   (config) => {
-    if (getCookie("x-access-token"))
-      config.headers["x-access-token"] = getCookie("x-access-token");
     return config;
   },
   (error) => {

@@ -4,6 +4,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import { useQuery } from "../../hooks/useQuery";
 // import { useStore } from "../store";
 import { setCookie } from '../../utils/cookie'
+import { setCookieService } from '../../api/api'
 
 const Oauth = () => {
   const query = useQuery();
@@ -20,10 +21,20 @@ const Oauth = () => {
 
   useMount(() => {
     console.log("mounted", accessToken);
-    console.log("useLocation()", query.get('x-access-token'));
     if (!accessToken) return;
-    setCookie("x-access-token", accessToken);
-    router.push(toPath);
+
+    const setData = async () => {
+      const result: any = await setCookieService({
+        accessToken: accessToken
+      })
+      if (result.code === 0) {
+        router.push(toPath);
+      } else {
+        alert('登陆失败')
+      }
+    }
+
+    setData()
   });
   if (!accessToken) {
     return (

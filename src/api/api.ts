@@ -128,3 +128,11 @@ export function twitterUsersSearch(q: string, count: number = 5) {
 export function getTokenList(page = 1, pagesize = 20, search?: string) {
   return client.get(`/token/list`, { params: { page, pagesize, search } })
 }
+
+// cookie
+export function setCookieService(data: any) {
+  return client.post(`/cookie`, data);
+}
+export function removeCookieService() {
+  return client.put(`/cookie`);
+}

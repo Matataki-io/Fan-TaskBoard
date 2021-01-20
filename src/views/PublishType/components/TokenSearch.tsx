@@ -2,11 +2,13 @@ import React, { useState, useMemo } from 'react'
 import styled from 'styled-components'
 import { useMount } from 'ahooks'
 import BigNumber from 'bignumber.js'
-
+import { useSelector, useDispatch } from "react-redux";
 import { getTokenList, tokenTokenList } from '../../../api/api'
 import { Select, Spin, Avatar } from 'antd';
 import debounce from 'lodash/debounce'
+
 import { getCookie } from '../../../utils/cookie'
+import { selectUser, setUser } from '../../../store/userSlice'
 
 const { Option } = Select;
 
@@ -17,15 +19,15 @@ interface TokenSearchProps {
 const Home: React.FC<any> = ({value = {}, onChange, token }) => {
   // Fan票搜索框相关变量
   const [searchData, setSearchData] = useState<any[]>([])
-
   const memoToken = useMemo(() => !!token, [ token ])
+  const user: any = useSelector(selectUser)
 
   // 获取数据
   useMount(() => {
-    if (!getCookie("x-access-token")) return
-
     const getData = async() => {
       try {
+        if (!user.id) return
+
         const result: any = await tokenTokenList({
           pagesize: 999,
           order: 0

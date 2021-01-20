@@ -28,7 +28,6 @@ export const { setUser } = userSlice.actions
 export const initUser = (): AppThunk => dispatch => {
 
   const getUser = async () => {
-    if (!getCookie("x-access-token")) return
     const result: any = await getUserProfile()
     console.log('result', result)
     if (result.code === 0) {

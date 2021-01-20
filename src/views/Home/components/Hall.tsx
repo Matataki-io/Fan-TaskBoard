@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Button } from 'antd'
 import { useHistory } from 'react-router-dom'
+import { useSelector, useDispatch } from "react-redux";
 
+import { selectUser, setUser } from '../../../store/userSlice'
 import { SystemIcon, CreateIcon } from '../../../components/IconAnt'
 import { getCookie } from '../../../utils/cookie'
 import { getAccountList } from '../../../api/api'
@@ -11,13 +13,15 @@ const Hall: React.FC = () => {
   const [bindTwitter, setBindTwitter] = useState<boolean>(false)
   const [showHallSystem, setShowHallSystem] = useState<boolean>(false)
   const history = useHistory();
+  const user: any = useSelector(selectUser)
 
   useEffect(() => {
     // 获取用户的绑定信息
     const getAccountBind = async () => {
-    if (!getCookie("x-access-token")) return
-
       try {
+
+        if (!user.id) return
+
         const result: any = await getAccountList()
         if (result.code === 0) {
           // console.log('res', result)
@@ -31,7 +35,7 @@ const Hall: React.FC = () => {
     }
     getAccountBind()
 
-  }, [])
+  }, [user])
 
   return (
     <StyledHall>

@@ -5,13 +5,12 @@ const client = axios.create({
   baseURL: process.env.REACT_APP_BACKEND_API,
   timeout: 1000 * 30,
   headers: {},
+  withCredentials: true,
 });
 
 // Just copy from matataki-fe
 client.interceptors.request.use(
   (config) => {
-    if (getCookie("x-access-token"))
-      config.headers["x-access-token"] = getCookie("x-access-token");
     return config;
   },
   (error) => {
