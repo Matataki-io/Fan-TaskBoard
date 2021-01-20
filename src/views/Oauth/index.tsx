@@ -2,14 +2,19 @@ import React from 'react';
 import { useMount } from "ahooks";
 import { useHistory, useLocation } from "react-router-dom";
 import { useQuery } from "../../hooks/useQuery";
+import { useSelector, useDispatch } from "react-redux";
+
 // import { useStore } from "../store";
 import { setCookie } from '../../utils/cookie'
 import { setCookieService } from '../../api/api'
+import { initUser } from '../../store/userSlice';
+
 
 const Oauth = () => {
   const query = useQuery();
   // const store = useStore();
   const router = useHistory();
+  const dispatch = useDispatch()
 
   let location = useLocation();
   console.log('location', location)
@@ -27,6 +32,8 @@ const Oauth = () => {
       const result: any = await setCookieService({
         accessToken: accessToken
       })
+      await dispatch(initUser())
+
       if (result.code === 0) {
         router.push(toPath);
       } else {
