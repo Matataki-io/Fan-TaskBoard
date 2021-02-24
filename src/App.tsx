@@ -24,7 +24,10 @@ import Header from './components/Header/index'
 import { initUser } from './store/userSlice';
 import { useMount } from "ahooks";
 import { useSelector, useDispatch } from "react-redux";
-// import { Alert } from 'antd'
+
+import { setCookie, getCookie} from './utils/cookie'
+import { Alert, Button, notification } from 'antd'
+import { SmileOutlined } from '@ant-design/icons';
 
 const App: React.FC = () => {
   const [mobileMenu, setMobileMenu] = useState(false)
@@ -42,6 +45,41 @@ const App: React.FC = () => {
     dispatch(initUser())
   })
 
+  const notificationErrorKey = 'notificationError'
+  // 1day 不提醒
+  const openNotification = () => {
+    const key = `open${Date.now()}`;
+    const btn = (
+      <Button type="primary" size="small" onClick={() => window.open(process.env.REACT_APP_HELP, '_blank')}>
+        查看更多
+      </Button>
+    );
+    const args = {
+      icon: <SmileOutlined style={{ color: '#108ee9' }} />,
+      message: '提示',
+      description:
+        '可能因为调用Twitter API 次数过多无法查询关注状态或领取失败！可以稍后再来重试！',
+      duration: 0,
+      btn,
+      key,
+      onClick: () => {
+        console.log('Notification Clicked!');
+      },
+      onClose: () => {
+        setCookie(notificationErrorKey, 'true', 1)
+        console.log('Notification close!');
+      },
+    };
+    notification.open(args);
+  };
+
+  useEffect(() => {
+    let isShow = getCookie(notificationErrorKey)
+    if (!isShow) {
+      openNotification()
+    }
+  }, [])
+
   return (
     <Providers>
       <Router>
@@ -51,11 +89,6 @@ const App: React.FC = () => {
         {/* <MobileMenu onDismiss={handleDismissMobileMenu} visible={mobileMenu} /> */}
         <Switch>
           <Route path="/" exact>
-            {/* <Alert
-              message="可能因为调用Twitter API 次数过多无法查询关注状态！可以稍后再来重试！"
-              banner
-              closable
-            /> */}
             <Home />
           </Route>
           <Route path="/oauth" exact>

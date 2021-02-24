@@ -3,7 +3,8 @@ import styled from 'styled-components'
 
 import { twitterUsersSearch } from '../../../api/api'
 
-import { Select, Spin, Avatar } from 'antd';
+import { Button, Select, Spin, Avatar, notification } from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 import debounce from 'lodash/debounce'
 
@@ -17,6 +18,31 @@ const Home: React.FC = ({ value = {}, onChange }: any) => {
   const [searchFetching, setSearchFetching] = useState<boolean>(false)
   const [searchValue, setSearchValue] = useState<any>(undefined)
   let userSearchStr = ''
+
+  const openNotification = () => {
+    const key = `open${Date.now()}`;
+    const btn = (
+      <Button type="primary" size="small" onClick={() => window.open(process.env.REACT_APP_HELP, '_blank')}>
+        查看更多
+      </Button>
+    );
+    const args = {
+      icon: <ExclamationCircleOutlined style={{ color: '#faad14' }} />,
+      message: '您可能遇到了问题！',
+      description:
+        '可能因为调用Twitter API 次数过多无法查询关注状态或领取失败！可以稍后再来重试！',
+      duration: 10,
+      btn,
+      key,
+      onClick: () => {
+        console.log('Notification Clicked!');
+      },
+      onClose: () => {
+        console.log('Notification close!');
+      },
+    };
+    notification.open(args);
+  };
 
   /** 搜索推特用户 */
   const fetchUser = (localValue: any) => {
@@ -39,6 +65,8 @@ const Home: React.FC = ({ value = {}, onChange }: any) => {
         console.warn('[搜索失败]:', res.message)
         setSearchFetching(false)
         setSearchData([])
+
+        openNotification()
       }
     }())
   }

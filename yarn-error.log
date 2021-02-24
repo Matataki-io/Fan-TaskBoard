@@ -1,14 +1,14 @@
 Arguments: 
-  /Users/xiaotian/.nvm/versions/node/v12.19.0/bin/node /Users/xiaotian/.nvm/versions/node/v12.19.0/bin/yarn add string-random
+  /usr/local/bin/node /usr/local/bin/yarn
 
 PATH: 
-  /Users/xiaotian/.nvm/versions/node/v12.19.0/bin:/usr/local/sbin:/usr/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/Library/Apple/usr/bin:/Users/xiaotian/.nvm/versions/node/v12.19.0/bin:/usr/local/sbin
+  /usr/local/sbin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/Library/Apple/usr/bin:/usr/local/sbin
 
 Yarn version: 
   1.22.10
 
 Node version: 
-  12.19.0
+  14.12.0
 
 Platform: 
   darwin x64

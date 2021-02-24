@@ -31,6 +31,9 @@ const Footer: React.FC = () => (
           <li>
             <a href="https://www.yuque.com/matataki/matataki/pmpeoi" rel="noopener noreferrer" target="_blank">帮助文档</a>
           </li>
+          <li>
+            <a href={ process.env.REACT_APP_HELP } rel="noopener noreferrer" target="_blank">领取失败？</a>
+          </li>
         </StyledFooterUl>
       </StyledFooterUlContent>
     </StyledFooterContainer>

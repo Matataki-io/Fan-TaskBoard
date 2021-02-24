@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Link, useParams, useHistory } from 'react-router-dom'
-import { Button, message, Avatar, Table, Input, Popconfirm } from 'antd'
+import { Button, message, Avatar, Table, Input, Popconfirm, notification } from 'antd'
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { useSelector } from "react-redux";
 import moment from 'moment'
 import BigNumber from 'bignumber.js'
@@ -220,6 +221,31 @@ const Publish: React.FC = () => {
     },
   ];
 
+  const openNotification = () => {
+    const key = `open${Date.now()}`;
+    const btn = (
+      <Button type="primary" size="small" onClick={() => window.open(process.env.REACT_APP_HELP, '_blank')}>
+        查看更多
+      </Button>
+    );
+    const args = {
+      icon: <ExclamationCircleOutlined style={{ color: '#faad14' }} />,
+      message: '您可能遇到了问题！',
+      description:
+        '可能因为调用Twitter API 次数过多无法查询关注状态或领取失败！可以稍后再来重试！',
+      duration: 10,
+      btn,
+      key,
+      onClick: () => {
+        console.log('Notification Clicked!');
+      },
+      onClose: () => {
+        console.log('Notification close!');
+      },
+    };
+    notification.open(args);
+  };
+
   // 领取奖励
   const ReceivedFn = async (qid: string | number): Promise<void> => {
     if (!user.id) {
@@ -238,9 +264,13 @@ const Publish: React.FC = () => {
         setReload(Date.now())
       } else {
         message.error(result.message)
+
+        openNotification()
       }
     } catch (error) {
       console.log('error', error)
+      message.error(error.toString())
+
     }
 
   }
