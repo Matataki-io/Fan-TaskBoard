@@ -128,6 +128,10 @@ export function twitterUsersSearch(q: string, count: number = 5) {
 export function getTokenList(page = 1, pagesize = 20, search?: string) {
   return client.get(`/token/list`, { params: { page, pagesize, search } })
 }
+// 待领取奖励列表
+export function pendingRewards() {
+  return client.get('/pendingRewards')
+}
 
 // cookie
 export function setCookieService(data: any) {

@@ -23,6 +23,7 @@
     "react-copy-to-clipboard": "^5.0.2",
     "react-countdown": "^2.2.1",
     "react-countup": "^4.3.3",
+    "react-device-detect": "^1.15.0",
     "react-dom": "^16.13.1",
     "react-markdown": "^5.0.3",
     "react-redux": "^7.2.2",

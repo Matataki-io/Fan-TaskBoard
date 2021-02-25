@@ -17,10 +17,17 @@ const Header: React.FC = () => {
   return (
     <StyledHeader>
       <StyledHeaderContainer>
-        <StyledHeaderLogoLink to="/">
-          <img className="logo" src={logo} alt="logo" aria-label="logo" />
-          <img className="logo-text" src={logoText} alt="logo" aria-label="logo" />
-        </StyledHeaderLogoLink>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <StyledHeaderLogoLink to="/">
+            <img className="logo" src={logo} alt="logo" aria-label="logo" />
+            <img className="logo-text" src={logoText} alt="logo" aria-label="logo" />
+          </StyledHeaderLogoLink>
+
+          <StyledHeaderNav>
+            <Link to="/rewards">待发放奖励</Link>
+          </StyledHeaderNav>
+        </div>
+
         <StyledHeaderUser>
           <StyledCreateButton type="primary" onClick={() => history.push('/publish')}>创建任务</StyledCreateButton>
           <AccountButton />
@@ -68,6 +75,18 @@ const StyledHeaderLogoLink = styled(Link)`
     }
   }
 `
+
+const StyledHeaderNav = styled.nav`
+  margin-left: 10px;
+  a {
+    color: #fff;
+    font-size: 14px;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+`
+
 const StyledHeaderUser = styled.div`
   display: flex;
   align-items: center;
