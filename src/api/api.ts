@@ -132,6 +132,10 @@ export function getTokenList(page = 1, pagesize = 20, search?: string) {
 export function pendingRewards() {
   return client.get('/pendingRewards')
 }
+// 所有任务的申请
+export function applyAll() {
+  return client.get('/apply/all')
+}
 
 // cookie
 export function setCookieService(data: any) {

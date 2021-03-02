@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Button } from 'antd'
-import { useHistory } from 'react-router-dom'
+import { useHistory, Link } from 'react-router-dom'
 import { useSelector, useDispatch } from "react-redux";
 
 import { selectUser, setUser } from '../../../store/userSlice'
 import { SystemIcon, CreateIcon } from '../../../components/IconAnt'
 import { getCookie } from '../../../utils/cookie'
-import { getAccountList } from '../../../api/api'
+import { getAccountList, applyAll } from '../../../api/api'
 
 const Hall: React.FC = () => {
   const [bindTwitter, setBindTwitter] = useState<boolean>(false)
   const [showHallSystem, setShowHallSystem] = useState<boolean>(false)
   const history = useHistory();
   const user: any = useSelector(selectUser)
+  const [applyAllList, setApplyAllList] = useState<Array<any>>([])
+
 
   useEffect(() => {
     // 获取用户的绑定信息
@@ -37,9 +39,28 @@ const Hall: React.FC = () => {
 
   }, [user])
 
+  useEffect(() => {
+    // 获取用户任务的申请信息
+    const getList = async () => {
+      try {
+
+        if (!user.id) return
+
+        const result: any = await applyAll()
+        if (result.code === 0) {
+          setApplyAllList(result.data.list)
+        }
+      } catch (error) {
+        console.log('error', error)
+      }
+    }
+    getList()
+
+  }, [user])
+
   return (
     <StyledHall>
-      <StyledHallSystem active={ showHallSystem }>
+      <StyledHallSystem active={showHallSystem}>
         <StyledListItemInfo>
           <div className="head">
             <SystemIcon className="head-icon"></SystemIcon>
@@ -48,7 +69,7 @@ const Hall: React.FC = () => {
           <p className="hall-description">完成下方任务即可开始获取奖励</p>
           <ul className="item">
             <li>1. <a href={`${process.env.REACT_APP_MATATAKI}/setting/account`} target="_blank" rel="noopener noreferrer">完成Twitter账户绑定</a>
-              <span>{ bindTwitter ? '✅' : '❌' } </span>
+              <span>{bindTwitter ? '✅' : '❌'} </span>
             </li>
             {/* <li>2.前往 <a>这里</a> 授权获取Twitter消息</li> */}
           </ul>
@@ -68,17 +89,35 @@ const Hall: React.FC = () => {
           <StyledButton>领取奖励</StyledButton>
         </StyledListItemBox> */}
 
-        <StyledHallSystemMini onClick={ () => setShowHallSystem(!showHallSystem) }>
+        <StyledHallSystemMini onClick={() => setShowHallSystem(!showHallSystem)}>
           <SystemIcon className="icon"></SystemIcon>
         </StyledHallSystemMini>
 
       </StyledHallSystem>
+      {
+        applyAllList.length > 0 ?
+          <StyledHallApply active={showHallSystem}>
+            <div className="head">
+              <SystemIcon className="head-icon"></SystemIcon>
+              <span className="head-title">待处理申请</span>
+            </div>
+            <StyledApplyItem>
+              {
+                applyAllList.map((i, idx) => (
+                  <li key={idx}>
+                    <Link target="_blank" to={`/${i.id}`}>{idx += 1}. {i.title}</Link>
+                  </li>
+                ))
+              }
+            </StyledApplyItem>
+          </StyledHallApply> : ''
+      }
       <StyledHallCreate>
         <div className="head">
           <CreateIcon className="head-icon"></CreateIcon>
           <span className="head-title">创建任务</span>
         </div>
-        <StyledButton onClick={ () => history.push('/publish') }>创建任务</StyledButton>
+        <StyledButton onClick={() => history.push('/publish')}>创建任务</StyledButton>
       </StyledHallCreate>
     </StyledHall>
   )
@@ -209,6 +248,47 @@ const StyledHallCreate = styled.div`
     display: none;
   }
 `
+const StyledHallApply = styled.div<{ active: boolean }>`
+  width: 100%;
+  background: #132D5E;
+  color: #fff;
+  border-radius: 8px;
+  margin-top: 24px;
+  padding: 24px;
+  .hall-create {
+    margin-top: 16px;
+    .ant-form-item-label > label {
+      color: #fff;
+    }
+  }
+  @media screen and (max-width: 1400px) {
+    position: fixed;
+    right: 0;
+    top: 200px;
+    width: 256px;
+    transform: ${({ active }) => active ? 'translateX(0)' : 'translateX(100%)'};
+    transition: transform .3s;
+    z-index: 10;
+  }
+`
 const StyledListItemInfo = styled.div`
   padding: 24px;
+`
+
+const StyledApplyItem = styled.ul`
+  padding: 0;
+  margin: 10px 0 0 0;
+  list-style: none;
+  max-height: 130px;
+  overflow: auto;
+  li {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 4px 0 0 0;
+    a {
+      color: #fff;
+      text-decoration: underline;
+    }
+  }
 `
