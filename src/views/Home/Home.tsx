@@ -235,7 +235,7 @@ const Home: React.FC = () => {
           <StyledList>
             {
               quests.map(i => (
-                <StyledListItem to={`/${i.id}`} key={i.id}>
+                <StyledListItem to={`/${i.id}`} key={i.id} target='_blank'>
                   <StyledListItemInfo>
                     <span className="tips">
                       {
