@@ -19,6 +19,7 @@ const Oauth = () => {
   let location = useLocation();
   console.log('location', location)
 
+  // http://127.0.0.1:3000/oauth?token=token
   const accessToken = query.get("token");
   const toPath = query.get("path")
     ? decodeURIComponent(query.get("path"))
