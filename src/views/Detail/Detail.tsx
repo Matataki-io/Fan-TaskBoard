@@ -639,7 +639,7 @@ const Publish: React.FC = () => {
                   <span className="box-title">任务简介</span>
                 </StyledBoxHead>
                 <StyledBoxContent className="md">
-                  <ReactMarkdown>
+                  <ReactMarkdown className="markdown-body">
                     {questDetail.content}
                   </ReactMarkdown>
                 </StyledBoxContent>
@@ -877,13 +877,10 @@ const StyledBoxContent = styled.div`
   &.md {
     padding: 16px;
     box-sizing: border-box;
-    color: #fff;
     word-break: break-all;
+    background-color: #fff;
     * {
-      color: #fff;
-    }
-    a {
-      color: #1890ff;
+      max-width: 100%;
     }
   }
 `

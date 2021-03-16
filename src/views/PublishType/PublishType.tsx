@@ -290,8 +290,8 @@ const PublishType: React.FC = () => {
                   mdContent ?
                   (
                     <StyledMDContent>
-                      <h3>Preview</h3>
-                      <ReactMarkdown>
+                      <h3 className="preview-title">Preview</h3>
+                      <ReactMarkdown className="markdown-body">
                         { mdContent }
                       </ReactMarkdown>
                     </StyledMDContent>
@@ -418,16 +418,19 @@ const StyledCover = styled.img`
 `
 const StyledMDContent = styled.div`
   margin: 40px 0;
-  color: #fff;
-  h3 {
+  .preview-title {
     font-size: 22px;
     font-weight: bold;
     padding: 0;
     margin: 0 0 20px 0;
+    color: #fff;
   }
   * {
-    color: #FFFFFF;
     max-width: 100%;
+  }
+  .markdown-body {
+    padding: 20px 10px;
+    background: #fff;
   }
 `
 
