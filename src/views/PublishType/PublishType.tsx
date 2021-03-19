@@ -4,12 +4,12 @@ import { Link, useParams, useHistory } from 'react-router-dom'
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Input, Radio, Form, message, Spin, Pagination } from 'antd'
 import ReactMarkdown from 'react-markdown'
-import { debounce } from 'lodash';
+import { debounce, isEmpty } from 'lodash';
 import random from 'string-random';
 
 import { selectUser } from '../../store/userSlice';
 import {
-  questInterface, createQuest, getQuestDetail, updateQuest,
+  questInterface, createQuest, getQuestDetail, updateQuest, statusesShowId,
   UpdateQuestProps
 } from '../../api/api'
 
@@ -31,11 +31,12 @@ const PublishType: React.FC = () => {
   const [radioKey, setRadioKey] = React.useState('default'); // 单选
   const [keyVal, setKeyVal] = React.useState(''); // 自定义口令value
   const [questDetail, setQuestDetail] = useState<any>({})
+  const [questTweet, setQuestTweet] = useState<any>({})
 
   // 判断任务类型
   useEffect(() => {
 
-    let list = ['twitter', 'customtask', 'key']
+    let list = ['twitter', 'twitterRetweet', 'customtask', 'key']
     if (!list.includes(type)) {
       history.go(-1)
     }
@@ -121,6 +122,15 @@ const PublishType: React.FC = () => {
         reward_people: value.rewardPeople,
         reward_price: value.rewardPrice
       }
+    } else if (type === 'twitterRetweet') {
+      data = {
+        type: 3,
+        twitter_status: questTweet.id_str,
+        twitter_status_url: value.tweetId,
+        token_id: value.token,
+        reward_people: value.rewardPeople,
+        reward_price: value.rewardPrice
+      }
     } else if (type === 'customtask') {
       data = {
         type: 1,
@@ -145,7 +155,7 @@ const PublishType: React.FC = () => {
       return
     }
 
-    let typeList = [0, 1, 2]
+    let typeList = [0, 1, 2, 3]
     if (!typeList.includes(data.type)) {
       message.info(`请选择任务类型`)
       return
@@ -224,7 +234,30 @@ const PublishType: React.FC = () => {
     const val = form.getFieldsValue()
     setMdContent(val.content)
   }
+  const handleTweet = async () => {
+    const val = form.getFieldsValue()
+    let tweetUrl = val.tweetId
+    console.log('tweetUrl', tweetUrl)
+
+    let flag = '/status/'
+    let idx = tweetUrl.indexOf(flag)
+    let tweetId = tweetUrl.slice(idx + flag.length)
+
+    try {
+      message.info('正在支付并且创建任务，请耐心等待...')
+      const result: any = await statusesShowId({ id: String(tweetId) })
+      if (result.code === 0) {
+        message.info('校验成功')
+        setQuestTweet(result.data)
+      } else {
+        message.error('校验失败')
+      }
+      } catch (error) {
+        console.log('校验推文 error', error)
+      }
+  }
   const debounceHandleContent = debounce(handleContent, 300)
+  const debounceHandleTweet = debounce(handleTweet, 300)
 
   // key model input handle change
   const handleKeyModelChange = (e: any) => {
@@ -246,6 +279,8 @@ const PublishType: React.FC = () => {
         <StyledCover src={
           type === 'twitter' ?
           publish1 :
+          type === 'twitterRetweet' ?
+          publish1 :
           type === 'key' ?
           publishDecrypt :
           type === 'customtask' ?
@@ -256,6 +291,8 @@ const PublishType: React.FC = () => {
           {
             type === 'twitter' ?
             '创建Twitter关注任务' :
+            type === 'twitterRetweet' ?
+            '创建Twitter转推任务' :
             type === 'key' ?
             '解谜任务' :
             type === 'customtask' ?
@@ -273,9 +310,23 @@ const PublishType: React.FC = () => {
           {
             type === 'twitter' ?
             (
-              <Form.Item label="关注账户" name="account" rules={[{ required: true, message: '请输入关注账户!' }]}>
-                <TwitterUserSearch />
+                <Form.Item label="关注账户" name="account" rules={[{ required: true, message: '请输入关注账户!' }]}>
+                  <TwitterUserSearch />
+                </Form.Item>
+            ) :
+            type === 'twitterRetweet' ?
+            (
+              <>
+              <Form.Item label="推文" name="tweetId" rules={[{ required: true, message: '请输入推文地址http(s)！' }]}>
+                <Input size="large" placeholder="请输入推文http(s)" onChange={ debounceHandleTweet }  />
               </Form.Item>
+                {
+                  !isEmpty(questTweet) ?
+                  (
+                    <div className="tweet">{ questTweet.text }</div>
+                  ) : null
+                }
+              </>
             ) :
             type === 'customtask' || type === 'key' ?
             (
@@ -400,6 +451,13 @@ const StyledContent = styled.div`
     .ant-radio-wrapper .text {
       color: #FFFFFF;
     }
+  }
+  .tweet {
+    color: #fff;
+    padding: 0 0 20px 0;
+    font-size: 14px;
+    max-height: 400px;
+    overflow: auto;
   }
 `
 const StyledBackPage = styled(Link)`

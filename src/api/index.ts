@@ -3,7 +3,7 @@ import { getCookie } from "../utils/cookie";
 
 const client = axios.create({
   baseURL: process.env.REACT_APP_BACKEND_API,
-  timeout: 1000 * 30,
+  timeout: 1000 * 60,
   headers: {},
   withCredentials: true,
 });

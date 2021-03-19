@@ -77,7 +77,7 @@ export function tokenTokenList(params: tokenListProps) {
 // =========== BE ===========
 // 获取所有任务列表
 export function getAllQuests(params: getAllQuestsProps) {
-  return client.get(`/quest`, { params });
+  return client.get(`/quest`, { params, timeout: 1000 * 120  });
 }
 // 获取任务详情
 export function getQuestDetail(id: string|number) {
@@ -135,6 +135,15 @@ export function pendingRewards() {
 // 所有任务的申请
 export function applyAll() {
   return client.get('/apply/all')
+}
+
+// 所有推文
+export function statusesShowId(params: { id: string }) {
+  return client.get(`/statuses/showId`, { params })
+}
+// 领取转推奖励
+export function receiveRetweet(data: receiveProps) {
+  return client.post(`/receive/retweet`, data);
 }
 
 // cookie

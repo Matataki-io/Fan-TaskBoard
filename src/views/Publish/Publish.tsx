@@ -41,6 +41,14 @@ const Publish: React.FC = () => {
             </div>
           </StyledItemBox>
           <StyledItemBox>
+            <img src={publish1} alt="cover"/>
+            <p className="title">Twitter转推任务</p>
+            <p className="description">此任务要求用户完成转推后即可领取奖励</p>
+            <div className="btn">
+              <StyledButtonAntd onClick={ () => toPublish('/publish/twitterRetweet') }>使用此模版</StyledButtonAntd>
+            </div>
+          </StyledItemBox>
+          <StyledItemBox>
             <img src={publish2} alt="cover"/>
             <p className="title">红包任务</p>
             <p className="description">知道红包链接的用户即可领取红包</p>

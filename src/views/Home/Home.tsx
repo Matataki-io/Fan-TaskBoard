@@ -15,6 +15,7 @@ import { selectUser } from '../../store/userSlice';
 import Hall from './components/Hall';
 import Menu from './components/Menu';
 import taskLogoCustom from '../../assets/img/task-logo-custom.png'
+import taskLogoRetweet from '../../assets/img/task-logo-retweet.png'
 import taskLogoKey from '../../assets/img/task-logo-key.png'
 
 const { Option } = Select;
@@ -172,6 +173,19 @@ const Home: React.FC = () => {
       return (<StyledButton type="primary">其他</StyledButton>)
     }
   }
+  const retweetButton = (i: any) => {
+    // console.log('i', i)
+
+    if (String(i.uid) === String(user.id)) {
+      return (<StyledButton type="primary" disabled={true}>自己发布</StyledButton>)
+    } else if (i.receive) {
+      return (<StyledButton type="primary" disabled={true}>我已领取</StyledButton>)
+    } else if (( String(i.received) === String(i.reward_people))) {
+      return (<StyledButton type="primary" disabled={true}>领取完毕</StyledButton>)
+    } else {
+      return (<StyledButton type="primary" onClick={ (e) => { e.preventDefault();window.open(`${i.twitter_status_url}`) } }>去做任务</StyledButton>)
+    }
+  }
 
   const customtaskButton = (i: any) => {
     // console.log('i', i)
@@ -241,7 +255,8 @@ const Home: React.FC = () => {
                       {
                         Number(i.type) === 0 ? 'Twitter关注' :
                         Number(i.type) === 1 ? '自定义' :
-                        Number(i.type) === 2 ? '解谜' : ''
+                        Number(i.type) === 2 ? '解谜' :
+                        Number(i.type) === 3 ? 'Twitter转推' : ''
                       }
                     </span>
                     {
@@ -252,6 +267,15 @@ const Home: React.FC = () => {
                             <img src={processTwitterImage(i.profile_image_url_https)} alt="avatar" />
                           </div>
                           <span className="user-name">{i.name || i.twitter_id}</span>
+                        </StyledListItemUser>
+                      ) :
+                      Number(i.type) === 3 ?
+                      (
+                        <StyledListItemUser onClick={ e => e.stopPropagation() } href={ `${i.twitter_status_url}`} target="_blank" rel="noopener noreferrer">
+                          <div className="user" style={{ borderRadius: 0 }}>
+                            <img src={taskLogoRetweet} alt="avatar" style={{ objectFit: "contain" }} />
+                          </div>
+                          <span className="user-name">Twitter转推</span>
                         </StyledListItemUser>
                       ) :
                       Number(i.type) === 1 ?
@@ -289,6 +313,7 @@ const Home: React.FC = () => {
                     </StyledListItemBoxReward>
                     {
                       Number(i.type) === 0 ? rewardButton(i) :
+                      Number(i.type) === 3 ? retweetButton(i) :
                       Number(i.type) === 1 ? customtaskButton(i) :
                       Number(i.type) === 2 ? keyButton(i) : null
                     }

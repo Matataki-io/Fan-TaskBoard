@@ -18,7 +18,7 @@ import Page from '../../components/Page'
 import { selectUser } from '../../store/userSlice';
 import {
   receiveProps, applyHandleProps, applyProps, receiveKeyProps,
-  getQuestDetail, getQuestDetailList, receive, receiveKey, getQuestDetailApplyList, apply, applyAgree, applyReject
+  getQuestDetail, getQuestDetailList, receive, receiveKey, getQuestDetailApplyList, apply, applyAgree, applyReject, receiveRetweet
 } from '../../api/api'
 import { DetailInfoIcon, DetailReceivedIcon, DetailShareIcon, CopyIcon, EditIcon } from '../../components/IconAnt'
 
@@ -274,6 +274,33 @@ const Publish: React.FC = () => {
     }
 
   }
+  const receiveRetweetFn = async (qid: string | number): Promise<void> => {
+    if (!user.id) {
+      message.info('请先登陆')
+      return
+    }
+
+    try {
+      const data: receiveProps = {
+        qid: qid
+      }
+      const result: any = await receiveRetweet(data)
+      console.log('result', result)
+      if (result.code === 0) {
+        message.success('领取成功')
+        setReload(Date.now())
+      } else {
+        message.error(result.message)
+
+        openNotification()
+      }
+    } catch (error) {
+      console.log('error', error)
+      message.error(error.toString())
+
+    }
+
+  }
   // 申请
   const ApplyFn = async (qid: string | number): Promise<void> => {
     if (!user.id) {
@@ -398,6 +425,18 @@ const Publish: React.FC = () => {
       return (<StyledButtonAntd onClick={() => ReceivedFn(id)} className="receive">领取奖励</StyledButtonAntd>)
     }
   }
+  // 领取按钮 转推
+  const ReceivedButtonTwitterRetweet = () => {
+    if (String(questDetail.uid) === String(user.id)) {
+      return (<StyledButtonAntd className="receive">自己发布</StyledButtonAntd>)
+    } else if (questDetail.receive) {
+      return (<StyledButtonAntd className="receive">我已领取</StyledButtonAntd>)
+    } else if ((String(questDetail.received) === String(questDetail.reward_people))) {
+      return (<StyledButtonAntd className="receive">领取完毕</StyledButtonAntd>)
+    } else {
+      return (<StyledButtonAntd onClick={() => receiveRetweetFn(id)} className="receive">领取奖励</StyledButtonAntd>)
+    }
+  }
   // 领取按钮 自定义任务
   const ReceivedButtonCustomTask = () => {
     if (String(questDetail.uid) === String(user.id)) {
@@ -480,6 +519,33 @@ const Publish: React.FC = () => {
       </>
     )
   }
+  // 任务详情 twitter retweet
+  const QuestDetailTwitterRetweet = () => {
+    return (
+      <>
+        <StyledCustomTaskInfo>
+          <StyledBCInfoCenter>
+            <div className="info-content">
+              <p className="info-title">你可得到</p>
+              <p className="info-amount">{processReward(questDetail.reward_price, questDetail.reward_people)}<sub>{questDetail.symbol}</sub></p>
+            </div>
+            <div className="info-content">
+              <p className="info-title">奖励份数</p>
+              <p className="info-amount">{processRewardShare(questDetail.reward_people, questDetail.received)}<sub>/{questDetail.reward_people}</sub></p>
+            </div>
+          </StyledBCInfoCenter>
+          <a
+            href={`${questDetail.twitter_status_url}`}
+            target="_blank" rel="noopener noreferrer"
+          >
+            <StyledButtonAntd className="follow">前往推特去转推</StyledButtonAntd>
+          </a>
+          {ReceivedButtonTwitterRetweet()}
+          <a className="link" href="https://www.matataki.io/p/6767" target="_blank" rel="noopener noreferrer">如何界定是否转推？</a>
+        </StyledCustomTaskInfo>
+      </>
+    )
+  }
 
   // 任务详情 custom
   const QuestDetailCustomTask = () => {
@@ -547,6 +613,7 @@ const Publish: React.FC = () => {
           <StyledInfoBox>
             <StyledInfoCover src={
               Number(questDetail.type) === 0 ? publishTwitter :
+              Number(questDetail.type) === 3 ? publishTwitter :
                 Number(questDetail.type) === 1 ? publishCustomtask :
                   Number(questDetail.type) === 2 ? publishDecrypt : ''
             } alt="cover" />
@@ -556,6 +623,7 @@ const Publish: React.FC = () => {
               <span className="title">
                 {
                   Number(questDetail.type) === 0 ? 'Twitter关注任务' :
+                  Number(questDetail.type) === 3 ? 'Twitter转推任务' :
                     (Number(questDetail.type) === 1 || Number(questDetail.type) === 2) ? questDetail.title : ''
                 }
               </span>
@@ -567,7 +635,7 @@ const Publish: React.FC = () => {
                 {
                   (
                     String(user.id) === String(questDetail.uid) &&
-                    String(questDetail.type) !== '0'
+                    (String(questDetail.type) !== '0' && String(questDetail.type) !== '3')
                   ) ? (
                     <StyledInfoIcon onClick={ handleEdit }>
                       <EditIcon className="icon"></EditIcon>
@@ -624,7 +692,8 @@ const Publish: React.FC = () => {
                 {
                   Number(questDetail.type) === 0 ? QuestDetailTwitter() :
                     Number(questDetail.type) === 1 ? QuestDetailCustomTask() :
-                      Number(questDetail.type) === 2 ? QuestDetailKey() : ''
+                      Number(questDetail.type) === 2 ? QuestDetailKey() :
+                      Number(questDetail.type) === 3 ? QuestDetailTwitterRetweet() : ''
                 }
               </StyledBoxContent>
             </StyledBox>
@@ -973,6 +1042,13 @@ const StyledCustomTaskInfo = styled.div`
     &.ant-input-textarea-show-count::after {
       color: #FFFFFF;
     }
+  }
+  .link {
+    color: #fff;
+    font-size: 14px;
+    text-decoration: underline;
+    margin: 10px 0 0 0;
+    display: inline-block;
   }
 `
 const StyledLine = styled.div`
