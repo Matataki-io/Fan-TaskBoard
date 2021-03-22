@@ -232,7 +232,7 @@ const Home: React.FC = () => {
               <img className="head-logo" src={logo} alt="logo" />
               <span className="head-title">任务大厅</span>
             </div>
-            <p className="head-description">关注下方的账号即可领取Fan票奖励</p>
+            <p className="head-description">完成下方任务即可领取Fan票奖励</p>
           </div>
           <div>
             <Select defaultValue={questSort} style={{ width: 120 }} onChange={handleChange}>
