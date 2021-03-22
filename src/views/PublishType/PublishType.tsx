@@ -337,7 +337,7 @@ const PublishType: React.FC = () => {
                   <Input size="large" placeholder="请输入任务标题" maxLength={20} />
                 </Form.Item>
                 <Form.Item label="任务介绍（支持markdown）" name="content" rules={[{ required: true, message: '请输入任务介绍!' }]}>
-                  <Input.TextArea className="textarea-content" rows={6} size="large" placeholder="请输入任务介绍" onChange={ debounceHandleContent } showCount maxLength={1000} />
+                  <Input.TextArea className="textarea-content" rows={6} size="large" placeholder="请输入任务介绍" onChange={ debounceHandleContent } showCount maxLength={9999} />
                 </Form.Item>
                 {
                   mdContent ?
@@ -491,6 +491,8 @@ const StyledMDContent = styled.div`
   .markdown-body {
     padding: 20px 10px;
     background: #fff;
+    max-height: 600px;
+    overflow: auto;
   }
 `
 
