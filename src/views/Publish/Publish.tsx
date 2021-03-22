@@ -8,6 +8,7 @@ import publishTitle from '../../assets/img/publish-title.png';
 import publish1 from '../../assets/img/publish-1.png';
 import publish2 from '../../assets/img/publish-2.png';
 import publish3 from '../../assets/img/publish-3.png';
+import publishRetweet from '../../assets/img/publish-retweet.png';
 import publishDecrypt from '../../assets/img/publish-decrypt.png';
 import Page from '../../components/Page'
 
@@ -41,7 +42,7 @@ const Publish: React.FC = () => {
             </div>
           </StyledItemBox>
           <StyledItemBox>
-            <img src={publish1} alt="cover"/>
+            <img src={publishRetweet} alt="cover"/>
             <p className="title">Twitter转推任务</p>
             <p className="description">此任务要求用户完成转推后即可领取奖励</p>
             <div className="btn">

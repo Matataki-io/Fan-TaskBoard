@@ -29,6 +29,9 @@ const Menu: React.FC<MenuProps> = ({ count, user, questType, questFilter, toggle
           <StyledMenuLink active={ questType === 'twitter' } href="/" onClick={ e => toggleType(e, 'twitter') }>Twitter关注（{ count.type_twitter }）</StyledMenuLink>
         </li>
         <li>
+          <StyledMenuLink active={ questType === 'twitterRetweet' } href="/" onClick={ e => toggleType(e, 'twitterRetweet') }>Twitter转推（{ count.type_retweet }）</StyledMenuLink>
+        </li>
+        <li>
           <StyledMenuLink active={ questType === 'customtask' } href="/" onClick={ e => toggleType(e, 'customtask') }>自定义任务（{ count.type_customtask }）</StyledMenuLink>
         </li>
         <li>

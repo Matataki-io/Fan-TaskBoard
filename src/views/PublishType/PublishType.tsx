@@ -19,6 +19,8 @@ import TokenSearch from './components/TokenSearch'
 import publish1 from '../../assets/img/publish-1.png'
 import publish2 from '../../assets/img/publish-2.png'
 import publish3 from '../../assets/img/publish-3.png'
+import publishRetweet from '../../assets/img/publish-retweet.png';
+
 import publishDecrypt from '../../assets/img/publish-decrypt.png'
 
 const PublishType: React.FC = () => {
@@ -244,7 +246,7 @@ const PublishType: React.FC = () => {
     let tweetId = tweetUrl.slice(idx + flag.length)
 
     try {
-      message.info('正在支付并且创建任务，请耐心等待...')
+      message.info('正在校验推文，请耐心等待...')
       const result: any = await statusesShowId({ id: String(tweetId) })
       if (result.code === 0) {
         message.info('校验成功')
@@ -280,7 +282,7 @@ const PublishType: React.FC = () => {
           type === 'twitter' ?
           publish1 :
           type === 'twitterRetweet' ?
-          publish1 :
+          publishRetweet :
           type === 'key' ?
           publishDecrypt :
           type === 'customtask' ?
