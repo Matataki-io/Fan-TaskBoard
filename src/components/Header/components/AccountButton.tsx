@@ -38,10 +38,12 @@ const AccountButton: React.FC<AccountButtonProps> = (props) => {
         <StyledButton onClick={jumpToMttkOAuth}>一键登陆</StyledButton>
       ) : (
         <StyledAccount>
-          <div className="avatar">
-            <img src={ `${process.env.REACT_APP_MTTK_IMG_CDN}/${user.avatar}` } alt="avatar"/>
-          </div>
-          <span className="username">{ user.username }</span>
+          <a href={ `https://www.matataki.io/user/${user.id}` } target="_blank" rel="noopener noreferrer" className="user">
+            <div className="avatar">
+              <img src={ `${process.env.REACT_APP_MTTK_IMG_CDN}/${user.avatar}` } alt="avatar"/>
+            </div>
+            <span className="username">{ user.username }</span>
+          </a>
           <span className="logout" onClick={logout}>Sign Out</span>
         </StyledAccount>
       )}
@@ -70,9 +72,14 @@ const StyledButton = styled.button`
   }
 `
 const StyledAccount = styled.div`
-display: flex;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  .user {
+    display: flex;
     align-items: center;
     color: #fff;
+  }
   .avatar {
     width: 30px;
     height: 30px;
