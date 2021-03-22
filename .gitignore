@@ -5,6 +5,7 @@
 ### macOS ###
 # General
 .DS_Store
+src/views/.DS_Store
 .AppleDouble
 .LSOverride
 
