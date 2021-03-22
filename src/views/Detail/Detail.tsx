@@ -952,7 +952,6 @@ const StyledBoxContent = styled.div`
       max-width: 100%;
     }
     .markdown-body {
-      background: #fff;
       max-height: 600px;
       overflow: auto;
     }
