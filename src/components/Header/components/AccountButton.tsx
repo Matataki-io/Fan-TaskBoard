@@ -35,7 +35,7 @@ const AccountButton: React.FC<AccountButtonProps> = (props) => {
   return (
     <StyledAccountButton>
       {!user.username ? (
-        <StyledButton onClick={jumpToMttkOAuth}>一键登陆</StyledButton>
+        <StyledButton onClick={jumpToMttkOAuth}>一键登录</StyledButton>
       ) : (
         <StyledAccount>
           <a href={ `https://www.matataki.io/user/${user.id}` } target="_blank" rel="noopener noreferrer" className="user">

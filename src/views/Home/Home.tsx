@@ -131,7 +131,7 @@ const Home: React.FC = () => {
   const receiveFn = async (qid: number): Promise<void> => {
 
     if (!user.id) {
-      message.error('请先登陆')
+      message.error('请先登录')
       return
     }
 

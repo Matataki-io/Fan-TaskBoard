@@ -54,7 +54,7 @@ const AccountButton: React.FC<AccountButtonProps> = (props) => {
         visible={visible}
       >
         {!user.username ? (
-          <StyledSignOut onClick={jumpToMttkOAuth}>一键登陆</StyledSignOut>
+          <StyledSignOut onClick={jumpToMttkOAuth}>一键登录</StyledSignOut>
         ) : (
           <>
             <StyledItem>

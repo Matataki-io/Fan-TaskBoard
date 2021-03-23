@@ -20,7 +20,7 @@ const Publish: React.FC = () => {
 
   const toPublish = (url: string) => {
     if (!user.id) {
-      message.info('请先登陆')
+      message.info('请先登录')
       return
     }
 

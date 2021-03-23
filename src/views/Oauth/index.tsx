@@ -38,7 +38,7 @@ const Oauth = () => {
       if (result.code === 0) {
         router.push(toPath);
       } else {
-        alert('登陆失败')
+        alert('登录失败')
       }
     }
 
