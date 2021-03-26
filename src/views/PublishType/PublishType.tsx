@@ -221,7 +221,7 @@ const PublishType: React.FC = () => {
   const onFinish = (value: any) => {
     console.log(value);
     if (!user.id) {
-      message.info('请登陆')
+      message.info('请登录')
       return
     }
 

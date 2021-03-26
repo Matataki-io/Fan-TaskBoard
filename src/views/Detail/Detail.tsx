@@ -250,7 +250,7 @@ const Publish: React.FC = () => {
   // 领取奖励
   const ReceivedFn = async (qid: string | number): Promise<void> => {
     if (!user.id) {
-      message.info('请先登陆')
+      message.info('请先登录')
       return
     }
 
@@ -277,7 +277,7 @@ const Publish: React.FC = () => {
   }
   const receiveRetweetFn = async (qid: string | number): Promise<void> => {
     if (!user.id) {
-      message.info('请先登陆')
+      message.info('请先登录')
       return
     }
 
@@ -305,7 +305,7 @@ const Publish: React.FC = () => {
   // 申请
   const ApplyFn = async (qid: string | number): Promise<void> => {
     if (!user.id) {
-      message.info('请先登陆')
+      message.info('请先登录')
       return
     }
 
@@ -330,7 +330,7 @@ const Publish: React.FC = () => {
   // 领取
   const rewardKey = async (qid: string | number): Promise<void> => {
     if (!user.id) {
-      message.info('请先登陆')
+      message.info('请先登录')
       return
     }
 
@@ -355,7 +355,7 @@ const Publish: React.FC = () => {
   // 申请同意
   const applyAgreeFn = async ({ qid, uid }: applyHandleProps): Promise<void> => {
     if (!user.id) {
-      message.info('请先登陆')
+      message.info('请先登录')
       return
     }
 
@@ -380,7 +380,7 @@ const Publish: React.FC = () => {
   // 申请拒绝
   const applyRejectFn = async ({ qid, uid }: applyHandleProps): Promise<void> => {
     if (!user.id) {
-      message.info('请先登陆')
+      message.info('请先登录')
       return
     }
 
