@@ -63,7 +63,13 @@ const AccountButton: React.FC<AccountButtonProps> = (props) => {
               </div>
               <span className="username">{ user.username }</span>
             </StyledItem>
-            <StyledItem onClick={() => history.push('/publish')}>
+            <StyledItem onClick={() => history.push('/rewards')}>
+              待发放奖励
+              </StyledItem>
+              <StyledItem onClick={() => history.push('/tasks')}>
+              管理任务
+              </StyledItem>
+              <StyledItem onClick={() => history.push('/publish')}>
               创建任务
             </StyledItem>
             <StyledItem onClick={logout}>

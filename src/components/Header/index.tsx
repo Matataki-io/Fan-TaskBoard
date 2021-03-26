@@ -2,17 +2,19 @@ import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Link, useHistory } from 'react-router-dom'
 import { Button, Drawer } from 'antd'
+import { useSelector } from "react-redux";
 
 import logo from "../../assets/img/logo.png";
 import logoText from "../../assets/img/logo-text.png";
 import AccountButton from './components/AccountButton'
 import AccountDrawer from './components/AccountDrawer'
-
+import { selectUser } from '../../store/userSlice'
 
 
 const Header: React.FC = () => {
   // const { account }: { account: string } = useWallet()
   const history = useHistory();
+  const user: any = useSelector(selectUser)
 
   return (
     <StyledHeader>
@@ -25,6 +27,9 @@ const Header: React.FC = () => {
 
           <StyledHeaderNav>
             <Link to="/rewards">待发放奖励</Link>
+            {
+              user.id ? (<>&nbsp;<Link to="/tasks">管理任务</Link></>) : null
+            }
           </StyledHeaderNav>
         </div>
 
@@ -84,6 +89,9 @@ const StyledHeaderNav = styled.nav`
     &:hover {
       text-decoration: underline;
     }
+  }
+  @media screen and (max-width: 768px) {
+    display: none;
   }
 `
 

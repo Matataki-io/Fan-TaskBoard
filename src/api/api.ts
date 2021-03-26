@@ -19,6 +19,9 @@ export interface questInterface {
 export interface receiveProps {
   qid: string|number
 }
+export interface questEndProps {
+  qid: string|number
+}
 export interface receiveKeyProps extends receiveProps {
   key: string
 }
@@ -87,6 +90,10 @@ export function getQuestDetail(id: string|number) {
 export function getQuestCount(params: getQuestCountProps) {
   return client.get(`/quest/count`, { params });
 }
+// 结束任务
+export function questEnd(data: questEndProps) {
+  return client.put(`/quest/end`, data);
+}
 // 获取任务详情列表
 export function getQuestDetailList(id: string|number, params: getQuestDetailProps) {
   return client.get(`/quest/${id}/list`, { params });
@@ -131,6 +138,10 @@ export function getTokenList(page = 1, pagesize = 20, search?: string) {
 // 待领取奖励列表
 export function pendingRewards() {
   return client.get('/pendingRewards')
+}
+// 获取自己的所有任务
+export function questAll() {
+  return client.get('/quest/all')
 }
 // 所有任务的申请
 export function applyAll() {

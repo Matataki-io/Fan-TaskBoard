@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Button, Input, Select, Form, message, Spin, Pagination } from 'antd'
 import { Link, useHistory } from 'react-router-dom'
 
+import { decimalProcessing } from '../../utils/index'
 import logo from '../../assets/img/logo.png'
 import Page from '../../components/Page'
 import {
@@ -26,7 +27,7 @@ const Home: React.FC = () => {
   const [questsCount, setQuestsCount] = useState<number>(0) // 任务 总数量
   const [questsCurrent, setQuestsCurrent] = useState<number>(1) // 任务 当前页
   const [questGetLoading, setQuestGetLoading] = useState<boolean>(false)
-  const [questSort, setQuestSort] = useState<string>('new') // 排序
+  const [questSort, setQuestSort] = useState<string>('default') // 排序
   const [questSearchToken, setQuestSearchToken] = useState<string|number>('') // 根据token搜索
   const [questType, setQuestType] = useState<string>('all') // 筛选
   const [questFilter, setQuestFilter] = useState<string>('all') // 筛选
@@ -34,6 +35,21 @@ const Home: React.FC = () => {
   const [count, setCount] = useState<any>({}) // 筛选统计
 
   const user: any = useSelector(selectUser)
+
+  const sortList = [
+    {
+      value: 'default',
+      label: '默认排序'
+    },
+    {
+      value: 'new',
+      label: '最新创建'
+    },
+    {
+      value: 'most',
+      label: '最多奖励'
+    }
+  ]
 
   // 任务排序处理
   const handleChange = (value: string) => {
@@ -115,9 +131,8 @@ const Home: React.FC = () => {
   const processReward = (price: string, people: string) => {
     // console.log('1111', price, people)
     let BN = BigNumber.clone()
-    BN.config({ DECIMAL_PLACES: 3 })
     let single = new BN(new BN(Number(price))).dividedBy(Number(people))
-    return single.toString()
+    return decimalProcessing(single.toString())
   }
   // 计算奖励领取份额
   const processRewardShare = (people: string, received: string) => {
@@ -236,8 +251,11 @@ const Home: React.FC = () => {
           </div>
           <div>
             <Select defaultValue={questSort} style={{ width: 120 }} onChange={handleChange}>
-              <Option value="new">最新创建</Option>
-              <Option value="most">最多奖励</Option>
+              {
+                sortList.map(i => (
+                  <Option value={ i.value }>{ i.label }</Option>
+                ))
+              }
             </Select>
           </div>
         </StyledContentHead>
@@ -323,6 +341,12 @@ const Home: React.FC = () => {
                     {/* <StyledButton>取消任务</StyledButton> */}
                     {/* <StyledButton>自己发布</StyledButton> */}
                   </StyledListItemBox>
+                  {
+                    Number(i.end) === 0 ?
+                    <span className="tag" role="img" aria-label="进行中" title="进行中">🔥</span> :
+                    Number(i.end) === 1 ?
+                    <span className="tag" role="img" aria-label="已结束" title="已结束">🔚</span> : ''
+                  }
                 </StyledListItem>
               ))
             }
@@ -419,6 +443,8 @@ const StyledListItem = styled(Link)`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  position: relative;
+  overflow: hidden;
   .tips {
     font-size: 12px;
     font-weight: 400;
@@ -439,6 +465,16 @@ const StyledListItem = styled(Link)`
       line-height: 17px;
       margin: 0 4px 0 0;
     }
+  }
+  .tag {
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: #fff;
+    border-radius: 0 0 0 8px;
+    font-size: 14px;
+    color: #333;
+    padding: 2px 10px;
   }
 `
 

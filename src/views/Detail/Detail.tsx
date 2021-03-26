@@ -8,10 +8,12 @@ import moment from 'moment'
 import BigNumber from 'bignumber.js'
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import ReactMarkdown from 'react-markdown'
+import { decimalProcessing } from '../../utils/index'
 
 import publishTwitter from '../../assets/img/publish-1.png';
 import publishKey from '../../assets/img/publish-2.png';
 import publishCustomtask from '../../assets/img/publish-3.png';
+import publishRetweet from '../../assets/img/publish-retweet.png';
 import publishDecrypt from '../../assets/img/publish-decrypt.png';
 
 import Page from '../../components/Page'
@@ -101,9 +103,8 @@ const Publish: React.FC = () => {
   const processReward = (price: string, people: string) => {
     // console.log('1111', price, people)
     let BN = BigNumber.clone()
-    BN.config({ DECIMAL_PLACES: 3 })
     let single = new BN(new BN(Number(price))).dividedBy(Number(people))
-    return single.toString()
+    return decimalProcessing(single.toString())
   }
   // 计算奖励领取份额
   const processRewardShare = (people: string, received: string) => {
@@ -205,7 +206,7 @@ const Publish: React.FC = () => {
         console.log('text', text, record)
         return (
           <>
-            <Button type="primary" onClick={() => applyAgreeFn({ qid: record.qid, uid: record.uid })}>同意</Button>
+            <Button disabled={ Number(questDetail.end) === 1 } type="primary" onClick={() => applyAgreeFn({ qid: record.qid, uid: record.uid })}>同意</Button>
             &nbsp;
             <Popconfirm
               placement="top"
@@ -422,7 +423,7 @@ const Publish: React.FC = () => {
     } else if ((String(questDetail.received) === String(questDetail.reward_people))) {
       return (<StyledButtonAntd className="receive">领取完毕</StyledButtonAntd>)
     } else {
-      return (<StyledButtonAntd onClick={() => ReceivedFn(id)} className="receive">领取奖励</StyledButtonAntd>)
+      return (<StyledButtonAntd disabled={ Number(questDetail.end) === 1 } onClick={() => ReceivedFn(id)} className="receive">领取奖励</StyledButtonAntd>)
     }
   }
   // 领取按钮 转推
@@ -434,7 +435,7 @@ const Publish: React.FC = () => {
     } else if ((String(questDetail.received) === String(questDetail.reward_people))) {
       return (<StyledButtonAntd className="receive">领取完毕</StyledButtonAntd>)
     } else {
-      return (<StyledButtonAntd onClick={() => receiveRetweetFn(id)} className="receive">领取奖励</StyledButtonAntd>)
+      return (<StyledButtonAntd disabled={ Number(questDetail.end) === 1 } onClick={() => receiveRetweetFn(id)} className="receive">领取奖励</StyledButtonAntd>)
     }
   }
   // 领取按钮 自定义任务
@@ -458,7 +459,7 @@ const Publish: React.FC = () => {
             rows={4}
             onChange={e => handleRemarkChange(e)}
           />
-          <StyledButtonAntd onClick={() => ApplyFn(id)} className="receive">我已完成任务并申请发放奖励</StyledButtonAntd>
+          <StyledButtonAntd disabled={ Number(questDetail.end) === 1 } onClick={() => ApplyFn(id)} className="receive">我已完成任务并申请发放奖励</StyledButtonAntd>
         </>
       )
     }
@@ -479,7 +480,7 @@ const Publish: React.FC = () => {
             placeholder="请输入Key"
             onChange={e => handleKeyChange(e)}
           />
-          <StyledButtonAntd onClick={() => rewardKey(id)} className="receive">立即领取</StyledButtonAntd>
+          <StyledButtonAntd disabled={ Number(questDetail.end) === 1 } onClick={() => rewardKey(id)} className="receive">立即领取</StyledButtonAntd>
         </>
       )
     }
@@ -613,7 +614,7 @@ const Publish: React.FC = () => {
           <StyledInfoBox>
             <StyledInfoCover src={
               Number(questDetail.type) === 0 ? publishTwitter :
-              Number(questDetail.type) === 3 ? publishTwitter :
+              Number(questDetail.type) === 3 ? publishRetweet :
                 Number(questDetail.type) === 1 ? publishCustomtask :
                   Number(questDetail.type) === 2 ? publishDecrypt : ''
             } alt="cover" />
@@ -628,7 +629,10 @@ const Publish: React.FC = () => {
                 }
               </span>
               <span className="status">
-                {(String(questDetail.received) === String(questDetail.reward_people)) ? '领取完毕' : '进行中'}
+                {
+                  (Number(questDetail.end) === 1) ? '🔚 已结束' :
+                  (String(questDetail.received) === String(questDetail.reward_people)) ? '✅ 领取完毕' : '🔥 进行中'
+                }
               </span>
 
               <StyledInfoIconContent>
@@ -762,6 +766,9 @@ const StyledButtonAntd = styled(Button)`
   &.receive {
     background: #6236FF;
     margin-top: 16px;
+    &[disabled] {
+      background: #f5f5f5;
+    }
   }
   &.follow {
     background: transparent;
@@ -854,7 +861,7 @@ const StyledInfoHead = styled.div`
     color: #FFFFFF;
     line-height: 50px;
     word-break: break-word;
-    max-width: 400px;
+    max-width: 340px;
   }
   .status {
     display: inline-block;

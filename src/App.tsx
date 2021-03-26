@@ -18,6 +18,7 @@ import Login from './views/Login'
 import Stake from './views/Stake'
 import Publish from './views/Publish'
 import Rewards from './views/Rewards'
+import Tasks from './views/Tasks'
 import PublishType from './views/PublishType'
 import PublishDone from './views/PublishDone'
 import Detail from './views/Detail'
@@ -100,6 +101,9 @@ const App: React.FC = () => {
           </Route>
           <Route path="/rewards" exact>
             <Rewards />
+          </Route>
+          <Route path="/tasks" exact>
+            <Tasks />
           </Route>
           <Route path="/publish" exact>
             <Publish />
