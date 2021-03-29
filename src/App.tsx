@@ -60,7 +60,7 @@ const App: React.FC = () => {
       icon: <SmileOutlined style={{ color: '#108ee9' }} />,
       message: '提示',
       description:
-        '可能因为调用Twitter API 次数过多无法查询关注状态或领取失败！可以稍后再来重试！',
+        '可能因为调用Twitter API 次数过多可能无法查询关注状态或领取失败！可以稍后再来重试！该提示仅为提示作用不代表不可用。',
       duration: 0,
       btn,
       key,
@@ -68,7 +68,7 @@ const App: React.FC = () => {
         console.log('Notification Clicked!');
       },
       onClose: () => {
-        setCookie(notificationErrorKey, 'true', 1)
+        setCookie(notificationErrorKey, 'true', 3)
         console.log('Notification close!');
       },
     };
